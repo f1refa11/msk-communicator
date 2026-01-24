@@ -169,6 +169,16 @@ async def handle_login(request):
         return response
     else:
         return redirect('/?login=fail')
+
+@app.route('/getcookie') 
+async def get_cookie_page(request):
+    token_value = request.cookies.get('session_id')
+    if token_value and token_value in SESSIONS:
+        user_data = SESSIONS[token_value]
+        user_name = user_data[2]
+        return f"Имя пользователя в этой сессии: <b>{user_name}</b>", 200, {'Content-Type': 'text/html; charset=utf-8'}
+    else:
+        return "Cookie не найдены или сессия истекла (перезайдите в аккаунт)", 404, {'Content-Type': 'text/html; charset=utf-8'}
     
 @app.route('/logout')
 async def logout(request):
