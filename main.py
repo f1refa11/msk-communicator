@@ -164,8 +164,8 @@ async def handle_login(request):
         response = redirect('/?login=success')
         
         # 3. Set the cookie (HttpOnly helps security)
-        response.set_cookie('session_id', token, http_only=True, max_age=3600)
-        
+        # response.set_cookie('session_id', token, http_only=True, max_age=3600)
+        response.set_cookie('session_id', token, http_only=True, max_age=3600, path='/')
         return response
     else:
         return redirect('/?login=fail')
