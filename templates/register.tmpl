@@ -1,0 +1,25 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>msk communicator</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        
+    </style>
+</head>
+<body>
+    <h1>регистрация</h1>
+    <form action="/api/account/register" method="post" id="reg_form">
+        <label for="name">Кликуха:</label>
+        <input type="text" id="name" name="name" placeholder="Хураман Джафаровна">
+        <label for="tel">Номер телефона:</label>
+        <input type="tel" id="tel" name="tel" placeholder="+79999836253">
+        <label for="pwd">Пароль:</label>
+        <input type="password" id="pwd" name="pwd" placeholder="Password123">
+        <button type="submit" form="reg_form" class="submit-button">зарегистрироваться</button>
+    </form> 
+</body>
+</html>
