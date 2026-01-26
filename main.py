@@ -183,14 +183,10 @@ async def get_cookie_page(request):
 @app.route('/logout')
 async def logout(request):
     token = request.cookies.get('session_id')
-    
-    # Remove from server memory
-    if token in SESSIONS:
+    if token and token in SESSIONS:
         del SESSIONS[token]
-    
-    # Tell browser to delete cookie
     response = redirect('/')
-    response.delete_cookie('session_id')
+    response.delete_cookie('session_id', path='/')
     return response
 
 app.run()
