@@ -17,6 +17,7 @@ env = Environment(
 page_index = env.get_template("index.tmpl")
 page_login = env.get_template("login.tmpl")
 page_register = env.get_template("register.tmpl")
+page_tutorial = env.get_template("tutorial.tmpl")
 
 app = Microdot()
 
@@ -90,6 +91,13 @@ async def static(request, path):
     if '..' in path:
         return 'Not found', 404
     return send_file('static/' + path)
+
+
+# tutorial
+@app.route('/tutorial')
+async def index(request):
+    return page_tutorial.render(test="test"), 200, {'Content-Type': 'text/html'}
+
 
 # @app.route('/db/<path:path>')
 # async def dbdownload(request, path):
@@ -169,17 +177,22 @@ async def handle_login(request):
         return response
     else:
         return redirect('/?login=fail')
-
+    
 @app.route('/getcookie') 
 async def get_cookie_page(request):
+    
     token_value = request.cookies.get('session_id')
     if token_value and token_value in SESSIONS:
         user_data = SESSIONS[token_value]
         user_name = user_data[2]
+        loged = True
         return f"Имя пользователя в этой сессии: <b>{user_name}</b>", 200, {'Content-Type': 'text/html; charset=utf-8'}
     else:
+        loged = False
         return "Cookie не найдены или сессия истекла (перезайдите в аккаунт)", 404, {'Content-Type': 'text/html; charset=utf-8'}
-    
+
+
+
 @app.route('/logout')
 async def logout(request):
     token = request.cookies.get('session_id')
