@@ -1,0 +1,9 @@
+<div id="topbar">
+    <img src="/assets/logo.svg" class="logo">
+    <a href="/tutorials">туториалы</a>
+    {% if yes_login %}
+        <a href="/account/">аккаунт</a>
+    {% else %}
+        <a href="/register/">вход/регистрация</a>
+    {% endif %}
+</div>

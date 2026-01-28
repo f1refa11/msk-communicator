@@ -94,7 +94,7 @@ async def static(request, path):
 
 
 # tutorial
-@app.route('/tutorial')
+@app.route('/tutorials')
 async def index(request):
     return page_tutorial.render(test="test"), 200, {'Content-Type': 'text/html'}
 
