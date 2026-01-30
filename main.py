@@ -98,13 +98,21 @@ async def static(request, path):
 async def index(request):
     return page_tutorial.render(test="test"), 200, {'Content-Type': 'text/html'}
 
-
 # @app.route('/db/<path:path>')
 # async def dbdownload(request, path):
 #     if '..' in path:
 #         return 'Not found', 404
         
 #     return send_file('db/' + path)
+
+
+@app.route('/assets/<path:path>')
+async def logoload(request, path):
+    #Я установил в темплейте прям длину и высоту в img
+    if '..' in path:
+        return 'Not found', 404
+    
+    return send_file('assets/' + path)
 
 # register route
 @app.route('/api/account/register', methods=['POST'])
