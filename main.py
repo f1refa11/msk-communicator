@@ -1,11 +1,13 @@
+import microdot.jinja
+import os
 from microdot import Microdot, send_file, redirect
+from microdot.session import Session, with_session
 from jinja2 import Environment, PackageLoader, select_autoescape
 import hashlib
 import bcrypt
 import sqlite3
 db = sqlite3.connect('database.db', autocommit=True)
 cur = db.cursor()
-import uuid
 
 # todo: rate limiting на post запросы
 
@@ -18,24 +20,20 @@ page_index = env.get_template("index.tmpl")
 page_login = env.get_template("login.tmpl")
 page_register = env.get_template("register.tmpl")
 page_tutorial = env.get_template("tutorial.tmpl")
+page_account = env.get_template("account.tmpl")
+page_forgot = env.get_template("forgot.tmpl")
 
 app = Microdot()
 
-SESSIONS = {}
+SESSION_SECRET = os.environ.get("SESSION_SECRET", "change-me")
+Session(app, secret_key=SESSION_SECRET)
 
-def create_session(username):
-    # Generate a random unique string
-    token = str(uuid.uuid4())
-    SESSIONS[token] = username
-    return token
-
-def get_current_user(request):
-    # Retrieve the cookie
-    token = request.cookies.get('session_id')
-    # Look up the token in our dictionary
-    if token and token in SESSIONS:
-        return SESSIONS[token]
-    return None
+def get_current_user(session):
+    user_id = session.get("user_id")
+    if not user_id:
+        return None
+    cur.execute("SELECT * FROM users WHERE id = ?", (user_id,))
+    return cur.fetchone()
 
 def init_db():
     """
@@ -53,6 +51,7 @@ def init_db():
                 name TEXT NOT NULL,
                 pass TEXT NOT NULL,
                 admin INTEGER DEFAULT 0,
+                avatar TEXT DEFAULT 'avatar-1',
                 PRIMARY KEY(id AUTOINCREMENT)
             )
         ''')
@@ -62,28 +61,59 @@ def init_db():
 # Run the check on startup
 init_db()
 
+# add missing columns for existing dbs
+cur.execute("PRAGMA table_info(users)")
+_cols = [row[1] for row in cur.fetchall()]
+if "avatar" not in _cols:
+    cur.execute("ALTER TABLE users ADD COLUMN avatar TEXT DEFAULT 'avatar-1'")
+
+AVATARS = ["avatar-1", "avatar-2", "avatar-3", "avatar-4", "avatar-5"]
+
 # -- PAGES
 
 # index
 @app.route('/')
-async def index(request):
+@with_session
+async def index(request, session):
+    user = get_current_user(session)
     login_status = ""
     if request.args.get("reg"):
         if request.args.get("reg") == "success":
             login_status = "ты удачно зарегал акк, заходи в меню входа в акк"
         else:
             login_status = "акк не зареган, попробуй ещё раз"
-    return page_index.render(test=login_status), 200, {'Content-Type': 'text/html'}
+    if request.args.get("login") == "success":
+        login_status = "вход успешен"
+    return page_index.render(
+        test=login_status,
+        yes_login=bool(user),
+        user_name=user[2] if user else ""
+    ), 200, {'Content-Type': 'text/html'}
 
 # login
 @app.route('/login')
-async def index(request):
-    return page_login.render(test="test"), 200, {'Content-Type': 'text/html'}
+@with_session
+async def index(request, session):
+    user = get_current_user(session)
+    status = ""
+    if request.args.get("reset") == "success":
+        status = "пароль обновлен, войдите снова"
+    return page_login.render(
+        test=status,
+        yes_login=bool(user),
+        user_name=user[2] if user else ""
+    ), 200, {'Content-Type': 'text/html'}
 
 # login
 @app.route('/register')
-async def index(request):
-    return page_register.render(test="test"), 200, {'Content-Type': 'text/html'}
+@with_session
+async def index(request, session):
+    user = get_current_user(session)
+    return page_register.render(
+        test="test",
+        yes_login=bool(user),
+        user_name=user[2] if user else ""
+    ), 200, {'Content-Type': 'text/html'}
 
 # static
 @app.route('/static/<path:path>')
@@ -95,8 +125,47 @@ async def static(request, path):
 
 # tutorial
 @app.route('/tutorials')
-async def index(request):
-    return page_tutorial.render(test="test"), 200, {'Content-Type': 'text/html'}
+@with_session
+async def index(request, session):
+    user = get_current_user(session)
+    return page_tutorial.render(
+        test="test",
+        yes_login=bool(user),
+        user_name=user[2] if user else ""
+    ), 200, {'Content-Type': 'text/html'}
+
+@app.route('/forgot')
+@with_session
+async def forgot_password_page(request, session):
+    user = get_current_user(session)
+    status = request.args.get("status") or ""
+    status_map = {
+        "blank": "заполните все поля",
+        "nomatch": "пароли не совпадают",
+        "notfound": "аккаунт не найден",
+    }
+    return page_forgot.render(
+        status=status_map.get(status, ""),
+        yes_login=bool(user),
+        user_name=user[2] if user else ""
+    ), 200, {'Content-Type': 'text/html'}
+
+# account settings
+@app.route('/account/')
+@with_session
+async def account_settings(request, session):
+    user = get_current_user(session)
+    if not user:
+        return redirect('/login')
+    if user[5] is None:
+        cur.execute("UPDATE users SET avatar = ? WHERE id = ?", ("avatar-1", user[0]))
+        user = get_current_user(session)
+    return page_account.render(
+        yes_login=True,
+        user=user,
+        avatars=AVATARS,
+        user_name=user[2]
+    ), 200, {'Content-Type': 'text/html'}
 
 # @app.route('/db/<path:path>')
 # async def dbdownload(request, path):
@@ -116,7 +185,8 @@ async def logoload(request, path):
 
 # register route
 @app.route('/api/account/register', methods=['POST'])
-async def handle_reg(request):
+@with_session
+async def handle_reg(request, session):
     # todo: проверить, существует ли уже пользователь
 
     # fetch form info
@@ -161,7 +231,8 @@ async def handle_reg(request):
     # return {'Имя': name,'Пароль':passw,'Хеш пароля':dpass}
 
 @app.route('/api/account/login', methods=['POST'])
-async def handle_login(request):
+@with_session
+async def handle_login(request, session):
     # 1. Fetch form info
     tel = request.form.get('tel')
     pwd = request.form.get('pwd')
@@ -176,38 +247,126 @@ async def handle_login(request):
     user = cur.fetchone()
 
     if user:
-        token = create_session(user)
         response = redirect('/?login=success')
-        
-        # 3. Set the cookie (HttpOnly helps security)
-        # response.set_cookie('session_id', token, http_only=True, max_age=3600)
-        response.set_cookie('session_id', token, http_only=True, max_age=3600, path='/')
+        session["user_id"] = user[0]
+        session.save()
         return response
     else:
         return redirect('/?login=fail')
+
+@app.route('/api/account/update_name', methods=['POST'])
+@with_session
+async def handle_update_name(request, session):
+    user = get_current_user(session)
+    if not user:
+        return redirect('/login')
+    new_name = request.form.get("name")
+    if not new_name:
+        return redirect('/account/?name=blank')
+    cur.execute("UPDATE users SET name = ? WHERE id = ?", (new_name, user[0]))
+    return redirect('/account/?name=success')
+
+@app.route('/api/account/update_tel', methods=['POST'])
+@with_session
+async def handle_update_tel(request, session):
+    user = get_current_user(session)
+    if not user:
+        return redirect('/login')
+    new_tel = request.form.get("tel")
+    if not new_tel:
+        return redirect('/account/?tel=blank')
+    cur.execute("SELECT id FROM users WHERE tel = ? AND id != ?", (new_tel, user[0]))
+    if cur.fetchone():
+        return redirect('/account/?tel=exists')
+    cur.execute("UPDATE users SET tel = ? WHERE id = ?", (new_tel, user[0]))
+    return redirect('/account/?tel=success')
+
+@app.route('/api/account/update_password', methods=['POST'])
+@with_session
+async def handle_update_password(request, session):
+    user = get_current_user(session)
+    if not user:
+        return redirect('/login')
+    current_pwd = request.form.get("current_pwd")
+    new_pwd = request.form.get("new_pwd")
+    new_pwd_confirm = request.form.get("new_pwd_confirm")
+    if not current_pwd or not new_pwd or not new_pwd_confirm:
+        return redirect('/account/?pwd=blank')
+    if new_pwd != new_pwd_confirm:
+        return redirect('/account/?pwd=nomatch')
+    current_hash = hashlib.sha256(current_pwd.encode('utf-8')).hexdigest()
+    if current_hash != user[3]:
+        return redirect('/account/?pwd=wrong')
+    new_hash = hashlib.sha256(new_pwd.encode('utf-8')).hexdigest()
+    cur.execute("UPDATE users SET pass = ? WHERE id = ?", (new_hash, user[0]))
+    return redirect('/account/?pwd=success')
+
+@app.route('/api/account/update_avatar', methods=['POST'])
+@with_session
+async def handle_update_avatar(request, session):
+    user = get_current_user(session)
+    if not user:
+        return redirect('/login')
+    avatar = request.form.get("avatar")
+    if avatar not in AVATARS:
+        return redirect('/account/?avatar=invalid')
+    cur.execute("UPDATE users SET avatar = ? WHERE id = ?", (avatar, user[0]))
+    return redirect('/account/?avatar=success')
+
+@app.route('/api/account/delete', methods=['POST'])
+@with_session
+async def handle_delete_account(request, session):
+    user = get_current_user(session)
+    if not user:
+        return redirect('/login')
+    confirm = request.form.get("confirm_delete")
+    pwd = request.form.get("delete_pwd")
+    if confirm != "on" or not pwd:
+        return redirect('/account/?delete=confirm')
+    pwd_hash = hashlib.sha256(pwd.encode('utf-8')).hexdigest()
+    if pwd_hash != user[3]:
+        return redirect('/account/?delete=wrong')
+    cur.execute("DELETE FROM users WHERE id = ?", (user[0],))
+    response = redirect('/?account=deleted')
+    session.delete()
+    return response
+
+@app.route('/api/account/forgot_password', methods=['POST'])
+@with_session
+async def handle_forgot_password(request, session):
+    name = request.form.get("name")
+    tel = request.form.get("tel")
+    new_pwd = request.form.get("new_pwd")
+    new_pwd_confirm = request.form.get("new_pwd_confirm")
+    if not name or not tel or not new_pwd or not new_pwd_confirm:
+        return redirect('/forgot?status=blank')
+    if new_pwd != new_pwd_confirm:
+        return redirect('/forgot?status=nomatch')
+    cur.execute("SELECT id FROM users WHERE tel = ? AND name = ?", (tel, name))
+    user = cur.fetchone()
+    if not user:
+        return redirect('/forgot?status=notfound')
+    new_hash = hashlib.sha256(new_pwd.encode('utf-8')).hexdigest()
+    cur.execute("UPDATE users SET pass = ? WHERE id = ?", (new_hash, user[0]))
+    return redirect('/login?reset=success')
     
 @app.route('/getcookie') 
-async def get_cookie_page(request):
-    
-    token_value = request.cookies.get('session_id')
-    if token_value and token_value in SESSIONS:
-        user_data = SESSIONS[token_value]
+@with_session
+async def get_cookie_page(request, session):
+    user_data = get_current_user(session)
+    if user_data:
         user_name = user_data[2]
-        loged = True
         return f"Имя пользователя в этой сессии: <b>{user_name}</b>", 200, {'Content-Type': 'text/html; charset=utf-8'}
     else:
-        loged = False
         return "Cookie не найдены или сессия истекла (перезайдите в аккаунт)", 404, {'Content-Type': 'text/html; charset=utf-8'}
 
 
 
 @app.route('/logout')
-async def logout(request):
-    token = request.cookies.get('session_id')
-    if token and token in SESSIONS:
-        del SESSIONS[token]
+@with_session
+async def logout(request, session):
     response = redirect('/')
-    response.delete_cookie('session_id', path='/')
+    session.delete()
     return response
 
 app.run()
