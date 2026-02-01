@@ -1,10 +1,17 @@
 <div id="topbar">
-    <a href="/"><img src="/assets/logo.svg" class="logo" style="width:100px; height:100px;"></a>
-    <a href="/tutorials">туториалы</a>
-    {% if yes_login %}
-        <span>привет, {{ user_name }}</span>
-        <a href="/account/">аккаунт</a>
-    {% else %}
-        <a href="/register">вход/регистрация</a>
-    {% endif %}
+    <div class="topbar-left">
+        <a href="/" class="topbar-logo">
+            <img src="/assets/logo.svg" class="logo" alt="msk communicator">
+        </a>
+        <a href="/tutorials" class="topbar-link">туториалы</a>
+    </div>
+    <div class="topbar-right">
+        {% if yes_login %}
+            <span class="topbar-greeting">привет, {{ user_name }}</span>
+            <a href="/account/" class="topbar-link">аккаунт</a>
+            <a href="/logout" class="topbar-link topbar-logout">выйти</a>
+        {% else %}
+            <a href="/register" class="topbar-link">вход/регистрация</a>
+        {% endif %}
+    </div>
 </div>
