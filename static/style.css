@@ -1,0 +1,103 @@
+body {
+	background-image: url(/assets/register/reg-background.png);
+	background-repeat: repeat;
+	background-size: contain;
+	background-position: center center;
+	background-attachment: fixed;
+	font-family: 'Arial';
+}
+.reg-title {
+	font-size: 70px;
+	font-weight: bold;
+	margin: auto;
+	width: fit-content;
+	background-color: rgba(128, 0, 128, 0.557);
+    border-radius: 10px;
+	margin-top: 8px;
+	margin-bottom: 16px;
+    padding: 3px;
+}
+.reg-main-content {
+	display: flex;
+	justify-content: left;
+	gap: 1vw;
+	margin-top: 5vw;
+}
+.reg-form {
+	flex: 0 1 2000px;
+	border-right: 2px solid gray;
+
+}
+.reg-form-labels {
+	font-size: 3vw;
+	font-weight: bold;
+	width: fit-content;
+}
+.reg-form-inputs {
+	font-size: 50px;
+	height: fit-content;
+	width: fit-content;
+	margin-top: 2vw;
+	border-style: solid;
+	border-width: 5px;
+	border-color: black;
+	padding-right: 24px;
+    outline: none;
+    border-radius: 10px;
+    box-sizing: border-box;
+    padding-left: 10px;
+}
+.reg-form-inputs:hover{
+    transition: 0.4s;
+    border: 5px solid rgba(128, 0, 128, 0.557);
+}
+.reg-button-submit-register {
+	font-size: 3vw;
+	font-weight: bold;
+	margin-top: 3vw;
+	padding-left: 20px;
+	padding-right: 20px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	background-color: #99e550;
+}
+.reg-button-submit-login {
+	font-size: 33px;
+	width: 320px;
+	height: 120px;
+	text-align: center;
+	font-weight: bold;
+	margin-top: 24px;
+	
+	padding-top: 10px;
+	padding-bottom: 10px;
+	background-color: #a6c5ff;
+	margin-left: 16px;
+	border: 2px solid black;
+	border-radius: 10px;
+	transition: 0.4s;
+}
+
+.reg-button-submit-login:hover{
+	background-color: rgba(128, 0, 128, 0.557);
+	color: white;
+
+}
+.reg-images {
+    flex: 0 1 20vw;
+	margin: auto;
+}
+
+.reg-side-img {
+    width: 100%;
+    height: auto;
+}
+.reg-under-image-paragraph {
+	display: block;
+	font-size: 2vw;
+	margin-top: 1vw;
+	line-height: 1.2;
+	text-align: center;
+	font-weight: bold;
+	
+}

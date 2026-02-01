@@ -52,15 +52,22 @@ body {
 	background-color: #99e550;
 }
 .reg-button-submit-login {
-	font-size: 3vw;
+	font-size: 24px;
 	font-weight: bold;
-	margin-top: 3vw;
+	margin-top: 24px;
 	padding-left: 20px;
 	padding-right: 20px;
 	padding-top: 10px;
 	padding-bottom: 10px;
 	background-color: #a6c5ff;
-	margin-left: 2vw;
+	margin-left: 16px;
+	border: 2px solid black;
+	border-radius: 10px;
+	
+}
+.reg-button-submit-login:hover{
+	
+
 }
 .reg-images {
     flex: 0 1 20vw;
