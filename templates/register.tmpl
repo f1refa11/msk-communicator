@@ -11,31 +11,32 @@
     </style>
 </head>
 <body>
-    
+    {% include "topbar.tmpl" %}
+
 	<div class="reg-main-content">
 		<div  class="reg-form">
 			<h1 class="reg-title">Регистрация</h1>
 			<form action="/api/account/register" method="post" id="reg_form">
-		
-				<label for="name" class="reg-form-labels">ФИО:</label> 
+
+				<label for="name" class="reg-form-labels">ФИО:</label>
 				<input type="text" id="name" name="name" placeholder="Введите ФИО" class="reg-form-inputs"><br>
-			
+
 				<label for="tel" class="reg-form-labels">Номер телефона:</label>
 				<input type="tel" id="tel" name="tel" placeholder="Введите номер телефона " class="reg-form-inputs"><br>
-			
+
 				<label for="pwd" class="reg-form-labels">Пароль:</label>
 				<input type="password" id="pwd" name="pwd" placeholder="Введите пароль" class="reg-form-inputs"><br>
-			
+
 				<input type="submit" id="pwd" name="pwd" placeholder="Создать аккаунт" class="reg-button-submit-login" value="Создать аккаунт"><br>
-				
-			</form> 
+
+			</form>
 		</div>
-	
+
 		<div class="reg-images">
 			<img src="/assets/register/max-logo.png" alt="MAX" class="reg-side-img">
 			<p class="reg-under-image-paragraph">Мы научим вас пользоваться Российским мессенджером MAX!</p>
 		</div>
-		
+
 	</div>
 </body>
 </html>
