@@ -11,6 +11,7 @@
     </style>
 </head>
 <body>
+    {% include "topbar.tmpl" %}
     <h1>вход в акк</h1>
     <form action="/api/account/login" method="post" id="login_form">
         <label for="tel">номер телефона:</label>
@@ -19,5 +20,7 @@
         <input type="password" id="pwd" name="pwd" placeholder="Пароль"><br>
         <button form="login_form" type="submit" class="submit-button">вход</button>
     </form> 
+    <p><a href="/forgot">забыл пароль</a></p>
+    <p>{{ test }}</p>
 </body>
 </html>
