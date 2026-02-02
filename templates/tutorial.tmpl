@@ -1,32 +1,47 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <title>msk communicator</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
+    <title>Список туториалов</title>
+    <!-- Подключите ваши стили здесь -->
     <style>
-        h1{
-            text-align: center;
+        .tutorial-list {
+            list-style: none;
+            padding: 0;
         }
-        h2{
-            text-align: center;
-        
+        .tutorial-item {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
-        img{
-            background-position: center center;
-            background-size: contain;
-            background-repeat: no-repeat;
-            
+        .tutorial-link {
+            text-decoration: none;
+            font-size: 18px;
+            color: #333;
+            display: block;
+        }
+        .tutorial-link:hover {
+            background-color: #f0f0f0;
         }
     </style>
 </head>
 <body>
-    <h1>Туториал</h1>
-    <h2>"Название туториала"</h2>
-    <p>"текст"</p>
-    <img src="/assets/tutorial_asset/cat1.jpg" alt="" style="width: 300px; height: 300px; background-color: black;">
-    <p>"текст"</p>
-    <img src="" alt="" style="width: 300px; height: 300px; background-color: red;">
+    <h1>Доступные туториалы</h1>
+    
+    {% if tutorials %}
+        <ul class="tutorial-list">
+        {% for tut in tutorials %}
+            <li class="tutorial-item">
+                <!-- Ссылка ведет на первую страницу туториала -->
+                <a class="tutorial-link" href="/tutorials/{{ tut }}/1">📂 {{ tut }}</a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Туториалы пока не добавлены.</p>
+    {% endif %}
+    
+    <a href="/">Назад на главную</a>
 </body>
 </html>

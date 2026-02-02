@@ -22,6 +22,7 @@ page_register = env.get_template("register.tmpl")
 page_tutorial = env.get_template("tutorial.tmpl")
 page_account = env.get_template("account.tmpl")
 page_forgot = env.get_template("forgot.tmpl")
+page_tutorial_viewer = env.get_template("tutorial_viewer.tmpl")
 
 app = Microdot()
 
@@ -126,10 +127,61 @@ async def static(request, path):
 # tutorial
 @app.route('/tutorials')
 @with_session
-async def index(request, session):
+async def tutorials_list(request, session):
     user = get_current_user(session)
+    
+    tutorials_path = 'static/tutorials'
+    tutorials = []
+    
+    # Проверяем папку и получаем список подпапок (названий туториалов)
+    if not os.path.exists(tutorials_path):
+        os.makedirs(tutorials_path)
+    else:
+        # Берем только папки
+        tutorials = [d for d in os.listdir(tutorials_path) if os.path.isdir(os.path.join(tutorials_path, d))]
+        tutorials.sort() # Сортировка по алфавиту
+
     return page_tutorial.render(
-        test="test",
+        tutorials=tutorials,
+        yes_login=bool(user),
+        user_name=user[2] if user else ""
+    ), 200, {'Content-Type': 'text/html'}
+
+# 3. Добавляем новый маршрут для просмотра страницы туториала
+@app.route('/tutorials/<tutorial_name>/<int:page_num>')
+@with_session
+async def tutorial_viewer(request, session, tutorial_name, page_num):
+    user = get_current_user(session)
+    
+    folder_path = os.path.join('static/tutorials', tutorial_name)
+    
+    # Проверка существования туториала
+    if not os.path.exists(folder_path):
+         return "Туториал не найден", 404
+    
+    # Получаем список файлов (изображений)
+    # Сортируем файлы, чтобы порядок слайдов был верным (рекомендуется называть 01.png, 02.png)
+    files = os.listdir(folder_path)
+    images = [f for f in files if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))]
+    images.sort() 
+    
+    total_pages = len(images)
+    
+    if total_pages == 0:
+        return "В этом туториале нет слайдов", 404
+
+    if page_num < 1 or page_num > total_pages:
+        return "Такой страницы не существует", 404
+        
+    # Определяем текущую картинку
+    current_image = images[page_num - 1]
+    image_src = f"/static/tutorials/{tutorial_name}/{current_image}"
+    
+    return page_tutorial_viewer.render(
+        tutorial_name=tutorial_name,
+        current_page=page_num,
+        total_pages=total_pages,
+        image_src=image_src,
         yes_login=bool(user),
         user_name=user[2] if user else ""
     ), 200, {'Content-Type': 'text/html'}
