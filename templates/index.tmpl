@@ -10,6 +10,12 @@
 </head>
 <body class="landing">
     {% include "topbar.tmpl" %}
+    {% if alert_message %}
+    <div class="alert {{ 'alert-success' if alert_type == 'success' else 'alert-error' }}" role="alert" aria-live="polite">
+        <span class="alert-icon">{% if alert_type == 'success' %}✅{% else %}⚠️{% endif %}</span>
+        <div class="alert-text">{{ alert_message }}</div>
+    </div>
+    {% endif %}
     <main class="landing-main">
         <section class="hero">
             <div class="hero-content">

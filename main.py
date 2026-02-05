@@ -122,17 +122,32 @@ AVATARS = ["avatar-1", "avatar-2", "avatar-3", "avatar-4", "avatar-5"]
 @with_session
 async def index(request, session):
     user = get_current_user(session)
-    login_status = ""
-    if request.args.get("reg"):
-        if request.args.get("reg") == "success":
-            login_status = "ты удачно зарегал акк, заходи в меню входа в акк"
+    alert_message = None
+    alert_type = None  # success | error
+
+    reg_status = request.args.get("reg")
+    if reg_status:
+        if reg_status == "success":
+            alert_type = "success"
+            alert_message = "Регистрация прошла успешно. Теперь войдите в аккаунт."
         else:
-            login_status = "акк не зареган, попробуй ещё раз"
-    if request.args.get("login") == "success":
-        login_status = "вход успешен"
+            alert_type = "error"
+            alert_message = "Не удалось зарегистрироваться. Попробуйте ещё раз."
+
+    login_status = request.args.get("login")
+    if login_status == "success":
+        alert_type = "success"
+        alert_message = "Вход выполнен."
+    elif login_status == "fail":
+        alert_type = "error"
+        alert_message = "Не удалось войти. Проверьте номер телефона и пароль."
+
     return (
         page_index.render(
-            test=login_status, yes_login=bool(user), user_name=user[2] if user else ""
+            alert_message=alert_message,
+            alert_type=alert_type,
+            yes_login=bool(user),
+            user_name=user[2] if user else "",
         ),
         200,
         {"Content-Type": "text/html"},
