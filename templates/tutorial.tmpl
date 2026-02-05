@@ -2,47 +2,87 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Список туториалов</title>
-    <!-- Подключите ваши стили здесь -->
-    <style>
-        .tutorial-list {
-            list-style: none;
-            padding: 0;
-        }
-        .tutorial-item {
-            margin: 10px 0;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .tutorial-link {
-            text-decoration: none;
-            font-size: 18px;
-            color: #333;
-            display: block;
-        }
-        .tutorial-link:hover {
-            background-color: #f0f0f0;
-        }
-        
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Туториалы</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
-<body>
-    <h1>Доступные туториалы</h1>
-    
-    {% if tutorials %}
-        <ul class="tutorial-list">
-        {% for tut in tutorials %}
-            <li class="tutorial-item">
-                <!-- Ссылка ведет на первую страницу туториала -->
-                <a class="tutorial-link" href="/tutorials/{{ tut }}/1">📂 {{ tut }}</a>
-            </li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>Туториалы пока не добавлены.</p>
-    {% endif %}
-    
-    <a href="/">Назад на главную</a>
+<body class="app-page">
+    {% include "topbar.tmpl" %}
+
+    <main class="page-shell tutorials-page">
+        <header class="page-header">
+            <div>
+                <div class="section-kicker">обучающие материалы</div>
+                <h1 class="page-title">Туториалы по шагам</h1>
+                <p class="page-note">Курсы разделены на режимы «Базовый» и «Расширенный». У каждого курса есть название и описание, чтобы быстро понять его содержание.</p>
+            </div>
+            <div class="section-actions">
+                <a class="btn btn-primary btn-lg" href="#basic">Базовый</a>
+                <a class="btn btn-ghost btn-lg" href="#advanced">Расширенный</a>
+            </div>
+        </header>
+
+        <section class="tutorial-section" id="basic">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Базовый</h2>
+                    <p class="section-text">Спокойный темп и крупные элементы. Подходит тем, кто только знакомится со смартфоном и мессенджером.</p>
+                </div>
+            </div>
+            {% if tutorials_basic %}
+                <div class="tutorial-grid">
+                    {% for tut in tutorials_basic %}
+                    <article class="tutorial-card">
+                        <div class="tutorial-top">
+                            <span class="tutorial-level level-basic">Базовый</span>
+                            {# <span class="tutorial-slug">/{{ tut.slug }}</span> #}
+                        </div>
+                        <h3>{{ tut.title }}</h3>
+                        <p class="tutorial-desc">{{ tut.description }}</p>
+                        <div class="tutorial-actions">
+                            <a class="btn btn-primary btn-lg" href="/tutorials/{{ tut.slug }}/1">начать</a>
+                        </div>
+                    </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="empty-state">Пока нет базовых курсов. Добавьте папку с meta.json в templates/tutorials.</p>
+            {% endif %}
+        </section>
+
+        <section class="tutorial-section" id="advanced">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Расширенный</h2>
+                    <p class="section-text">Более длинные сценарии, покупки и госуслуги. Всё ещё с крупным шрифтом и подсказками.</p>
+                </div>
+            </div>
+            {% if tutorials_advanced %}
+                <div class="tutorial-grid">
+                    {% for tut in tutorials_advanced %}
+                    <article class="tutorial-card">
+                        <div class="tutorial-top">
+                            <span class="tutorial-level level-advanced">Расширенный</span>
+                            <span class="tutorial-slug">/{{ tut.slug }}</span>
+                        </div>
+                        <h3>{{ tut.title }}</h3>
+                        <p class="tutorial-desc">{{ tut.description }}</p>
+                        <div class="tutorial-actions">
+                            <a class="btn btn-primary btn-lg" href="/tutorials/{{ tut.slug }}/1">продолжить</a>
+                        </div>
+                    </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="empty-state">Расширенные курсы ещё не добавлены.</p>
+            {% endif %}
+        </section>
+
+        {% if not has_any %}
+            <div class="card empty-card">
+                <p>Туториалы пока не добавлены. Создайте папку в <code>templates/tutorials/&lt;название&gt;</code> и положите туда файлы шагов <code>1.tmpl</code>, <code>2.tmpl</code> и <code>meta.json</code> с полями <code>title</code>, <code>description</code> и <code>level</code>.</p>
+            </div>
+        {% endif %}
+    </main>
 </body>
 </html>

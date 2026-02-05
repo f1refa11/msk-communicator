@@ -4,23 +4,37 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>msk communicator</title>
     <link rel="stylesheet" href="/static/style.css">
-    <style>
-        
-    </style>
 </head>
-<body>
+<body class="auth-page">
     {% include "topbar.tmpl" %}
-    <h1>вход в акк</h1>
-    <form action="/api/account/login" method="post" id="login_form">
-        <label for="tel">номер телефона:</label>
-        <input type="tel" id="tel" name="tel" placeholder="+79999852523"><br>
-        <label for="pwd">Пароль:</label>
-        <input type="password" id="pwd" name="pwd" placeholder="Пароль"><br>
-        <button form="login_form" type="submit" class="submit-button">вход</button>
-    </form> 
-    <p><a href="/forgot">забыл пароль</a></p>
-    <p>{{ test }}</p>
+    <main class="page-shell">
+        <section class="card form-card">
+            <h1 class="page-title">Вход в аккаунт</h1>
+            <p class="page-note">Введите номер телефона и пароль. Шрифт и поля увеличены, чтобы их было легко прочитать.</p>
+            <form action="/api/account/login" method="post" id="login_form" class="form-grid">
+                <label class="field">
+                    <span class="field-label">Номер телефона</span>
+                    <input type="tel" id="tel" name="tel" class="field-input" placeholder="+7 999 985-25-23" autocomplete="tel" required>
+                </label>
+                <label class="field">
+                    <span class="field-label">Пароль</span>
+                    <input type="password" id="pwd" name="pwd" class="field-input" placeholder="Введите пароль" autocomplete="current-password" required>
+                </label>
+                <div class="form-actions">
+                    <button form="login_form" type="submit" class="btn btn-primary btn-lg">войти</button>
+                    <a class="btn btn-ghost btn-lg" href="/register">создать аккаунт</a>
+                </div>
+                <div class="form-helper">
+                    <a href="/forgot">Забыли пароль?</a>
+                    {% if test %}
+                        <span class="status-text">{{ test }}</span>
+                    {% endif %}
+                </div>
+            </form>
+        </section>
+    </main>
 </body>
 </html>

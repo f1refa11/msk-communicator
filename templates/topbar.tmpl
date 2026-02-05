@@ -1,17 +1,24 @@
-<div id="topbar">
-    <div class="topbar-left">
-        <a href="/" class="topbar-logo">
-            <img src="/assets/logo.svg" class="logo" alt="msk communicator">
-        </a>
-        <a href="/tutorials" class="topbar-link">туториалы</a>
+<header id="topbar">
+    <div class="topbar-inner">
+        <div class="topbar-left">
+            <a href="/" class="topbar-logo" aria-label="На главную">
+                <img src="/assets/logo.svg" class="logo" alt="msk communicator">
+                <span class="logo-text">msk communicator</span>
+            </a>
+        </div>
+
+        <div class="topbar-center">
+            <a href="/tutorials" class="topbar-nav-btn" aria-label="Открыть туториалы">📘 Туториалы</a>
+        </div>
+
+        <div class="topbar-right">
+            {% if yes_login %}
+                <span class="topbar-greeting">Здравствуйте, {{ user_name }}</span>
+                <a href="/account/" class="topbar-link">Аккаунт</a>
+                <a href="/logout" class="topbar-link topbar-logout">Выйти</a>
+            {% else %}
+                <a href="/register" class="topbar-link">Вход/регистрация</a>
+            {% endif %}
+        </div>
     </div>
-    <div class="topbar-right">
-        {% if yes_login %}
-            <span class="topbar-greeting">привет, {{ user_name }}</span>
-            <a href="/account/" class="topbar-link">аккаунт</a>
-            <a href="/logout" class="topbar-link topbar-logout">выйти</a>
-        {% else %}
-            <a href="/register" class="topbar-link">вход/регистрация</a>
-        {% endif %}
-    </div>
-</div>
+</header>

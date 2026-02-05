@@ -3,23 +3,43 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>msk communicator</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
-<body>
+<body class="auth-page">
     {% include "topbar.tmpl" %}
-    <h1>сброс пароля</h1>
-    <form action="/api/account/forgot_password" method="post" id="forgot_form">
-        <label for="name">имя в аккаунте:</label>
-        <input type="text" id="name" name="name" placeholder="Хураман Джафаровна"><br>
-        <label for="tel">номер телефона:</label>
-        <input type="tel" id="tel" name="tel" placeholder="+79999852523"><br>
-        <label for="new_pwd">новый пароль:</label>
-        <input type="password" id="new_pwd" name="new_pwd"><br>
-        <label for="new_pwd_confirm">повторите пароль:</label>
-        <input type="password" id="new_pwd_confirm" name="new_pwd_confirm"><br>
-        <button form="forgot_form" type="submit" class="submit-button">сбросить пароль</button>
-    </form>
-    <p>{{ status }}</p>
+    <main class="page-shell">
+        <section class="card form-card">
+            <h1 class="page-title">Сброс пароля</h1>
+            <p class="page-note">Укажите имя и номер телефона, чтобы задать новый пароль.</p>
+
+            <form action="/api/account/forgot_password" method="post" id="forgot_form" class="form-grid">
+                <label class="field">
+                    <span class="field-label">Имя в аккаунте</span>
+                    <input type="text" id="name" name="name" class="field-input" placeholder="Например: Елена Ивановна" autocomplete="name" required>
+                </label>
+                <label class="field">
+                    <span class="field-label">Номер телефона</span>
+                    <input type="tel" id="tel" name="tel" class="field-input" placeholder="+7 999 985-25-23" autocomplete="tel" required>
+                </label>
+                <label class="field">
+                    <span class="field-label">Новый пароль</span>
+                    <input type="password" id="new_pwd" name="new_pwd" class="field-input" autocomplete="new-password" required>
+                </label>
+                <label class="field">
+                    <span class="field-label">Повторите пароль</span>
+                    <input type="password" id="new_pwd_confirm" name="new_pwd_confirm" class="field-input" autocomplete="new-password" required>
+                </label>
+                <div class="form-actions">
+                    <button form="forgot_form" type="submit" class="btn btn-primary btn-lg">сбросить пароль</button>
+                    <a class="btn btn-ghost btn-lg" href="/login">вернуться ко входу</a>
+                </div>
+                {% if status %}
+                    <div class="status-text">{{ status }}</div>
+                {% endif %}
+            </form>
+        </section>
+    </main>
 </body>
 </html>

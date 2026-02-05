@@ -4,40 +4,48 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>msk communicator</title>
     <link rel="stylesheet" href="/static/style.css">
-    <style>
-        
-    </style>
 </head>
-<body>
+<body class="auth-page register-page">
     {% include "topbar.tmpl" %}
 
-	<div class="reg-main-content">
-		<div  class="reg-form">
-			<h1 class="reg-title">Регистрация</h1>
-			<form action="/api/account/register" method="post" id="reg_form">
+    <main class="page-shell">
+        <div class="auth-split">
+            <section class="card form-card">
+                <h1 class="page-title">Регистрация</h1>
+                <p class="page-note">Создайте аккаунт, чтобы сохранить прогресс в базовых и расширенных курсах.</p>
 
-				<label for="name" class="reg-form-labels">ФИО:</label>
-				<input type="text" id="name" name="name" placeholder="Введите ФИО" class="reg-form-inputs"><br>
+                <form action="/api/account/register" method="post" id="reg_form" class="form-grid">
+                    <label class="field">
+                        <span class="field-label">ФИО</span>
+                        <input type="text" id="name" name="name" class="field-input" placeholder="Введите ФИО" autocomplete="name" required>
+                    </label>
 
-				<label for="tel" class="reg-form-labels">Номер телефона:</label>
-				<input type="tel" id="tel" name="tel" placeholder="Введите номер телефона " class="reg-form-inputs"><br>
+                    <label class="field">
+                        <span class="field-label">Номер телефона</span>
+                        <input type="tel" id="tel" name="tel" class="field-input" placeholder="Введите номер телефона" autocomplete="tel" required>
+                    </label>
 
-				<label for="pwd" class="reg-form-labels">Пароль:</label>
-				<input type="password" id="pwd" name="pwd" placeholder="Введите пароль" class="reg-form-inputs"><br>
+                    <label class="field">
+                        <span class="field-label">Пароль</span>
+                        <input type="password" id="pwd" name="pwd" class="field-input" placeholder="Придумайте пароль" autocomplete="new-password" required>
+                    </label>
 
-				<input type="submit" id="pwd" name="pwd" placeholder="Создать аккаунт" class="reg-button-submit-login" value="Создать аккаунт"><br>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-lg">создать аккаунт</button>
+                        <a class="btn btn-ghost btn-lg" href="/login">у меня уже есть аккаунт</a>
+                    </div>
+                </form>
+            </section>
 
-			</form>
-            <p><a href="/login">уже есть аккаунт? войти</a></p>
-		</div>
-
-		<div class="reg-images">
-			<img src="/assets/register/max-logo.png" alt="MAX" class="reg-side-img">
-			<p class="reg-under-image-paragraph">Мы научим вас пользоваться Российским мессенджером MAX!</p>
-		</div>
-
-	</div>
+            <aside class="card auth-aside">
+                <img src="/assets/register/max-logo.png" alt="MAX" class="reg-side-img">
+                <p class="reg-under-image-paragraph">Мы научим вас пользоваться мессенджером MAX и другими сервисами. Все элементы крупные и заметные.</p>
+                <div class="aside-note">Поддержка режимов: Базовый и Расширенный.</div>
+            </aside>
+        </div>
+    </main>
 </body>
 </html>
