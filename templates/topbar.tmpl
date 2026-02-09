@@ -1,4 +1,4 @@
-<header id="topbar">
+﻿<header id="topbar">
     <div class="topbar-inner">
         <div class="topbar-left">
             <a href="/" class="topbar-logo" aria-label="На главную">
@@ -22,3 +22,25 @@
         </div>
     </div>
 </header>
+
+<div class="support-widget" id="support-widget">
+    <button type="button" class="support-widget-toggle" data-role="toggle" aria-controls="support-widget-panel" aria-expanded="false">
+        <span class="support-widget-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img" focusable="false">
+                <path d="M12 3a7 7 0 0 0-7 7v5a2 2 0 0 0 2 2h1v-6H7a5 5 0 0 1 10 0h-1v6h1a2 2 0 0 0 2-2v-5a7 7 0 0 0-7-7Zm-3 14v2a2 2 0 0 0 2 2h2v-2h-2v-2H9Z"></path>
+            </svg>
+        </span>
+        <span class="support-widget-label">помощь</span>
+    </button>
+
+    <section class="support-widget-panel" id="support-widget-panel" data-role="panel" aria-hidden="true">
+        <header class="support-widget-header">
+            <div class="support-widget-title">Чат поддержки</div>
+            <button type="button" class="support-widget-close" data-role="close" aria-label="Закрыть чат">x</button>
+        </header>
+        <div class="support-widget-messages" data-role="messages"></div>
+        <div class="support-widget-actions" data-role="actions"></div>
+    </section>
+</div>
+
+<script src="/static/script.js" defer></script>

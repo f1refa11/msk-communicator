@@ -1,0 +1,68 @@
+[
+  {
+    "created_at": "2026-02-09T19:26:20.306517+00:00",
+    "report_kind": "problem",
+    "report_code": "video_not_opening",
+    "label": "не открывается видео",
+    "user": {
+      "id": 1,
+      "tel": "+79999836259",
+      "name": "Цурганов Артём"
+    }
+  },
+  {
+    "created_at": "2026-02-09T19:26:23.136091+00:00",
+    "report_kind": "problem",
+    "report_code": "video_not_opening",
+    "label": "не открывается видео",
+    "user": {
+      "id": 1,
+      "tel": "+79999836259",
+      "name": "Цурганов Артём"
+    }
+  },
+  {
+    "created_at": "2026-02-09T19:29:16.764279+00:00",
+    "report_kind": "problem",
+    "report_code": "video_not_opening",
+    "label": "не открывается видео",
+    "user": {
+      "id": 1,
+      "tel": "+79999836259",
+      "name": "Цурганов Артём"
+    }
+  },
+  {
+    "created_at": "2026-02-09T19:29:24.956348+00:00",
+    "report_kind": "faq_feedback",
+    "report_code": "change_password:issues",
+    "label": "как поменять пароль для аккаунта? / Возникли проблемы",
+    "user": {
+      "id": 1,
+      "tel": "+79999836259",
+      "name": "Цурганов Артём"
+    }
+  },
+  {
+    "created_at": "2026-02-09T19:29:31.401797+00:00",
+    "report_kind": "problem",
+    "report_code": "account_login_failed",
+    "label": "не получается зайти в аккаунт",
+    "user": {
+      "id": 1,
+      "tel": "+79999836259",
+      "name": "Цурганов Артём"
+    }
+  },
+  {
+    "created_at": "2026-02-09T19:31:39.443367+00:00",
+    "report_kind": "problem",
+    "report_code": "account_login_failed",
+    "label": "не получается зайти в аккаунт",
+    "user": {
+      "id": 1,
+      "tel": "+79999836259",
+      "name": "Цурганов Артём"
+    }
+  }
+]

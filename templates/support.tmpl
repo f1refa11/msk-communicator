@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Поддержка | msk communicator</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="app-page">
+    {% include "topbar.tmpl" %}
+
+    <main class="page-shell support-page">
+        <h1 class="page-title">Поддержка</h1>
+        <p class="page-note">При открытии страницы доступны 2 кнопки: «Пожаловаться на проблему» и «Прочие вопросы».</p>
+
+        {% if status_message %}
+        <div class="alert {{ 'alert-success' if status_type == 'success' else 'alert-error' }}" role="alert" aria-live="polite">
+            <span class="alert-icon">{% if status_type == 'success' %}✓{% else %}⚠{% endif %}</span>
+            <div class="alert-text">{{ status_message }}</div>
+        </div>
+        {% endif %}
+
+        <section class="card form-card">
+            <h2>Выберите раздел</h2>
+            <div class="support-switch">
+                <form action="/support" method="get" class="support-action-form">
+                    <input type="hidden" name="mode" value="problem">
+                    <button type="submit" class="btn btn-primary btn-lg">Пожаловаться на проблему</button>
+                </form>
+                <form action="/support" method="get" class="support-action-form">
+                    <input type="hidden" name="mode" value="faq">
+                    <button type="submit" class="btn btn-ghost btn-lg">Прочие вопросы</button>
+                </form>
+            </div>
+        </section>
+
+        {% if mode == "problem" %}
+        <section class="card form-card">
+            <h2>Пожаловаться на проблему</h2>
+            <div class="support-actions">
+                <form action="/api/support/problem" method="post" class="support-action-form">
+                    <input type="hidden" name="problem" value="video_not_opening">
+                    <button type="submit" class="btn btn-primary btn-lg">1. не открывается видео</button>
+                </form>
+                <form action="/api/support/problem" method="post" class="support-action-form">
+                    <input type="hidden" name="problem" value="tutorial_not_opening">
+                    <button type="submit" class="btn btn-primary btn-lg">2. не открывается интерактивный туториал</button>
+                </form>
+                <form action="/api/support/problem" method="post" class="support-action-form">
+                    <input type="hidden" name="problem" value="account_not_created">
+                    <button type="submit" class="btn btn-primary btn-lg">3. не создаётся аккаунт</button>
+                </form>
+                <form action="/api/support/problem" method="post" class="support-action-form">
+                    <input type="hidden" name="problem" value="account_login_failed">
+                    <button type="submit" class="btn btn-primary btn-lg">4. не получается зайти в аккаунт</button>
+                </form>
+            </div>
+        </section>
+        {% elif mode == "faq" %}
+        <section class="card form-card">
+            <h2>Прочие вопросы</h2>
+            <div class="support-actions">
+                <form action="/support" method="get" class="support-action-form">
+                    <input type="hidden" name="mode" value="faq">
+                    <input type="hidden" name="faq" value="change_password">
+                    <button type="submit" class="btn btn-ghost btn-lg">1. как поменять пароль для аккаунта?</button>
+                </form>
+                <form action="/support" method="get" class="support-action-form">
+                    <input type="hidden" name="mode" value="faq">
+                    <input type="hidden" name="faq" value="delete_account">
+                    <button type="submit" class="btn btn-ghost btn-lg">2. как удалить аккаунт?</button>
+                </form>
+            </div>
+
+            {% if selected_faq %}
+            <article class="support-answer">
+                <h3>{{ selected_faq.question }}</h3>
+                <p>{{ selected_faq.answer }}</p>
+                <p><a href="/account/">Открыть страницу настроек аккаунта</a></p>
+                <div class="support-feedback">
+                    <form action="/api/support/faq_feedback" method="post" class="support-action-form">
+                        <input type="hidden" name="faq" value="{{ selected_faq_key }}">
+                        <input type="hidden" name="feedback" value="resolved">
+                        <button type="submit" class="btn btn-primary btn-lg">Всё получилось</button>
+                    </form>
+                    <form action="/api/support/faq_feedback" method="post" class="support-action-form">
+                        <input type="hidden" name="faq" value="{{ selected_faq_key }}">
+                        <input type="hidden" name="feedback" value="issues">
+                        <button type="submit" class="btn btn-ghost btn-lg">Возникли проблемы</button>
+                    </form>
+                </div>
+            </article>
+            {% endif %}
+        </section>
+        {% endif %}
+    </main>
+</body>
+</html>

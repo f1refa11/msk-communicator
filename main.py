@@ -10,6 +10,7 @@ import json
 import sqlite3
 import mimetypes
 import jwt
+from datetime import datetime, timezone
 
 db = sqlite3.connect("database.db", autocommit=True)
 cur = db.cursor()
@@ -25,8 +26,39 @@ page_tutorial = env.get_template("tutorial.tmpl")
 page_account = env.get_template("account.tmpl")
 page_forgot = env.get_template("forgot.tmpl")
 page_tutorial_viewer = env.get_template("tutorial_viewer.tmpl")
+page_support = env.get_template("support.tmpl")
 TUTORIALS_DIR = os.path.join("templates", "tutorials")
 TUTORIAL_PAGE_EXTENSIONS = (".tmpl", ".html", ".htm")
+BUGREPORTS_FILE = os.path.join(os.path.dirname(__file__), "bugreports.json")
+
+SUPPORT_PROBLEM_LABELS = {
+    "video_not_opening": "не открывается видео",
+    "tutorial_not_opening": "не открывается интерактивный туториал",
+    "account_not_created": "не создаётся аккаунт",
+    "account_login_failed": "не получается зайти в аккаунт",
+}
+
+SUPPORT_FAQ_DATA = {
+    "change_password": {
+        "question": "как поменять пароль для аккаунта?",
+        "answer": (
+            "Вы можете поменять пароль в настройках аккаунта. Нажмите кнопку "
+            "«Перейти в настройки аккаунта» ниже и введите старый и новый пароли."
+        ),
+    },
+    "delete_account": {
+        "question": "как удалить аккаунт?",
+        "answer": (
+            "Вы можете удалить аккаунт через страницу настроек аккаунта: "
+            "в самом конце страницы есть кнопка удаления."
+        ),
+    },
+}
+
+SUPPORT_FEEDBACK_LABELS = {
+    "resolved": "Всё получилось",
+    "issues": "Возникли проблемы",
+}
 
 app = Microdot()
 
@@ -215,6 +247,60 @@ cur.execute(
 )
 
 AVATARS = ["avatar-1", "avatar-2", "avatar-3", "avatar-4", "avatar-5"]
+
+
+def _load_bug_reports():
+    if not os.path.exists(BUGREPORTS_FILE):
+        return []
+    try:
+        with open(BUGREPORTS_FILE, encoding="utf-8-sig") as reports_file:
+            data = json.load(reports_file)
+    except (OSError, json.JSONDecodeError):
+        return []
+    if isinstance(data, list):
+        return data
+    return []
+
+
+def append_bug_report(report_kind: str, report_code: str, label: str, user):
+    reports = _load_bug_reports()
+    reports.append(
+        {
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "report_kind": report_kind,
+            "report_code": report_code,
+            "label": label,
+            "user": (
+                {
+                    "id": user[0],
+                    "tel": user[1],
+                    "name": user[2],
+                }
+                if user
+                else None
+            ),
+        }
+    )
+    with open(BUGREPORTS_FILE, "w", encoding="utf-8") as reports_file:
+        json.dump(reports, reports_file, ensure_ascii=False, indent=2)
+
+
+def _is_support_widget_request(request):
+    return (
+        request.headers.get("X-Support-Widget") == "1"
+        or request.form.get("source") == "widget"
+    )
+
+
+def _support_api_response(request, ok: bool, message: str, fallback_url: str):
+    if _is_support_widget_request(request):
+        body = json.dumps({"ok": ok, "message": message}, ensure_ascii=False)
+        return (
+            body,
+            200 if ok else 400,
+            {"Content-Type": "application/json; charset=utf-8"},
+        )
+    return redirect(fallback_url)
 
 # -- PAGES
 
@@ -448,6 +534,41 @@ async def forgot_password_page(request, session):
     )
 
 
+@app.route("/support")
+@with_session
+async def support_page(request, session):
+    user = get_current_user(session)
+    mode = request.args.get("mode") or "root"
+    if mode not in ("root", "problem", "faq"):
+        mode = "root"
+
+    faq_key = request.args.get("faq") or ""
+    selected_faq = SUPPORT_FAQ_DATA.get(faq_key)
+
+    sent = request.args.get("sent")
+    status_message = None
+    status_type = "success"
+    if sent == "1":
+        status_message = "Сообщение отправлено разработчикам сайта."
+    elif sent == "0":
+        status_type = "error"
+        status_message = "Не удалось отправить сообщение. Попробуйте снова."
+
+    return (
+        page_support.render(
+            yes_login=bool(user),
+            user_name=user[2] if user else "",
+            mode=mode,
+            selected_faq=selected_faq,
+            selected_faq_key=faq_key,
+            status_message=status_message,
+            status_type=status_type,
+        ),
+        200,
+        {"Content-Type": "text/html"},
+    )
+
+
 # account settings
 @app.route("/account/")
 @with_session
@@ -670,6 +791,80 @@ async def handle_forgot_password(request, session):
     return redirect("/login?reset=success")
 
 
+@app.route("/api/support/problem", methods=["POST"])
+@with_session
+async def handle_support_problem_report(request, session):
+    user = get_current_user(session)
+    problem_key = request.form.get("problem")
+    problem_label = SUPPORT_PROBLEM_LABELS.get(problem_key)
+    if not problem_label:
+        return _support_api_response(
+            request,
+            ok=False,
+            message="Не удалось определить тип проблемы.",
+            fallback_url="/support?mode=problem&sent=0",
+        )
+
+    try:
+        append_bug_report(
+            report_kind="problem",
+            report_code=problem_key,
+            label=problem_label,
+            user=user,
+        )
+    except OSError:
+        return _support_api_response(
+            request,
+            ok=False,
+            message="Не удалось отправить сообщение. Попробуйте снова.",
+            fallback_url="/support?mode=problem&sent=0",
+        )
+    return _support_api_response(
+        request,
+        ok=True,
+        message="Сообщение отправлено разработчикам сайта.",
+        fallback_url="/support?mode=problem&sent=1",
+    )
+
+
+@app.route("/api/support/faq_feedback", methods=["POST"])
+@with_session
+async def handle_support_faq_feedback(request, session):
+    user = get_current_user(session)
+    faq_key = request.form.get("faq")
+    feedback_key = request.form.get("feedback")
+    faq_data = SUPPORT_FAQ_DATA.get(faq_key)
+    feedback_label = SUPPORT_FEEDBACK_LABELS.get(feedback_key)
+    if not faq_data or not feedback_label:
+        return _support_api_response(
+            request,
+            ok=False,
+            message="Не удалось обработать ответ по вопросу.",
+            fallback_url=f"/support?mode=faq&faq={faq_key or ''}&sent=0",
+        )
+
+    try:
+        append_bug_report(
+            report_kind="faq_feedback",
+            report_code=f"{faq_key}:{feedback_key}",
+            label=f"{faq_data['question']} / {feedback_label}",
+            user=user,
+        )
+    except OSError:
+        return _support_api_response(
+            request,
+            ok=False,
+            message="Не удалось отправить сообщение. Попробуйте снова.",
+            fallback_url=f"/support?mode=faq&faq={faq_key}&sent=0",
+        )
+    return _support_api_response(
+        request,
+        ok=True,
+        message="Сообщение отправлено разработчикам сайта.",
+        fallback_url=f"/support?mode=faq&faq={faq_key}&sent=1",
+    )
+
+
 @app.route("/getcookie")
 @with_session
 async def get_cookie_page(request, session):
@@ -698,3 +893,4 @@ async def logout(request, session):
 
 
 app.run()
+
