@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body class="reg-body-login">
+	<div class="reg-page">
+		<div class="reg-info-block reg-info-block-static">
+			<p>Добро пожаловать! Здесь мы научим вас пользоваться приложением MAX, как не попасться на уловки мошенников и многому другому! Но сначала пройдите регистрацию в нашем сервисе</p>
+		</div>
+		
+		<div class="reg-main-content">
+			<div  class="reg-form">
+				<h1 class="reg-title">Вход</h1>
+				<form action="/api/account/register" method="post" id="reg_form">
+			
+					<label for="tel" class="reg-form-labels">Номер телефона:</label>
+					<input type="tel" id="tel_login" name="tel" placeholder="Введите номер телефона " class="reg-form-inputs"><br>
+			
+					<label for="pwd" class="reg-form-labels">Пароль:</label>
+					<input type="password" id="pwd_login" name="pwd" placeholder="Введите пароль" class="reg-form-inputs"><br>
+			
+					<button type="submit" form="reg_form_login" class="reg-button-submit-login">Войти</button><br>
+					<label for="registration" class="reg-form-labels">Ещё нет аккаунта?<label>
+					<a href="registration.html"><button type="submit" id="registration" form="reg_form_register" class="reg-button-submit-register">Зарегистрироваться</button></a>
+					
+					
+				</form> 
+			</div>
+	
+			<div class="reg-images">
+				<img src="../images/max-logo.png" alt="MAX" class="reg-side-img">
+				<p class="reg-under-image-paragraph">Мы научим вас пользоваться Российским мессенджером MAX!</p>
+			</div>
+		
+		</div>
+	</div>
+</body>
+</html>

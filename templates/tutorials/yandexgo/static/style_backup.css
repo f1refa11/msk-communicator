@@ -1,0 +1,161 @@
+/*Фон регистрации из группы reg*/
+.reg-body-registration {
+	background-image: url(../images/reg-background-login.png);
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: center;
+	background-attachment: fixed;
+	font-family: 'Arial';
+}
+/*Фон логина из группы reg*/
+.reg-body-login {
+	background-image: url(../images/reg-background-login.png);
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: center;
+	background-attachment: fixed;
+	font-family: 'Arial';
+}
+/*Контейнер страниц группы reg*/
+.reg-page{
+	
+}
+/*Инфоблок группы reg*/
+.reg-info-block {
+	font-size: 1.5vw;
+	background-color: #FFFFFF;
+	border: solid 2px black;
+	width: 100%;
+	overflow: hidden;
+	white-space: nowrap;
+	font-weight: bold;
+	padding-bottom: 10px;
+}
+/*Текст в инфоблоке группы reg*/
+.reg-info-block p {
+    display: inline-block;
+    padding-left: 100%;
+    animation: reg-info-block-scroll 80s linear infinite;	
+}
+/*Анимация в инфоблоке группы reg*/
+@keyframes reg-info-block-scroll {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(-100%, 0); }
+}
+/*Заголовок страниц группы reg*/
+.reg-title {
+	font-size: 4vw;
+	font-weight: bold;
+	margin: auto;
+	width: fit-content;
+	background-color: #FFFFFF;
+
+	border: solid 2px black;
+	margin-bottom: 2vw;
+}
+/*Блок содержания страницы группы reg*/
+.reg-main-content {
+	display: flex;
+	margin-left: 0.5vw;
+	justify-content: left;
+	gap: 1vw;
+	margin-top: 3vw;
+}
+/*Форма на странице группы reg*/
+.reg-form {
+	flex: 0 1 75vw;
+	border-right: 2px solid gray;
+}
+/*Подптси input'ов группы reg*/
+.reg-form-labels {
+	font-size: 3vw;
+	font-weight: bold;
+	width: fit-content;
+}
+/*Input'ы группы reg*/
+.reg-form-inputs {
+	font-size: 3vw;
+	height: fit-content;
+	width: fit-content;
+	margin-top: 2vw;
+	border-style: solid;
+	border-width: 2px;
+	border-color: black;
+	padding-right: 3vw;
+}
+/*Кнопка регистрации группы reg*/
+.reg-button-submit-register {
+	font-size: 3vw;
+	font-weight: bold;
+	margin-top: 3vw;
+	padding-left: 20px;
+	padding-right: 20px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	background-color: #99e550;
+}
+/*Кнопка входа группы reg*/
+.reg-button-submit-login {
+	font-size: 3vw;
+	font-weight: bold;
+	margin-top: 3vw;
+	padding-left: 20px;
+	padding-right: 20px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	background-color: #a6c5ff;
+	margin-left: 2vw;
+}
+/*Блок с картинкой справа группы reg*/
+.reg-images {
+    flex: 0 1 20vw;
+	margin: auto;
+}
+/*Картинка справа группы reg*/
+.reg-side-img {
+    width: 100%;
+    height: auto;
+}
+/*Подпись картинки справа группы reg*/
+.reg-under-image-paragraph {
+	display: block;
+	font-size: 2.5vw;
+	margin-top: 1vw;
+	line-height: 1.2;
+	text-align: center;
+	font-weight: bold;
+}
+
+.taxi-course-main-body {
+	background-image: url(../images/taxi-course-background.png);
+	background-repeat: repeat;
+	background-size: cover;
+	background-position: center;
+	background-attachment: fixed;
+	font-family: 'Arial';
+}
+
+.taxi-course-title {
+	font-size: 4vw;
+	font-weight: bold;
+	margin-top: 3vw;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 3vw;
+	width: fit-content;
+	background-color: rgba(F, F, F, 0.5);
+	border: solid 2px black;]
+}
+.taxi-course-paragraph {
+	font-size: 3vw;
+	font-weight: bold;
+	margin-top: 1vw;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 2vw;
+	width: fit-content;
+	text-align: center;
+	background-color: rgba(F, F, F, 0.5);
+
+	
+}

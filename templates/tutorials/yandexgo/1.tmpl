@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Как заказать такси в Яндекс GO</title>
+    <link rel="stylesheet" href="/tutorials-assets/yandexgo/pages/style.css">
+    <link rel="stylesheet" href="/tutorials-assets/yandexgo/static/style.css">
+</head>
+<body class="taxi-course-body">
+    <div class="course-container">
+        <div class="course-header">
+            <h1 class="course-title">📱 Как заказать такси в Яндекс GO</h1>
+            <p class="course-subtitle">Следуйте инструкциям шаг за шагом</p>
+        </div>
+
+        <div class="course-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            <p class="progress-text">Шаг <span id="currentStep">1</span> из <span id="totalSteps">9</span></p>
+        </div>
+
+        <div class="course-content">
+            <!-- Шаг 0: Подготовка -->
+            <div class="step-card" id="step0" style="display: block;">
+                <div class="step-number">📋 Подготовка</div>
+                <h2 class="step-title">Перед началом работы</h2>
+                <div class="step-description">
+                    <p class="instruction-text">⚠️ <strong>ВАЖНО!</strong> Перед использованием приложения убедитесь, что на телефоне включены:</p>
+                    <ul class="checklist">
+                        <li class="checklist-item">📶 <strong>Мобильный интернет или Wi-Fi</strong> - для загрузки карты и поиска такси</li>
+                        <li class="checklist-item">📍 <strong>Геолокация (GPS)</strong> - чтобы приложение знало ваше местоположение</li>
+                        <li class="checklist-item">🔔 <strong>Уведомления</strong> - чтобы вы получали сообщения от водителя</li>
+                    </ul>
+                    <div class="info-box">
+                        <p><strong>Как включить геолокацию:</strong></p>
+                        <p>1. Откройте "Настройки" телефона</p>
+                        <p>2. Найдите раздел "Конфиденциальность" или "Местоположение"</p>
+                        <p>3. Включите "Службы геолокации"</p>
+                        <p>4. Найдите в списке приложение "Яндекс GO"</p>
+                        <p>5. Выберите "При использовании приложения" или "Всегда"</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Шаг 1: Главный экран -->
+            <div class="step-card" id="step1" style="display: none;">
+                <div class="step-number">Шаг 1</div>
+                <h2 class="step-title">Открываем приложение</h2>
+                <div class="step-description">
+                    <p class="instruction-text">🔍 Найдите на экране телефона желто-черный значок с надписью "GO" и нажмите на него</p>
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="yandex-go-main">
+                            <div class="yg-header">
+                                <div class="yg-logo">GO</div>
+                                <div class="yg-menu-btn">☰</div>
+                            </div>
+                            <div class="yg-map-area">
+                                <div class="yg-map-placeholder">
+                                    <p style="color: #666; text-align: center; padding: 60px 20px;">🗺️ Здесь отображается карта вашего города</p>
+                                </div>
+                                <div class="yg-location-btn">📍</div>
+                            </div>
+                            <div class="yg-bottom-sheet">
+                                <div class="yg-handle"></div>
+                                <h3 class="yg-sheet-title">Куда поедем?</h3>
+                                <div class="yg-search-box" id="addressInput">
+                                    <span class="yg-icon">🔍</span>
+                                    <span class="yg-placeholder">Введите адрес</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p>💡 Приложение автоматически определит ваше текущее местоположение на карте</p>
+                </div>
+                <div class="map-container">
+                    <h3 style="font-size: 28px; margin: 20px 0; text-align: center;">📍 Пример: Карта вашего города</h3>
+                    <iframe src="https://yandex.ru/map-widget/v1/?um=constructor%3A7c6e6e5d5c5c5c5c5c5c5c5c5c5c5c5c&amp;source=constructor" frameborder="0"></iframe>
+                    <p style="font-size: 20px; text-align: center; padding: 15px; background-color: #fff8e1;">
+                        💡 На настоящей карте будет видно ваше местоположение
+                    </p>
+                </div>
+            </div>
+
+            <!-- Шаг 2: Ввод адреса откуда -->
+            <div class="step-card" id="step2" style="display: none;">
+                <div class="step-number">Шаг 2</div>
+                <h2 class="step-title">Указываем адрес отправления</h2>
+                <div class="step-description">
+                    <p class="instruction-text">👆 Нажмите на поле "Откуда" (оно обычно уже заполнено вашим текущим адресом)</p>
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="yandex-go-address">
+                            <div class="yg-header-simple">
+                                <button class="yg-back-btn">← Назад</button>
+                            </div>
+                            <div class="yg-address-form">
+                                <div class="yg-input-group">
+                                    <div class="yg-input-icon green">A</div>
+                                    <input type="text" class="yg-input active" placeholder="Откуда" value="Ваш текущий адрес">
+                                </div>
+                                <div class="yg-input-group">
+                                    <div class="yg-input-icon red">Б</div>
+                                    <input type="text" class="yg-input" placeholder="Куда" id="destinationInput">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p>💡 Если адрес определился неверно, нажмите на поле и введите правильный адрес</p>
+                </div>
+            </div>
+
+            <!-- Шаг 3: Ввод адреса куда -->
+            <div class="step-card" id="step3" style="display: none;">
+                <div class="step-number">Шаг 3</div>
+                <h2 class="step-title">Указываем адрес назначения</h2>
+                <div class="step-description">
+                    <p class="instruction-text">👆 Нажмите на поле "Куда" и начните вводить адрес, куда вам нужно</p>
+                    <p class="instruction-text">Приложение покажет подсказки - выберите нужный адрес из списка</p>
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="yandex-go-address">
+                            <div class="yg-header-simple">
+                                <button class="yg-back-btn">← Назад</button>
+                            </div>
+                            <div class="yg-address-form">
+                                <div class="yg-input-group">
+                                    <div class="yg-input-icon green">A</div>
+                                    <input type="text" class="yg-input" placeholder="Откуда" value="ул. Ленина, 10">
+                                </div>
+                                <div class="yg-input-group">
+                                    <div class="yg-input-icon red">Б</div>
+                                    <input type="text" class="yg-input active" placeholder="Куда" value="Вокзал">
+                                </div>
+                            </div>
+                            <div class="yg-suggestions">
+                                <div class="yg-suggestion-item">
+                                    <div class="yg-suggestion-icon">🏛️</div>
+                                    <div class="yg-suggestion-text">
+                                        <div class="yg-suggestion-title">Железнодорожный вокзал</div>
+                                        <div class="yg-suggestion-address">Привокзальная площадь, 1</div>
+                                    </div>
+                                </div>
+                                <div class="yg-suggestion-item">
+                                    <div class="yg-suggestion-icon">🚉</div>
+                                    <div class="yg-suggestion-text">
+                                        <div class="yg-suggestion-title">Автовокзал</div>
+                                        <div class="yg-suggestion-address">ул. Вокзальная, 5</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p>💡 Можно вводить не полный адрес, а название места (например: "аэропорт", "больница", "парк")</p>
+                </div>
+            </div>
+
+            <!-- Шаг 4: Выбор тарифа -->
+            <div class="step-card" id="step4" style="display: none;">
+                <div class="step-number">Шаг 4</div>
+                <h2 class="step-title">Выбираем тариф</h2>
+                <div class="step-description">
+                    <p class="instruction-text">💰 Приложение покажет разные варианты такси с ценами</p>
+                    <p class="instruction-text">👆 Нажмите на тот вариант, который вам подходит</p>
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="yandex-go-tariffs">
+                            <div class="yg-header-simple">
+                                <button class="yg-back-btn">← Назад</button>
+                                <h3>Выбор тарифа</h3>
+                            </div>
+                            <div class="yg-route-info">
+                                <p>📍 ул. Ленина, 10 → Вокзал</p>
+                                <p>⏱️ 15 минут · 8 км</p>
+                            </div>
+                            <div class="yg-tariffs-list">
+                                <div class="yg-tariff-card">
+                                    <div class="yg-tariff-icon">🚗</div>
+                                    <div class="yg-tariff-info">
+                                        <div class="yg-tariff-name">Эконом</div>
+                                        <div class="yg-tariff-time">⏱️ ~5 мин</div>
+                                    </div>
+                                    <div class="yg-tariff-price">250₽</div>
+                                </div>
+                                <div class="yg-tariff-card highlighted" id="comfortTariff">
+                                    <div class="yg-tariff-icon">🚙</div>
+                                    <div class="yg-tariff-info">
+                                        <div class="yg-tariff-name">Комфорт</div>
+                                        <div class="yg-tariff-time">⏱️ ~3 мин</div>
+                                    </div>
+                                    <div class="yg-tariff-price">350₽</div>
+                                </div>
+                                <div class="yg-tariff-card">
+                                    <div class="yg-tariff-icon">🚐</div>
+                                    <div class="yg-tariff-info">
+                                        <div class="yg-tariff-name">Минивэн</div>
+                                        <div class="yg-tariff-time">⏱️ ~8 мин</div>
+                                    </div>
+                                    <div class="yg-tariff-price">500₽</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p>💡 <strong>Эконом</strong> - самый дешевый вариант</p>
+                    <p>💡 <strong>Комфорт</strong> - более новые автомобили</p>
+                    <p>💡 <strong>Минивэн</strong> - для большой компании или с багажом</p>
+                </div>
+            </div>
+
+            <!-- Шаг 5: Опции заказа -->
+            <div class="step-card" id="step5" style="display: none;">
+                <div class="step-number">Шаг 5</div>
+                <h2 class="step-title">Дополнительные опции (необязательно)</h2>
+                <div class="step-description">
+                    <p class="instruction-text">⚙️ Здесь можно добавить пожелания к поездке</p>
+                    <p class="instruction-text">Если ничего не нужно - просто пропустите этот шаг</p>
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="yandex-go-options">
+                            <div class="yg-options-list">
+                                <div class="yg-option-item">
+                                    <div class="yg-option-text">
+                                        <div class="yg-option-title">💺 Детское кресло</div>
+                                        <div class="yg-option-subtitle">+ 100₽</div>
+                                    </div>
+                                    <label class="yg-toggle">
+                                        <input type="checkbox">
+                                        <span class="yg-toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="yg-option-item">
+                                    <div class="yg-option-text">
+                                        <div class="yg-option-title">🐕 С животными</div>
+                                        <div class="yg-option-subtitle">+ 50₽</div>
+                                    </div>
+                                    <label class="yg-toggle">
+                                        <input type="checkbox">
+                                        <span class="yg-toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="yg-option-item">
+                                    <div class="yg-option-text">
+                                        <div class="yg-option-title">🧳 Грузовой багажник</div>
+                                        <div class="yg-option-subtitle">Бесплатно</div>
+                                    </div>
+                                    <label class="yg-toggle">
+                                        <input type="checkbox">
+                                        <span class="yg-toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="yg-comment-section">
+                                    <p class="yg-comment-label">💬 Комментарий для водителя:</p>
+                                    <textarea class="yg-comment-input" placeholder="Например: 'Подъеду через 5 минут'"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Шаг 6: Способ оплаты -->
+            <div class="step-card" id="step6" style="display: none;">
+                <div class="step-number">Шаг 6</div>
+                <h2 class="step-title">Выбираем способ оплаты</h2>
+                <div class="step-description">
+                    <p class="instruction-text">💳 Внизу экрана нажмите на способ оплаты</p>
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="yandex-go-payment">
+                            <div class="yg-header-simple">
+                                <button class="yg-back-btn">← Назад</button>
+                                <h3>Способ оплаты</h3>
+                            </div>
+                            <div class="yg-payment-methods">
+                                <div class="yg-payment-card" id="cashPayment">
+                                    <div class="yg-payment-icon">💵</div>
+                                    <div class="yg-payment-text">
+                                        <div class="yg-payment-title">Наличные</div>
+                                        <div class="yg-payment-subtitle">Заплатите водителю</div>
+                                    </div>
+                                    <div class="yg-payment-check">✓</div>
+                                </div>
+                                <div class="yg-payment-card">
+                                    <div class="yg-payment-icon">💳</div>
+                                    <div class="yg-payment-text">
+                                        <div class="yg-payment-title">Банковская карта</div>
+                                        <div class="yg-payment-subtitle">Списание после поездки</div>
+                                    </div>
+                                    <div class="yg-payment-plus">+</div>
+                                </div>
+                                <div class="yg-payment-card">
+                                    <div class="yg-payment-icon">📱</div>
+                                    <div class="yg-payment-text">
+                                        <div class="yg-payment-title">СБП</div>
+                                        <div class="yg-payment-subtitle">Система быстрых платежей</div>
+                                    </div>
+                                    <div class="yg-payment-plus">+</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p>💡 <strong>Наличные</strong> - самый простой способ, заплатите водителю после поездки</p>
+                    <p>💡 <strong>Карта</strong> - деньги спишутся автоматически, карту нужно добавить заранее</p>
+                    <p>💡 <strong>СБП</strong> - оплата через ваш банк, быстро и безопасно</p>
+                </div>
+            </div>
+
+            <!-- Шаг 7: Заказ такси -->
+            <div class="step-card" id="step7" style="display: none;">
+                <div class="step-number">Шаг 7</div>
+                <h2 class="step-title">Заказываем такси</h2>
+                <div class="step-description">
+                    <p class="instruction-text">✅ Проверьте все данные и нажмите большую желтую кнопку "Заказать"</p>
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="yandex-go-confirm">
+                            <div class="yg-confirm-info">
+                                <div class="yg-route-summary">
+                                    <p><strong>Откуда:</strong> ул. Ленина, 10</p>
+                                    <p><strong>Куда:</strong> Вокзал</p>
+                                </div>
+                                <div class="yg-order-details">
+                                    <p>🚙 <strong>Комфорт</strong></p>
+                                    <p>⏱️ Подача ~3 мин</p>
+                                    <p>💵 Наличные · 350₽</p>
+                                </div>
+                            </div>
+                            <button class="yg-order-button" id="orderButton">
+                                Заказать такси
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p>⚠️ После нажатия кнопки начнется поиск водителя</p>
+                </div>
+            </div>
+
+            <!-- Шаг 8: Ожидание водителя -->
+            <div class="step-card" id="step8" style="display: none;">
+                <div class="step-number">Шаг 8</div>
+                <h2 class="step-title">Ожидаем водителя</h2>
+                <div class="step-description">
+                    <p class="instruction-text">⏳ Приложение нашло водителя! Теперь ждем, пока он приедет</p>
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="yandex-go-waiting">
+                            <div class="yg-driver-card">
+                                <div class="yg-driver-photo">👨</div>
+                                <div class="yg-driver-info">
+                                    <div class="yg-driver-name">Иван</div>
+                                    <div class="yg-driver-rating">⭐ 4.9</div>
+                                </div>
+                            </div>
+                            <div class="yg-car-info">
+                                <p><strong>Volkswagen Polo</strong></p>
+                                <p>🚗 Белый · А123ВС 77</p>
+                                <p class="yg-arrival-time">🕐 Подъедет через 3 минуты</p>
+                            </div>
+                            <div class="yg-action-buttons">
+                                <button class="yg-action-btn">
+                                    📞 Позвонить
+                                </button>
+                                <button class="yg-action-btn">
+                                    💬 Написать
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p>💡 Запомните <strong>номер машины</strong> и <strong>цвет автомобиля</strong></p>
+                    <p>💡 Если нужно, можете позвонить или написать водителю</p>
+                    <p>💡 Выходите к машине только когда она подъехала</p>
+                </div>
+            </div>
+
+            <!-- Шаг 9: В поездке -->
+            <div class="step-card" id="step9" style="display: none;">
+                <div class="step-number">Шаг 9</div>
+                <h2 class="step-title">В поездке</h2>
+                <div class="step-description">
+                    <p class="instruction-text">🎉 Садитесь в машину и наслаждайтесь поездкой!</p>
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="yandex-go-ride">
+                            <div class="yg-ride-map">
+                                <div style="background: linear-gradient(180deg, #e0f2e0 0%, #fff 100%); height: 200px; display: flex; align-items: center; justify-content: center;">
+                                    <p style="color: #666;">🗺️ Карта маршрута</p>
+                                </div>
+                            </div>
+                            <div class="yg-ride-info">
+                                <p class="yg-ride-status">🚗 В пути</p>
+                                <p class="yg-ride-eta">⏱️ Прибытие через 12 минут</p>
+                                <p class="yg-ride-distance">📍 Осталось 7 км</p>
+                                <div class="yg-ride-cost">
+                                    <p>Стоимость: <strong>350₽</strong></p>
+                                </div>
+                            </div>
+                            <button class="yg-cancel-btn">
+                                Отменить поездку
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p>✅ После прибытия заплатите водителю (если выбраны наличные)</p>
+                    <p>✅ Не забудьте свои вещи в машине!</p>
+                    <p>✅ Можете оценить поездку в приложении</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="course-navigation">
+            <button class="nav-button" id="prevBtn" onclick="changeStep(-1)">← Назад</button>
+            <button class="nav-button primary" id="nextBtn" onclick="changeStep(1)">Далее →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        const totalSteps = 9;
+
+        function updateProgress() {
+            const progress = (currentStep / totalSteps) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('currentStep').textContent = currentStep + 1;
+            document.getElementById('totalSteps').textContent = totalSteps + 1;
+        }
+
+        function showStep(stepIndex) {
+            // Скрываем все шаги
+            const allSteps = document.querySelectorAll('.step-card');
+            allSteps.forEach(step => step.style.display = 'none');
+            
+            // Показываем нужный шаг
+            const step = document.getElementById('step' + stepIndex);
+            if (step) {
+                step.style.display = 'block';
+                step.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            // Обновляем кнопки
+            document.getElementById('prevBtn').disabled = stepIndex === 0;
+            if (stepIndex === totalSteps) {
+                document.getElementById('nextBtn').textContent = '✓ Завершить';
+            } else {
+                document.getElementById('nextBtn').textContent = 'Далее →';
+            }
+
+            updateProgress();
+        }
+
+        function changeStep(direction) {
+            currentStep += direction;
+            if (currentStep < 0) currentStep = 0;
+            if (currentStep > totalSteps) {
+                alert('🎉 Поздравляем! Вы завершили курс по заказу такси в Яндекс GO!');
+                currentStep = totalSteps;
+            }
+            showStep(currentStep);
+        }
+
+        // Добавляем интерактивность к элементам
+        document.addEventListener('DOMContentLoaded', function() {
+            // Инициализация
+            showStep(0);
+
+            // Клик по полю ввода адреса на шаге 1
+            const addressInput = document.getElementById('addressInput');
+            if (addressInput) {
+                addressInput.addEventListener('click', function() {
+                    if (currentStep === 1) {
+                        setTimeout(() => {
+                            currentStep = 2;
+                            showStep(currentStep);
+                        }, 300);
+                    }
+                });
+            }
+
+            // Клик по тарифу
+            const comfortTariff = document.getElementById('comfortTariff');
+            if (comfortTariff) {
+                comfortTariff.addEventListener('click', function() {
+                    if (currentStep === 4) {
+                        setTimeout(() => {
+                            currentStep = 5;
+                            showStep(currentStep);
+                        }, 500);
+                    }
+                });
+            }
+
+            // Клик по способу оплаты
+            const cashPayment = document.getElementById('cashPayment');
+            if (cashPayment) {
+                cashPayment.addEventListener('click', function() {
+                    if (currentStep === 6) {
+                        setTimeout(() => {
+                            currentStep = 7;
+                            showStep(currentStep);
+                        }, 500);
+                    }
+                });
+            }
+
+            // Клик по кнопке "Заказать"
+            const orderButton = document.getElementById('orderButton');
+            if (orderButton) {
+                orderButton.addEventListener('click', function() {
+                    if (currentStep === 7) {
+                        this.textContent = '⏳ Ищем водителя...';
+                        this.disabled = true;
+                        setTimeout(() => {
+                            currentStep = 8;
+                            showStep(currentStep);
+                        }, 1500);
+                    }
+                });
+            }
+        });
+
+        // Поддержка свайпов на мобильных
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            if (touchEndX < touchStartX - 50) {
+                // Свайп влево - следующий шаг
+                changeStep(1);
+            }
+            if (touchEndX > touchStartX + 50) {
+                // Свайп вправо - предыдущий шаг
+                changeStep(-1);
+            }
+        }
+    </script>
+</body>
+</html>

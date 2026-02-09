@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Как заказать такси через приложение Яндекс GO?</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; }
+        
+        .taxi-course-main-body {
+            background-image: url(../images/taxi-course-background.png);
+            background-repeat: repeat;
+            background-size: 400px;
+            background-position: center;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .course-main-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            width: 100%;
+        }
+        
+        .course-main-content {
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 3px solid black;
+            border-radius: 15px;
+            padding: 50px 40px;
+            text-align: center;
+        }
+        
+        .taxi-course-title {
+            font-size: 42px;
+            font-weight: bold;
+            margin: 0 0 30px 0;
+            color: #000;
+        }
+        
+        .taxi-course-paragraph {
+            font-size: 26px;
+            font-weight: 600;
+            margin: 15px 0;
+            color: #333;
+            line-height: 1.4;
+        }
+        
+        .course-example {
+            background-color: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        
+        .example-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 0 0 15px 0;
+            color: #856404;
+        }
+        
+        .example-text {
+            font-size: 22px;
+            margin: 8px 0;
+            color: #856404;
+        }
+        
+        .start-course-button {
+            font-size: 28px;
+            font-weight: bold;
+            padding: 20px 50px;
+            background-color: #ffd700;
+            border: 3px solid black;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: black;
+            display: inline-block;
+        }
+        
+        .start-course-button:hover {
+            background-color: #ffed4e;
+            transform: scale(1.05);
+        }
+        
+        @media screen and (max-width: 768px) {
+            .taxi-course-title { font-size: 32px; }
+            .taxi-course-paragraph { font-size: 22px; }
+            .example-title { font-size: 24px; }
+            .example-text { font-size: 19px; }
+            .start-course-button { font-size: 24px; padding: 18px 40px; }
+            .course-main-content { padding: 35px 25px; }
+        }
+        
+        @media screen and (max-width: 480px) {
+            .taxi-course-title { font-size: 28px; }
+            .taxi-course-paragraph { font-size: 20px; }
+            .start-course-button { font-size: 22px; padding: 16px 35px; }
+        }
+    </style>
+</head>
+<body class="taxi-course-main-body">
+    <div class="course-main-container">
+        <div class="course-main-content">
+            <h1 class="taxi-course-title">🚕 Как заказать такси онлайн?</h1>
+            <p class="taxi-course-paragraph">Такси можно удобно заказать через приложение Яндекс GO!</p>
+            <p class="taxi-course-paragraph">В этом курсе мы расскажем как это сделать</p>
+            <div class="course-example">
+                <p class="example-title">📱 Что вы узнаете:</p>
+                <p class="example-text">• Как установить и настроить приложение</p>
+                <p class="example-text">• Как указать адрес и выбрать тариф</p>
+                <p class="example-text">• Как оплатить поездку</p>
+                <p class="example-text">• Как встретить водителя</p>
+            </div>
+            <a href="taxi-course-guide.html" class="start-course-button">🚀 Начать обучение</a>
+        </div>
+    </div>
+</body>
+</html>

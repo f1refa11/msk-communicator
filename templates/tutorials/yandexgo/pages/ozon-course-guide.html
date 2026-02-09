@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Как заказать товары на OZON</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body class="ozon-course-body">
+    <div class="course-container">
+        <div class="course-header">
+            <h1 class="course-title">🛍️ Как заказать товары на OZON</h1>
+            <p class="course-subtitle">Покупаем тёплые носки - шаг за шагом</p>
+        </div>
+
+        <div class="course-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            <p class="progress-text">Шаг <span id="currentStep">1</span> из <span id="totalSteps">11</span></p>
+        </div>
+
+        <div class="course-content">
+            <!-- Шаг 0: Подготовка -->
+            <div class="step-card" id="step0" style="display: block;">
+                <div class="step-number">📋 Подготовка</div>
+                <h2 class="step-title">Перед началом покупок</h2>
+                <div class="step-description">
+                    <p class="instruction-text">⚠️ <strong>ВАЖНО!</strong> Что нужно для покупок на OZON:</p>
+                    <ul class="checklist">
+                        <li class="checklist-item">📱 <strong>Установленное приложение OZON</strong> - скачайте из магазина приложений</li>
+                        <li class="checklist-item">📶 <strong>Интернет</strong> - мобильный или Wi-Fi</li>
+                        <li class="checklist-item">💳 <strong>Способ оплаты</strong> - банковская карта или наличные при получении</li>
+                        <li class="checklist-item">📍 <strong>Адрес доставки</strong> - куда привезти товар</li>
+                    </ul>
+                    <div class="info-box">
+                        <p><strong>Безопасность:</strong></p>
+                        <p>✅ OZON - это надёжный магазин</p>
+                        <p>✅ Можно оплачивать при получении - не нужно сразу платить</p>
+                        <p>✅ Если товар не подошёл - можно вернуть в течение 7 дней</p>
+                        <p>⚠️ Никогда не сообщайте код из СМС посторонним!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Шаг 1: Открытие приложения -->
+            <div class="step-card" id="step1" style="display: none;">
+                <div class="step-number">Шаг 1</div>
+                <h2 class="step-title">Открываем приложение OZON</h2>
+                <div class="step-description">
+                    <p class="instruction-text">🔍 Найдите на экране телефона синий значок с белыми буквами "OZON" и нажмите на него</p>
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="ozon-main">
+                            <div class="ozon-header">
+                                <div class="ozon-logo">OZON</div>
+                                <div class="ozon-location">📍 Москва</div>
+                                <div class="ozon-icons">
+                                    <span class="ozon-icon">❤️</span>
+                                    <span class="ozon-icon">🛒</span>
+                                </div>
+                            </div>
+                            <div class="ozon-search-bar" id="searchBar">
+                                <span class="search-icon">🔍</span>
+                                <span class="search-placeholder">Искать на Ozon</span>
+                            </div>
+                            <div class="ozon-categories">
+                                <div class="ozon-category">
+                                    <div class="category-icon">👕</div>
+                                    <div class="category-name">Одежда</div>
+                                </div>
+                                <div class="ozon-category">
+                                    <div class="category-icon">📱</div>
+                                    <div class="category-name">Электроника</div>
+                                </div>
+                                <div class="ozon-category">
+                                    <div class="category-icon">🏠</div>
+                                    <div class="category-name">Дом</div>
+                                </div>
+                                <div class="ozon-category">
+                                    <div class="category-icon">🎨</div>
+                                    <div class="category-name">Хобби</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p>💡 Если приложения нет - скачайте его из App Store (iPhone) или Google Play (Android)</p>
+                </div>
+            </div>
+
+            <!-- Шаг 2: Поиск товара -->
+            <div class="step-card" id="step2" style="display: none;">
+                <div class="step-number">Шаг 2</div>
+                <h2 class="step-title">Ищем тёплые носки</h2>
+                <div class="step-description">
+                    <p class="instruction-text">👆 Нажмите на строку поиска вверху экрана</p>
+                    <p class="instruction-text">⌨️ Введите "тёплые носки" и нажмите поиск</p>
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="ozon-search">
+                            <div class="ozon-header-simple">
+                                <button class="ozon-back-btn">← Назад</button>
+                                <div class="ozon-search-input-active">
+                                    <span class="search-icon">🔍</span>
+                                    <input type="text" value="тёплые носки" class="ozon-input">
+                                    <button class="search-btn">Найти</button>
+                                </div>
+                            </div>
+                            <div class="ozon-search-suggestions">
+                                <div class="suggestion-item">🧦 тёплые носки мужские</div>
+                                <div class="suggestion-item">🧦 тёплые носки женские</div>
+                                <div class="suggestion-item">🧦 тёплые носки шерстяные</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p>💡 Приложение подскажет похожие запросы - можете выбрать один из них</p>
+                </div>
+            </div>
+
+            <!-- Шаг 3: Просмотр результатов -->
+            <div class="step-card" id="step3" style="display: none;">
+                <div class="step-number">Шаг 3</div>
+                <h2 class="step-title">Выбираем подходящие носки</h2>
+                <div class="step-description">
+                    <p class="instruction-text">👀 Приложение покажет много вариантов носков</p>
+                    <p class="instruction-text">👆 Листайте вниз и выберите те, которые вам нравятся</p>
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="ozon-results">
+                            <div class="ozon-header-simple">
+                                <button class="ozon-back-btn">← Назад</button>
+                                <p class="results-title">Тёплые носки</p>
+                            </div>
+                            <div class="ozon-filters">
+                                <button class="filter-btn">⚙️ Фильтры</button>
+                                <button class="filter-btn">💰 Цена</button>
+                                <button class="filter-btn">⭐ Рейтинг</button>
+                            </div>
+                            <div class="ozon-products">
+                                <div class="ozon-product-card" id="product1">
+                                    <div class="product-image">
+                                        <div class="product-placeholder">🧦</div>
+                                        <div class="product-badge">−25%</div>
+                                    </div>
+                                    <div class="product-info">
+                                        <p class="product-price">299₽ <span class="old-price">399₽</span></p>
+                                        <p class="product-name">Носки тёплые шерстяные</p>
+                                        <p class="product-rating">⭐ 4.8 (523 отзыва)</p>
+                                    </div>
+                                </div>
+                                <div class="ozon-product-card">
+                                    <div class="product-image">
+                                        <div class="product-placeholder">🧦</div>
+                                    </div>
+                                    <div class="product-info">
+                                        <p class="product-price">450₽</p>
+                                        <p class="product-name">Носки махровые зимние</p>
+                                        <p class="product-rating">⭐ 4.9 (1205 отзывов)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p>💡 Обращайте внимание на <strong>рейтинг</strong> (⭐) и <strong>отзывы</strong> - это важно!</p>
+                    <p>💡 Чем больше звёздочек и отзывов, тем лучше товар</p>
+                </div>
+            </div>
+
+            <!-- Шаг 4: Карточка товара -->
+            <div class="step-card" id="step4" style="display: none;">
+                <div class="step-number">Шаг 4</div>
+                <h2 class="step-title">Изучаем товар подробнее</h2>
+                <div class="step-description">
+                    <p class="instruction-text">📋 Здесь вся информация о товаре</p>
+                    <p class="instruction-text">Прокрутите вниз, чтобы прочитать описание и отзывы</p>
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="ozon-product-page">
+                            <div class="ozon-header-simple">
+                                <button class="ozon-back-btn">← Назад</button>
+                                <div class="header-icons">
+                                    <span>🔍</span>
+                                    <span>❤️</span>
+                                    <span>📤</span>
+                                </div>
+                            </div>
+                            <div class="product-detail-image">
+                                <div class="product-main-image">🧦</div>
+                                <div class="image-dots">● ○ ○ ○</div>
+                            </div>
+                            <div class="product-detail-info">
+                                <h3 class="product-detail-title">Носки тёплые шерстяные мужские</h3>
+                                <div class="product-detail-rating">
+                                    <span class="rating-stars">⭐⭐⭐⭐⭐</span>
+                                    <span class="rating-text">4.8 · 523 отзыва</span>
+                                </div>
+                                <div class="product-detail-price">
+                                    <span class="current-price">299₽</span>
+                                    <span class="old-price-big">399₽</span>
+                                    <span class="discount-badge">-25%</span>
+                                </div>
+                                <div class="product-characteristics">
+                                    <p><strong>Размер:</strong> 41-47</p>
+                                    <p><strong>Состав:</strong> 80% шерсть, 20% синтетика</p>
+                                    <p><strong>Цвет:</strong> Серый</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p>💡 Обязательно проверьте <strong>размер</strong> и <strong>характеристики</strong></p>
+                    <p>💡 Читайте отзывы других покупателей</p>
+                </div>
+            </div>
+
+            <!-- Шаг 5: Добавление в корзину -->
+            <div class="step-card" id="step5" style="display: none;">
+                <div class="step-number">Шаг 5</div>
+                <h2 class="step-title">Добавляем товар в корзину</h2>
+                <div class="step-description">
+                    <p class="instruction-text">🛒 Внизу экрана нажмите на кнопку "В корзину"</p>
+                    <p class="instruction-text">Товар добавится в вашу корзину - можно продолжить покупки или оформить заказ</p>
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="ozon-add-to-cart">
+                            <div class="product-summary-box">
+                                <p class="summary-price">299₽</p>
+                                <p class="summary-oldprice">399₽</p>
+                                <p class="summary-delivery">🚚 Доставка завтра</p>
+                            </div>
+                            <div class="cart-actions">
+                                <button class="btn-add-cart" id="addToCartBtn">
+                                    🛒 В корзину
+                                </button>
+                                <button class="btn-buy-now">
+                                    ⚡ Купить сейчас
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p>💡 <strong>"В корзину"</strong> - добавить товар и продолжить покупки</p>
+                    <p>💡 <strong>"Купить сейчас"</strong> - сразу перейти к оформлению</p>
+                    <p>💡 В корзине можно изменить количество товаров</p>
+                </div>
+            </div>
+
+            <!-- Шаг 6: Корзина -->
+            <div class="step-card" id="step6" style="display: none;">
+                <div class="step-number">Шаг 6</div>
+                <h2 class="step-title">Проверяем корзину</h2>
+                <div class="step-description">
+                    <p class="instruction-text">🛒 Нажмите на значок корзины вверху экрана</p>
+                    <p class="instruction-text">Здесь все товары, которые вы хотите купить</p>
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="ozon-cart">
+                            <div class="ozon-header-simple">
+                                <button class="ozon-back-btn">← Назад</button>
+                                <h3>Корзина</h3>
+                            </div>
+                            <div class="cart-items">
+                                <div class="cart-item">
+                                    <div class="cart-item-image">🧦</div>
+                                    <div class="cart-item-info">
+                                        <p class="cart-item-name">Носки тёплые шерстяные</p>
+                                        <div class="cart-item-controls">
+                                            <button class="qty-btn">−</button>
+                                            <span class="qty-number">1</span>
+                                            <button class="qty-btn">+</button>
+                                        </div>
+                                        <p class="cart-item-price">299₽</p>
+                                    </div>
+                                    <button class="cart-item-delete">🗑️</button>
+                                </div>
+                            </div>
+                            <div class="cart-summary">
+                                <div class="summary-row">
+                                    <span>Товары (1)</span>
+                                    <span>299₽</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Доставка</span>
+                                    <span class="free-delivery">Бесплатно</span>
+                                </div>
+                                <div class="summary-total">
+                                    <span>Итого</span>
+                                    <span class="total-price">299₽</span>
+                                </div>
+                            </div>
+                            <button class="checkout-btn" id="checkoutBtn">
+                                Перейти к оформлению
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p>💡 Можно изменить количество товара кнопками + и −</p>
+                    <p>💡 Можно удалить товар, нажав на корзину 🗑️</p>
+                </div>
+            </div>
+
+            <!-- Шаг 7: Адрес доставки -->
+            <div class="step-card" id="step7" style="display: none;">
+                <div class="step-number">Шаг 7</div>
+                <h2 class="step-title">Указываем адрес доставки</h2>
+                <div class="step-description">
+                    <p class="instruction-text">📍 Введите адрес, куда привезти заказ</p>
+                    <p class="instruction-text">Можно выбрать доставку домой или в пункт выдачи</p>
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="ozon-checkout">
+                            <div class="ozon-header-simple">
+                                <button class="ozon-back-btn">← Назад</button>
+                                <h3>Оформление заказа</h3>
+                            </div>
+                            <div class="checkout-section">
+                                <h4 class="section-title">📍 Адрес доставки</h4>
+                                <div class="delivery-options">
+                                    <div class="delivery-option selected">
+                                        <div class="option-radio">●</div>
+                                        <div class="option-content">
+                                            <p class="option-title">🏠 Доставка курьером</p>
+                                            <p class="option-subtitle">Завтра, бесплатно</p>
+                                            <input type="text" class="address-input" placeholder="Улица, дом, квартира">
+                                        </div>
+                                    </div>
+                                    <div class="delivery-option">
+                                        <div class="option-radio">○</div>
+                                        <div class="option-content">
+                                            <p class="option-title">📦 Пункт выдачи</p>
+                                            <p class="option-subtitle">Сегодня, бесплатно</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p>💡 <strong>Курьером домой</strong> - привезут прямо к двери</p>
+                    <p>💡 <strong>Пункт выдачи</strong> - заберёте сами, часто быстрее</p>
+                    <p>💡 Укажите номер телефона для связи</p>
+                </div>
+            </div>
+
+            <!-- Шаг 8: Выбор способа оплаты -->
+            <div class="step-card" id="step8" style="display: none;">
+                <div class="step-number">Шаг 8</div>
+                <h2 class="step-title">Выбираем способ оплаты</h2>
+                <div class="step-description">
+                    <p class="instruction-text">💳 Выберите, как хотите оплатить заказ</p>
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="ozon-payment-methods">
+                            <div class="checkout-section">
+                                <h4 class="section-title">💳 Способ оплаты</h4>
+                                <div class="payment-options">
+                                    <div class="payment-option" id="cashOption">
+                                        <div class="option-radio">○</div>
+                                        <div class="option-content">
+                                            <p class="option-title">💵 При получении</p>
+                                            <p class="option-subtitle">Наличными или картой курьеру</p>
+                                        </div>
+                                    </div>
+                                    <div class="payment-option">
+                                        <div class="option-radio">○</div>
+                                        <div class="option-content">
+                                            <p class="option-title">💳 Картой онлайн</p>
+                                            <p class="option-subtitle">Безопасная оплата</p>
+                                        </div>
+                                    </div>
+                                    <div class="payment-option">
+                                        <div class="option-radio">○</div>
+                                        <div class="option-content">
+                                            <p class="option-title">📱 СБП</p>
+                                            <p class="option-subtitle">Система быстрых платежей</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p>💡 <strong>При получении</strong> - самый безопасный способ для новичков</p>
+                    <p>💡 Сначала посмотрите товар, потом платите</p>
+                    <p>💡 <strong>Картой онлайн</strong> - быстрее, но платить нужно сразу</p>
+                    <p>⚠️ При оплате картой НИКОГДА не говорите код из СМС посторонним!</p>
+                </div>
+            </div>
+
+            <!-- Шаг 9: Получатель -->
+            <div class="step-card" id="step9" style="display: none;">
+                <div class="step-number">Шаг 9</div>
+                <h2 class="step-title">Данные получателя</h2>
+                <div class="step-description">
+                    <p class="instruction-text">📝 Укажите ваше имя и телефон</p>
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="ozon-recipient">
+                            <div class="checkout-section">
+                                <h4 class="section-title">👤 Получатель</h4>
+                                <div class="form-group">
+                                    <label class="form-label">Имя и фамилия</label>
+                                    <input type="text" class="form-input" placeholder="Иван Иванов">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Телефон</label>
+                                    <input type="tel" class="form-input" placeholder="+7 (___) ___-__-__">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Комментарий для курьера (необязательно)</label>
+                                    <textarea class="form-textarea" placeholder="Например: код домофона 123"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p>💡 Телефон нужен, чтобы курьер мог с вами связаться</p>
+                    <p>💡 В комментарии можно указать код домофона или подъезд</p>
+                </div>
+            </div>
+
+            <!-- Шаг 10: Подтверждение заказа -->
+            <div class="step-card" id="step10" style="display: none;">
+                <div class="step-number">Шаг 10</div>
+                <h2 class="step-title">Проверяем и оформляем заказ</h2>
+                <div class="step-description">
+                    <p class="instruction-text">✅ Проверьте все данные</p>
+                    <p class="instruction-text">👆 Нажмите кнопку "Оформить заказ"</p>
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="ozon-final-checkout">
+                            <div class="checkout-summary-card">
+                                <h4>📦 Ваш заказ</h4>
+                                <p class="summary-item">Носки тёплые шерстяные × 1</p>
+                                <hr>
+                                <p class="summary-item">📍 Доставка курьером завтра</p>
+                                <p class="summary-item">💵 Оплата при получении</p>
+                                <p class="summary-item">📞 Иван Иванов</p>
+                                <hr>
+                                <div class="final-total">
+                                    <span>Итого:</span>
+                                    <span class="final-price">299₽</span>
+                                </div>
+                            </div>
+                            <button class="final-order-btn" id="finalOrderBtn">
+                                Оформить заказ
+                            </button>
+                            <p class="terms-text">Нажимая кнопку, вы соглашаетесь с условиями</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p>⚠️ <strong>Проверьте:</strong></p>
+                    <p>✓ Правильный товар</p>
+                    <p>✓ Правильный адрес</p>
+                    <p>✓ Правильный телефон</p>
+                </div>
+            </div>
+
+            <!-- Шаг 11: Заказ оформлен -->
+            <div class="step-card" id="step11" style="display: none;">
+                <div class="step-number">🎉 Готово!</div>
+                <h2 class="step-title">Заказ успешно оформлен</h2>
+                <div class="step-description">
+                    <p class="instruction-text">🎊 Поздравляем! Ваш первый заказ на OZON оформлен!</p>
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="ozon-success">
+                            <div class="success-icon">✅</div>
+                            <h3 class="success-title">Заказ оформлен!</h3>
+                            <p class="success-subtitle">Номер заказа: #12345678</p>
+                            <div class="success-info-box">
+                                <p><strong>📦 Что дальше?</strong></p>
+                                <p class="success-step">1️⃣ Курьер позвонит вам перед доставкой</p>
+                                <p class="success-step">2️⃣ Проверьте товар при получении</p>
+                                <p class="success-step">3️⃣ Оплатите, если выбрали оплату при получении</p>
+                            </div>
+                            <div class="tracking-section">
+                                <p class="tracking-title">📍 Отследить заказ:</p>
+                                <p class="tracking-text">Зайдите в раздел "Мои заказы"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p>💡 <strong>Важно знать:</strong></p>
+                    <p>✅ Вы получите СМС с номером заказа</p>
+                    <p>✅ В приложении можно отследить, где ваш заказ</p>
+                    <p>✅ Если что-то не так - можно отменить заказ до отправки</p>
+                    <p>✅ Если товар не подошёл - можно вернуть в течение 7 дней</p>
+                    <p>⚠️ Сохраните чек после получения заказа!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="course-navigation">
+            <button class="nav-button" id="prevBtn" onclick="changeStep(-1)">← Назад</button>
+            <button class="nav-button primary" id="nextBtn" onclick="changeStep(1)">Далее →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        const totalSteps = 11;
+
+        function updateProgress() {
+            const progress = (currentStep / totalSteps) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('currentStep').textContent = currentStep + 1;
+            document.getElementById('totalSteps').textContent = totalSteps + 1;
+        }
+
+        function showStep(stepIndex) {
+            const allSteps = document.querySelectorAll('.step-card');
+            allSteps.forEach(step => step.style.display = 'none');
+            
+            const step = document.getElementById('step' + stepIndex);
+            if (step) {
+                step.style.display = 'block';
+                step.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            document.getElementById('prevBtn').disabled = stepIndex === 0;
+            if (stepIndex === totalSteps) {
+                document.getElementById('nextBtn').textContent = '✓ Завершить';
+            } else {
+                document.getElementById('nextBtn').textContent = 'Далее →';
+            }
+
+            updateProgress();
+        }
+
+        function changeStep(direction) {
+            currentStep += direction;
+            if (currentStep < 0) currentStep = 0;
+            if (currentStep > totalSteps) {
+                alert('🎉 Поздравляем! Теперь вы знаете, как покупать на OZON!\n\nТочно так же можно заказать любой другой товар - одежду, технику, продукты, книги и многое другое!');
+                currentStep = totalSteps;
+            }
+            showStep(currentStep);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            showStep(0);
+
+            // Клик по поиску
+            const searchBar = document.getElementById('searchBar');
+            if (searchBar) {
+                searchBar.addEventListener('click', function() {
+                    if (currentStep === 1) {
+                        setTimeout(() => {
+                            currentStep = 2;
+                            showStep(currentStep);
+                        }, 300);
+                    }
+                });
+            }
+
+            // Клик по товару
+            const product1 = document.getElementById('product1');
+            if (product1) {
+                product1.addEventListener('click', function() {
+                    if (currentStep === 3) {
+                        setTimeout(() => {
+                            currentStep = 4;
+                            showStep(currentStep);
+                        }, 300);
+                    }
+                });
+            }
+
+            // Добавление в корзину
+            const addToCartBtn = document.getElementById('addToCartBtn');
+            if (addToCartBtn) {
+                addToCartBtn.addEventListener('click', function() {
+                    if (currentStep === 5) {
+                        this.textContent = '✓ Добавлено';
+                        this.style.backgroundColor = '#4CAF50';
+                        setTimeout(() => {
+                            currentStep = 6;
+                            showStep(currentStep);
+                        }, 800);
+                    }
+                });
+            }
+
+            // Переход к оформлению
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            if (checkoutBtn) {
+                checkoutBtn.addEventListener('click', function() {
+                    if (currentStep === 6) {
+                        setTimeout(() => {
+                            currentStep = 7;
+                            showStep(currentStep);
+                        }, 300);
+                    }
+                });
+            }
+
+            // Выбор оплаты наличными
+            const cashOption = document.getElementById('cashOption');
+            if (cashOption) {
+                cashOption.addEventListener('click', function() {
+                    if (currentStep === 8) {
+                        const radio = this.querySelector('.option-radio');
+                        radio.textContent = '●';
+                        setTimeout(() => {
+                            currentStep = 9;
+                            showStep(currentStep);
+                        }, 500);
+                    }
+                });
+            }
+
+            // Финальное оформление
+            const finalOrderBtn = document.getElementById('finalOrderBtn');
+            if (finalOrderBtn) {
+                finalOrderBtn.addEventListener('click', function() {
+                    if (currentStep === 10) {
+                        this.textContent = '⏳ Оформляем...';
+                        this.disabled = true;
+                        setTimeout(() => {
+                            currentStep = 11;
+                            showStep(currentStep);
+                        }, 1500);
+                    }
+                });
+            }
+        });
+
+        // Поддержка свайпов
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            if (touchEndX < touchStartX - 50) {
+                changeStep(1);
+            }
+            if (touchEndX > touchStartX + 50) {
+                changeStep(-1);
+            }
+        }
+    </script>
+</body>
+</html>

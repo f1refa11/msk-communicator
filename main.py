@@ -7,6 +7,7 @@ import hashlib
 import bcrypt
 import json
 import sqlite3
+import mimetypes
 
 db = sqlite3.connect("database.db", autocommit=True)
 cur = db.cursor()
@@ -23,6 +24,7 @@ page_account = env.get_template("account.tmpl")
 page_forgot = env.get_template("forgot.tmpl")
 page_tutorial_viewer = env.get_template("tutorial_viewer.tmpl")
 TUTORIALS_DIR = os.path.join("templates", "tutorials")
+TUTORIAL_PAGE_EXTENSIONS = (".tmpl", ".html", ".htm")
 
 app = Microdot()
 
@@ -69,6 +71,15 @@ def load_tutorials():
         )
 
     return tutorials
+
+
+def _tutorial_sort_key(filename: str):
+    """Sort tutorial pages numerically when possible, otherwise alphabetically."""
+    stem, _ = os.path.splitext(filename)
+    try:
+        return (0, int(stem))
+    except ValueError:
+        return (1, stem.lower())
 
 
 def get_current_user(session):
@@ -193,6 +204,44 @@ async def static(request, path):
     return send_file("static/" + path)
 
 
+@app.route("/tutorials-assets/<tutorial_name>/<path:path>")
+async def tutorial_assets(request, tutorial_name, path):
+    """Serve per-tutorial static assets (css, images) located next to templates."""
+    if ".." in path or path.startswith("/"):
+        return "Not found", 404
+    asset_path = os.path.join(TUTORIALS_DIR, tutorial_name, path)
+    if not os.path.isfile(asset_path):
+        return "Not found", 404
+    # Basic Range support for media files (videos) so seeking works
+    range_header = request.headers.get("Range") or request.headers.get("range")
+    if range_header and range_header.startswith("bytes="):
+        file_size = os.path.getsize(asset_path)
+        bytes_range = range_header.split("=", 1)[1]
+        start_str, end_str = (bytes_range.split("-") + [""])[:2]
+        try:
+            start = int(start_str) if start_str else 0
+            end = int(end_str) if end_str else file_size - 1
+        except ValueError:
+            return "Invalid Range", 400
+        if start >= file_size:
+            return "Range Not Satisfiable", 416
+        end = min(end, file_size - 1)
+        length = end - start + 1
+        with open(asset_path, "rb") as f:
+            f.seek(start)
+            data = f.read(length)
+        mime, _ = mimetypes.guess_type(asset_path)
+        headers = {
+            "Content-Range": f"bytes {start}-{end}/{file_size}",
+            "Accept-Ranges": "bytes",
+            "Content-Length": str(length),
+            "Content-Type": mime or "application/octet-stream",
+        }
+        return data, 206, headers
+
+    return send_file(asset_path)
+
+
 # tutorial
 @app.route("/tutorials")
 @with_session
@@ -233,10 +282,14 @@ async def tutorial_viewer(request, session, tutorial_name, page_num):
         (t for t in load_tutorials() if t["slug"] == tutorial_name), None
     )
 
-    # Ищем все файлы .tmpl в папке туториала
-    files = [f for f in os.listdir(tutorial_path) if f.endswith(".tmpl")]
-    # Сортируем (важно называть файлы 1.tmpl, 2.tmpl или 01.tmpl, чтобы порядок был верным)
-    files.sort()
+    # Ищем страницы туториала: Jinja-шаблоны (.tmpl) и обычные HTML (.html/.htm)
+    files = [
+        f
+        for f in os.listdir(tutorial_path)
+        if os.path.splitext(f)[1].lower() in TUTORIAL_PAGE_EXTENSIONS
+    ]
+    # Сортируем по номеру (1, 2, 10), затем по имени
+    files.sort(key=_tutorial_sort_key)
 
     total_pages = len(files)
 
@@ -249,7 +302,7 @@ async def tutorial_viewer(request, session, tutorial_name, page_num):
     current_file = files[page_num - 1]
 
     # Формируем путь для Jinja (относительно папки templates)
-    # Например: "tutorials/taxi/1.tmpl"
+    # Например: "tutorials/taxi/1.tmpl" или "tutorials/taxi/1.html"
     template_name = f"tutorials/{tutorial_name}/{current_file}"
 
     try:
