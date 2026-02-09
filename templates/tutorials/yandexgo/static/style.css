@@ -331,7 +331,7 @@ body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
 }
 /*Контейнер страниц группы reg*/
 .reg-page{
-	
+
 }
 /*Инфоблок группы reg*/
 .reg-info-block {
@@ -457,7 +457,7 @@ body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
 	margin-bottom: 3vw;
 	width: fit-content;
 	background-color: rgba(F, F, F, 0.5);
-	border: solid 2px black;]
+	border: solid 2px black;
 }
 .taxi-course-paragraph {
 	font-size: 3vw;
