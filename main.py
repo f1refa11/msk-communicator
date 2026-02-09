@@ -3,11 +3,13 @@ import os
 from microdot import Microdot, send_file, redirect
 from microdot.session import Session, with_session
 from jinja2 import Environment, PackageLoader, select_autoescape
+import base64
 import hashlib
 import bcrypt
 import json
 import sqlite3
 import mimetypes
+import jwt
 
 db = sqlite3.connect("database.db", autocommit=True)
 cur = db.cursor()
@@ -27,6 +29,45 @@ TUTORIALS_DIR = os.path.join("templates", "tutorials")
 TUTORIAL_PAGE_EXTENSIONS = (".tmpl", ".html", ".htm")
 
 app = Microdot()
+
+
+def _ensure_jwt_compat():
+    """Provide PyJWT-like encode/decode if another jwt package is installed."""
+    if hasattr(jwt, "encode") and hasattr(jwt, "decode"):
+        return
+
+    jwt_engine = jwt.JWT()
+
+    def _to_oct_jwk(secret_key):
+        key_bytes = (
+            secret_key
+            if isinstance(secret_key, bytes)
+            else str(secret_key).encode("utf-8")
+        )
+        key_b64 = base64.urlsafe_b64encode(key_bytes).rstrip(b"=").decode("ascii")
+        return jwt.jwk_from_dict({"kty": "oct", "k": key_b64})
+
+    def _encode(payload, secret_key, algorithm="HS256"):
+        return jwt_engine.encode(payload, _to_oct_jwk(secret_key), alg=algorithm)
+
+    def _decode(token, secret_key, algorithms=None):
+        allowed = set(algorithms) if algorithms else {"HS256"}
+        return jwt_engine.decode(token, _to_oct_jwk(secret_key), algorithms=allowed)
+
+    jwt.encode = _encode
+    jwt.decode = _decode
+
+    if not hasattr(jwt, "exceptions"):
+        class _CompatExceptions:
+            pass
+        jwt.exceptions = _CompatExceptions()
+
+    if not hasattr(jwt.exceptions, "PyJWTError"):
+        fallback_error = getattr(jwt.exceptions, "JWTException", Exception)
+        jwt.exceptions.PyJWTError = fallback_error
+
+
+_ensure_jwt_compat()
 
 SESSION_SECRET = os.environ.get("SESSION_SECRET", "change-me")
 Session(app, secret_key=SESSION_SECRET)
@@ -82,6 +123,45 @@ def _tutorial_sort_key(filename: str):
         return (1, stem.lower())
 
 
+def mark_tutorial_completed(user_id: int, tutorial_slug: str):
+    """Mark tutorial as completed for a user on first visit."""
+    if not user_id or not tutorial_slug:
+        return
+    cur.execute(
+        """
+        INSERT INTO tutorial_progress (user_id, tutorial_slug)
+        VALUES (?, ?)
+        ON CONFLICT(user_id, tutorial_slug) DO NOTHING
+        """,
+        (user_id, tutorial_slug),
+    )
+
+
+def get_user_tutorial_progress(user_id: int):
+    """Return tutorial list with completion status for the given user."""
+    tutorials = load_tutorials()
+    cur.execute(
+        "SELECT tutorial_slug, completed_at FROM tutorial_progress WHERE user_id = ?",
+        (user_id,),
+    )
+    completed_by_slug = {row[0]: row[1] for row in cur.fetchall()}
+
+    progress = []
+    for tutorial in tutorials:
+        completed_at = completed_by_slug.get(tutorial["slug"])
+        progress.append(
+            {
+                "slug": tutorial["slug"],
+                "title": tutorial["title"],
+                "description": tutorial["description"],
+                "level": tutorial["level"],
+                "completed": bool(completed_at),
+                "completed_at": completed_at,
+            }
+        )
+    return progress
+
+
 def get_current_user(session):
     user_id = session.get("user_id")
     if not user_id:
@@ -122,6 +202,17 @@ cur.execute("PRAGMA table_info(users)")
 _cols = [row[1] for row in cur.fetchall()]
 if "avatar" not in _cols:
     cur.execute("ALTER TABLE users ADD COLUMN avatar TEXT DEFAULT 'avatar-1'")
+
+cur.execute(
+    """
+    CREATE TABLE IF NOT EXISTS tutorial_progress (
+        user_id INTEGER NOT NULL,
+        tutorial_slug TEXT NOT NULL,
+        completed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY(user_id, tutorial_slug)
+    )
+    """
+)
 
 AVATARS = ["avatar-1", "avatar-2", "avatar-3", "avatar-4", "avatar-5"]
 
@@ -301,6 +392,8 @@ async def tutorial_viewer(request, session, tutorial_name, page_num):
         return "Такой страницы не существует", 404
 
     current_file = files[page_num - 1]
+    if user and page_num == total_pages:
+        mark_tutorial_completed(user[0], tutorial_name)
 
     # Формируем путь для Jinja (относительно папки templates)
     # Например: "tutorials/taxi/1.tmpl" или "tutorials/taxi/1.html"
@@ -365,9 +458,17 @@ async def account_settings(request, session):
     if user[5] is None:
         cur.execute("UPDATE users SET avatar = ? WHERE id = ?", ("avatar-1", user[0]))
         user = get_current_user(session)
+    tutorial_progress = get_user_tutorial_progress(user[0])
+    completed_tutorials_count = sum(1 for t in tutorial_progress if t["completed"])
     return (
         page_account.render(
-            yes_login=True, user=user, avatars=AVATARS, user_name=user[2]
+            yes_login=True,
+            user=user,
+            avatars=AVATARS,
+            user_name=user[2],
+            tutorial_progress=tutorial_progress,
+            completed_tutorials_count=completed_tutorials_count,
+            total_tutorials_count=len(tutorial_progress),
         ),
         200,
         {"Content-Type": "text/html"},
@@ -542,6 +643,7 @@ async def handle_delete_account(request, session):
     pwd_hash = hashlib.sha256(pwd.encode("utf-8")).hexdigest()
     if pwd_hash != user[3]:
         return redirect("/account/?delete=wrong")
+    cur.execute("DELETE FROM tutorial_progress WHERE user_id = ?", (user[0],))
     cur.execute("DELETE FROM users WHERE id = ?", (user[0],))
     response = redirect("/?account=deleted")
     session.delete()
