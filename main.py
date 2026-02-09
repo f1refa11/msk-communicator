@@ -239,7 +239,8 @@ async def tutorial_assets(request, tutorial_name, path):
         }
         return data, 206, headers
 
-    return send_file(asset_path)
+    mime, _ = mimetypes.guess_type(asset_path)
+    return send_file(asset_path, content_type=mime or "application/octet-stream")
 
 
 # tutorial
