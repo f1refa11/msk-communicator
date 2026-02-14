@@ -528,7 +528,8 @@ async def tutorials_list(request, session):
             "slug": course["slug"],
             "title": course["title"],
             "description": course["description"],
-            "modules": [],
+            "basic_modules": [],
+            "advanced_modules": [],
         }
         for course in COURSE_DEFINITIONS
     ]
@@ -539,12 +540,19 @@ async def tutorials_list(request, session):
         course = course_map.get(course_slug)
         if course is None:
             continue
-        course["modules"].append(tutorial)
+
+        if tutorial.get("level") == "advanced":
+            course["advanced_modules"].append(tutorial)
+        else:
+            course["basic_modules"].append(tutorial)
 
     return (
         page_tutorial.render(
             courses=courses,
-            has_any=any(course["modules"] for course in courses),
+            has_any=any(
+                course["basic_modules"] or course["advanced_modules"]
+                for course in courses
+            ),
             yes_login=bool(user),
             user_name=user[2] if user else "",
         ),

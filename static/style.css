@@ -838,6 +838,15 @@ img { max-width: 100%; height: auto; }
     margin-top: 20px;
 }
 
+.difficulty-block {
+    margin-top: 14px;
+}
+
+.difficulty-title {
+    margin: 0 0 12px;
+    font-size: 20px;
+}
+
 .tutorial-card {
     background: #fff;
     border: 1px solid var(--border);

@@ -497,6 +497,41 @@
             letter-spacing: 0.06em;
         }
 
+        .info-progress {
+            display: grid;
+            gap: 8px;
+        }
+
+        .info-progress-label {
+            font-size: 12px;
+            color: #5f6368;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+        }
+
+        .info-progress-track {
+            display: grid;
+            grid-template-columns: repeat(var(--segments-count, 4), minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .progress-segment {
+            height: 10px;
+            border-radius: 999px;
+            background: #dfe6ef;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .progress-segment.is-complete {
+            background: #1f9d55;
+        }
+
+        .progress-segment.is-current {
+            background: #0070d2;
+            box-shadow: 0 0 0 3px rgba(0, 112, 210, 0.2);
+        }
+
         .info-title {
             margin: 0;
             font-size: 24px;
@@ -690,6 +725,10 @@
     </div>
 
     <aside class="info-block" aria-live="polite">
+        <div class="info-progress">
+            <div class="info-progress-label">Прогресс прохождения</div>
+            <div id="info-progress-track" class="info-progress-track"></div>
+        </div>
         <div id="info-step" class="info-step">Шаг 1 из 4</div>
         <h2 id="info-title" class="info-title">Откройте чат с Артёмом</h2>
         <p id="info-description" class="info-description">Найдите контакт «Артём Цурганов» в списке чатов и нажмите на него.</p>
@@ -766,6 +805,7 @@
     const infoTitle = document.getElementById('info-title');
     const infoDescription = document.getElementById('info-description');
     const infoNote = document.getElementById('info-note');
+    const infoProgressTrack = document.getElementById('info-progress-track');
     const navPrev = document.getElementById('nav-prev');
     const navNext = document.getElementById('nav-next');
     const infoNav = document.getElementById('info-nav');
@@ -778,6 +818,39 @@
 
     function getStepIndex(stepKey) {
         return stepOrder.indexOf(stepKey);
+    }
+
+    function ensureProgressSegments() {
+        const segmentsCount = stepOrder.length;
+        infoProgressTrack.style.setProperty('--segments-count', String(segmentsCount));
+
+        if (infoProgressTrack.childElementCount === segmentsCount) {
+            return;
+        }
+
+        infoProgressTrack.innerHTML = '';
+        for (let i = 0; i < segmentsCount; i += 1) {
+            const segment = document.createElement('span');
+            segment.className = 'progress-segment';
+            infoProgressTrack.appendChild(segment);
+        }
+    }
+
+    function updateProgressBar(stepKey) {
+        ensureProgressSegments();
+        const segments = Array.from(infoProgressTrack.children);
+        const isCompleted = stepKey === 'completed';
+        const stepIndex = getStepIndex(stepKey);
+        const currentIndex = isCompleted ? stepOrder.length - 1 : stepIndex;
+
+        segments.forEach((segment, index) => {
+            segment.classList.remove('is-complete', 'is-current');
+            if (isCompleted || index < currentIndex) {
+                segment.classList.add('is-complete');
+            } else if (index === currentIndex) {
+                segment.classList.add('is-current');
+            }
+        });
     }
 
     function setInputText(text) {
@@ -869,6 +942,8 @@
             infoNote.style.display = 'none';
             infoNote.textContent = '';
         }
+
+        updateProgressBar(stepKey);
     }
 
     function updateNavigation(stepKey) {

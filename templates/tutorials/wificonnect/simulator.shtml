@@ -39,21 +39,6 @@
             flex-shrink: 0;
         }
 
-        .phone-frame::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            opacity: 0;
-            pointer-events: none;
-            z-index: 40;
-            transition: opacity 0.2s ease;
-        }
-
-        .phone-frame.dimmed::after {
-            opacity: 1;
-        }
-
         .click-target-active {
             position: relative;
             z-index: 95;
@@ -131,6 +116,29 @@
         .home-screen {
             background: url('/assets/tutorials/wificonnect/photo.jpeg') center/cover;
             color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .home-screen::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1;
+            transition: opacity 0.2s ease;
+        }
+
+        .home-screen.dimmed::before {
+            opacity: 1;
+        }
+
+        .home-screen .status-bar,
+        .home-screen .app-grid {
+            position: relative;
+            z-index: 2;
         }
         .home-screen .status-bar { color: white; }
         .app-grid {
@@ -804,7 +812,7 @@
     }
 
     function updateClickHint(hintConfig) {
-        const frame = document.querySelector('.phone-frame');
+        const homeScreen = document.getElementById('screen-home');
 
         if (activeHintTargetId) {
             const previousTarget = document.getElementById(activeHintTargetId);
@@ -818,22 +826,23 @@
 
         const resolvedHint = normalizeClickHint(hintConfig);
         if (!resolvedHint) {
-            if (frame) {
-                frame.classList.remove('dimmed');
+            if (homeScreen) {
+                homeScreen.classList.remove('dimmed');
             }
             return;
         }
 
         const target = document.getElementById(resolvedHint.targetId);
         if (!target) {
-            if (frame) {
-                frame.classList.remove('dimmed');
+            if (homeScreen) {
+                homeScreen.classList.remove('dimmed');
             }
             return;
         }
 
-        if (frame) {
-            frame.classList.add('dimmed');
+        if (homeScreen) {
+            const isLauncherTarget = Boolean(target.closest('#screen-home'));
+            homeScreen.classList.toggle('dimmed', isLauncherTarget);
         }
 
         target.style.setProperty('--click-hint-radius', `${resolvedHint.radius}px`);

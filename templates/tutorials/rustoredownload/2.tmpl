@@ -62,6 +62,42 @@
             text-transform: uppercase;
         }
 
+        .info-progress {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .info-progress-label {
+            font-size: 12px;
+            color: #5f6368;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+        }
+
+        .info-progress-track {
+            display: grid;
+            grid-template-columns: repeat(var(--segments-count, 8), minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .progress-segment {
+            height: 10px;
+            border-radius: 999px;
+            background: #dfe6ef;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .progress-segment.is-complete {
+            background: #1f9d55;
+        }
+
+        .progress-segment.is-current {
+            background: #0070d2;
+            box-shadow: 0 0 0 3px rgba(0, 112, 210, 0.2);
+        }
+
         .guide-title {
             margin: 0 0 15px 0;
             font-size: 28px;
@@ -90,6 +126,7 @@
             margin-top: auto;
             display: flex;
             justify-content: space-between;
+            gap: 10px;
             border-top: 1px solid #eee;
             padding-top: 20px;
         }
@@ -359,6 +396,15 @@
         .btn-blue { background: var(--ru-blue); color: white; }
         .btn-white { background: white; color: var(--ru-blue); border: 2px solid var(--ru-blue); }
 
+        #screen-5 {
+            background: #0066CC;
+            color: white;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: bold;
+        }
+
         /* Прогресс бар */
         .progress-fill {
             position: absolute;
@@ -420,6 +466,11 @@
 
 <div class="simulator-wrapper">
     <div class="guide-panel">
+
+        <div class="info-progress">
+            <div class="info-progress-label">Прогресс прохождения</div>
+            <div id="info-progress-track" class="info-progress-track"></div>
+        </div>
 
         <div id="steps-container">
             <div class="instruction-step active" id="instr-1">
@@ -507,6 +558,7 @@
 
         <div class="nav-buttons">
             <button class="nav-btn" id="btn-prev" onclick="manualPrev()">← Назад</button>
+            <button class="nav-btn" id="btn-restart" onclick="restartTutorial()">↺ Начать заново</button>
             <button class="nav-btn primary" id="btn-next" onclick="manualNext()">Далее →</button>
         </div>
 
@@ -662,6 +714,10 @@
             </div>
         </div>
 
+        <div id="screen-5" class="screen">
+            ЕМИАС
+        </div>
+
     </div>
 </div>
 
@@ -670,6 +726,39 @@
     const searchTarget = "ЕМИАС";
     let typedText = "";
     const totalSteps = 8;
+    let downloadInterval = null;
+    const progressTrack = document.getElementById('info-progress-track');
+
+    function ensureProgressSegments() {
+        progressTrack.style.setProperty('--segments-count', String(totalSteps));
+
+        if (progressTrack.childElementCount === totalSteps) {
+            return;
+        }
+
+        progressTrack.innerHTML = '';
+        for (let i = 0; i < totalSteps; i += 1) {
+            const segment = document.createElement('span');
+            segment.className = 'progress-segment';
+            progressTrack.appendChild(segment);
+        }
+    }
+
+    function updateProgressBar(step) {
+        ensureProgressSegments();
+        const segments = Array.from(progressTrack.children);
+        const isCompleted = step >= totalSteps;
+        const currentIndex = isCompleted ? totalSteps - 1 : Math.max(0, step - 1);
+
+        segments.forEach((segment, index) => {
+            segment.classList.remove('is-complete', 'is-current');
+            if (isCompleted || index < currentIndex) {
+                segment.classList.add('is-complete');
+            } else if (index === currentIndex) {
+                segment.classList.add('is-current');
+            }
+        });
+    }
 
     // ОБНОВЛЕННЫЕ КООРДИНАТЫ (Исправление по запросу 2)
     // Теперь они более точно попадают в элементы
@@ -706,6 +795,11 @@
     function goToStep(step) {
         if (step < 1 || step > totalSteps) return;
 
+        if (downloadInterval) {
+            clearInterval(downloadInterval);
+            downloadInterval = null;
+        }
+
         // Обновляем UI инструкций
         document.querySelectorAll('.instruction-step').forEach(el => el.classList.remove('active'));
         const instr = document.getElementById('instr-' + step);
@@ -714,6 +808,7 @@
         currentStep = step;
         updateHint(step);
         updateNavButtons();
+        updateProgressBar(step);
 
         // Логика экранов
         document.querySelectorAll('.screen').forEach(el => el.style.display = 'none');
@@ -721,7 +816,8 @@
         if (step === 1) document.getElementById('screen-1').style.display = 'flex'; // Home
         if (step === 2) document.getElementById('screen-2').style.display = 'flex'; // Store Main
         if (step === 3 || step === 4) document.getElementById('screen-3').style.display = 'flex'; // Search
-        if (step >= 5) document.getElementById('screen-4').style.display = 'flex'; // App Details
+        if (step >= 5 && step < 8) document.getElementById('screen-4').style.display = 'flex'; // App Details
+        if (step === 8) document.getElementById('screen-5').style.display = 'flex'; // Final App Screen
 
         // Особые состояния для шагов
         const kbArea = document.getElementById('keyboard-area');
@@ -759,10 +855,11 @@
             btn.onclick = startDownload;
         }
 
-        // Финал
-        if (step === 8) {
-             document.querySelector('.phone-case').innerHTML = '<div style="background:#0066CC; width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:white; font-size:40px; font-weight:bold;">ЕМИАС</div>';
-        }
+    }
+
+    function restartTutorial() {
+        typedText = "";
+        goToStep(1);
     }
 
     // Ручная навигация (Запрос 3)
@@ -811,18 +908,21 @@
         btnText.innerText = "Загрузка...";
         let progress = 0;
 
-        const interval = setInterval(() => {
+        downloadInterval = setInterval(() => {
             progress += 2;
             progressBar.style.width = progress + "%";
 
             if (progress >= 100) {
-                clearInterval(interval);
+                clearInterval(downloadInterval);
+                downloadInterval = null;
                 goToStep(7);
             }
         }, 50);
     }
 
     // Старт
+    ensureProgressSegments();
+    updateProgressBar(1);
     updateHint(1);
     updateNavButtons();
 </script>

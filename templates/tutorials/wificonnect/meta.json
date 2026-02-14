@@ -1,7 +1,7 @@
 {
   "title": "Подключение к Wifi",
   "description": "Пошаговое подключение смартфона к домашней или общественной сети Wi-Fi.",
-  "level": "basic",
+  "level": "advanced",
   "course": "smartphone-basics",
   "viewer_navigation": "style-switch",
   "style_options": [

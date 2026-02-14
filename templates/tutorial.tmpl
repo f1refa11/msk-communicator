@@ -31,24 +31,50 @@
                     <p class="section-text">{{ course.description }}</p>
                 </div>
             </div>
-            {% if course.modules %}
-                <div class="tutorial-grid">
-                    {% for tut in course.modules %}
-                    <article class="tutorial-card">
-                        <div class="tutorial-top">
-                            <span class="tutorial-level level-basic">Интерактивный модуль</span>
-                        </div>
-                        <h3>{{ tut.title }}</h3>
-                        <p class="tutorial-desc">{{ tut.description }}</p>
-                        <div class="tutorial-actions">
-                            <a class="btn btn-primary btn-lg" href="/tutorials/{{ tut.slug }}/1">Открыть модуль</a>
-                        </div>
-                    </article>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <p class="empty-state">В этом курсе пока нет интерактивных модулей.</p>
-            {% endif %}
+
+            <div class="difficulty-block" id="{{ course.slug }}-basic">
+                <h3 class="difficulty-title">Базовый</h3>
+                {% if course.basic_modules %}
+                    <div class="tutorial-grid">
+                        {% for tut in course.basic_modules %}
+                        <article class="tutorial-card">
+                            <div class="tutorial-top">
+                                <span class="tutorial-level level-basic">Базовый</span>
+                            </div>
+                            <h3>{{ tut.title }}</h3>
+                            <p class="tutorial-desc">{{ tut.description }}</p>
+                            <div class="tutorial-actions">
+                                <a class="btn btn-primary btn-lg" href="/tutorials/{{ tut.slug }}/1">Открыть модуль</a>
+                            </div>
+                        </article>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="empty-state">В этом курсе пока нет базовых интерактивных модулей.</p>
+                {% endif %}
+            </div>
+
+            <div class="difficulty-block" id="{{ course.slug }}-advanced">
+                <h3 class="difficulty-title">Расширенный</h3>
+                {% if course.advanced_modules %}
+                    <div class="tutorial-grid">
+                        {% for tut in course.advanced_modules %}
+                        <article class="tutorial-card">
+                            <div class="tutorial-top">
+                                <span class="tutorial-level level-advanced">Расширенный</span>
+                            </div>
+                            <h3>{{ tut.title }}</h3>
+                            <p class="tutorial-desc">{{ tut.description }}</p>
+                            <div class="tutorial-actions">
+                                <a class="btn btn-primary btn-lg" href="/tutorials/{{ tut.slug }}/1">Открыть модуль</a>
+                            </div>
+                        </article>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="empty-state">В этом курсе пока нет расширенных интерактивных модулей.</p>
+                {% endif %}
+            </div>
         </section>
         {% endfor %}
 
