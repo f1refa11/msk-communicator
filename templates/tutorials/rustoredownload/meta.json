@@ -1,0 +1,17 @@
+{
+  "title": "Установка приложений rustore",
+  "description": "Установка ЕМИАС",
+  "level": "basic",
+  "course": "smartphone-basics",
+  "viewer_navigation": "style-switch",
+  "style_options": [
+    {
+      "label": "Видео-урок",
+      "page": 1
+    },
+    {
+      "label": "Интерактивный курс",
+      "page": 2
+    }
+  ]
+}

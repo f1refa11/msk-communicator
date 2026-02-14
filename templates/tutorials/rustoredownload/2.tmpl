@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Симулятор RuStore</title>
+    <style>
+        :root {
+            --ru-blue: #0077FF;
+            --ru-bg: #FFFFFF;
+            --ru-gray: #F2F3F5;
+            --ru-text: #19191D;
+            --ru-subtext: #8E8E93;
+            /* Цвета клавиатуры */
+            --kb-bg: #E8EAED;
+            --kb-key-white: #FFFFFF;
+            --kb-key-dark: #DADCE0;
+        }
+
+        /*body {*/
+        /*    font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;*/
+        /*    background-color: #eef1f5;*/
+        /*    margin: 0;*/
+        /*    padding: 20px;*/
+        /*    display: flex;*/
+        /*    justify-content: center;*/
+        /*}*/
+
+        .simulator-wrapper {
+            display: flex;
+            gap: 40px;
+            max-width: 1100px;
+            width: 100%;
+            align-items: flex-start;
+            flex-wrap: wrap;
+	        flex-direction: row-reverse;
+        }
+
+        /* --- ЛЕВАЯ ПАНЕЛЬ: ИНСТРУКЦИИ --- */
+        .guide-panel {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 400px;
+        }
+
+        .step-badge {
+            display: inline-block;
+            background: var(--ru-blue);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .guide-title {
+            margin: 0 0 15px 0;
+            font-size: 28px;
+            color: var(--ru-text);
+        }
+
+        .guide-text {
+            font-size: 20px;
+            line-height: 1.6;
+            color: #444;
+            margin-bottom: 25px;
+        }
+
+        .guide-text strong {
+            color: var(--ru-blue);
+            font-weight: 700;
+        }
+
+        .instruction-step { display: none; }
+        .instruction-step.active { display: block; animation: fadeIn 0.5s; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Кнопки навигации */
+        .nav-buttons {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        .nav-btn {
+            background: #f0f0f0;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            color: #333;
+        }
+        .nav-btn:hover { background: #e0e0e0; }
+        .nav-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .nav-btn.primary { background: var(--ru-blue); color: white; }
+        .nav-btn.primary:hover { background: #0056b3; }
+
+
+        /* --- ПРАВАЯ ПАНЕЛЬ: ТЕЛЕФОН --- */
+        .phone-case {
+            width: 360px;
+            height: 620px;
+            background: #000;
+            border-radius: 40px;
+            border: 12px solid #1a1a1a;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+            flex-shrink: 0;
+        }
+
+        .status-bar {
+            height: 24px;
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 20px;
+            color: black;
+            font-size: 13px;
+            font-weight: 600;
+            pointer-events: none;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            position: absolute;
+            top: 0; left: 0;
+            display: none;
+            flex-direction: column;
+        }
+        .screen.active { display: flex; }
+
+        /* ЭКРАН 1: РАБОЧИЙ СТОЛ */
+        #screen-desktop {
+            /* Исправлен градиент */
+            background: linear-gradient(180deg, #dbe4f0 0%, #aabdd4 100%);
+            width: 100%;
+            height: 100%;
+            padding-top: 60px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .app-icon-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .app-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 14px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .app-name {
+            font-size: 12px;
+            color: #333;
+            text-shadow: 0 1px 1px rgba(255,255,255,0.8);
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .icon-rustore {
+            background: var(--ru-blue);
+            color: white;
+            font-family: sans-serif;
+            position: relative;
+            overflow: hidden;
+            font-weight: 900;
+        }
+        .icon-rustore::before { content: "Ru"; font-size: 20px; z-index: 2; }
+        .icon-rustore::after {
+            content: ""; position: absolute; bottom: -5px; right: -5px;
+            width: 25px; height: 25px; background: rgba(255,255,255,0.2); border-radius: 50%;
+        }
+
+        /* ЭКРАН 2-5: ИНТЕРФЕЙС ПРИЛОЖЕНИЯ */
+        .rustore-header {
+            padding: 40px 16px 12px 16px;
+            background: var(--ru-bg);
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-bar {
+            background: var(--ru-gray);
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            color: var(--ru-subtext);
+            font-size: 16px;
+            gap: 8px;
+            cursor: text;
+            flex: 1;
+        }
+
+        .search-icon-svg { width: 20px; height: 20px; fill: #999; }
+
+        .rustore-content {
+            background: var(--ru-bg);
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .banner {
+            height: 150px;
+            background: linear-gradient(90deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .section-title { font-size: 20px; font-weight: 700; margin-bottom: 16px; }
+
+        .app-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 0;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+            cursor: pointer;
+        }
+
+        .app-row-icon {
+            width: 56px; height: 56px;
+            background: #eee;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; font-size: 24px;
+        }
+        .icon-emias { background: #0066CC; color: white; font-weight: bold; }
+
+        .app-row-info { flex: 1; }
+        .app-row-title { font-weight: 600; font-size: 16px; margin-bottom: 4px; color: var(--ru-text); }
+        .app-row-cat { color: var(--ru-subtext); font-size: 13px; }
+
+        .btn-install-small {
+            background: var(--ru-gray);
+            color: var(--ru-blue);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* --- КЛАВИАТУРА (Исправленная) --- */
+        .keyboard {
+            background: var(--kb-bg);
+            padding: 8px 4px 8px 4px;
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            display: flex; flex-direction: column; gap: 10px;
+            box-sizing: border-box;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        }
+
+        .key-row { display: flex; justify-content: center; gap: 6px; padding: 0 4px; }
+
+        .key {
+            background: var(--kb-key-white);
+            border-radius: 6px;
+            height: 44px;
+            flex: 1;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; color: #000;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+            cursor: pointer;
+            font-family: Roboto, sans-serif;
+            font-weight: 400;
+        }
+        .key:active { background: #eee; transform: translateY(1px); }
+
+        .key.functional { background: var(--kb-key-dark); font-size: 16px; }
+        .key.space { flex: 4.5; font-size: 14px; color: #888; }
+        .key.enter { background: #388ae0; color: white; flex: 1.2; display: flex; align-items: center; justify-content: center;}
+
+        /* Исправление по запросу 4 */
+        .key.enter-empty {
+            background: var(--kb-key-dark); /* Цвет функциональной кнопки */
+            box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+            /* Пустое место */
+        }
+
+        /* СТРАНИЦА ПРИЛОЖЕНИЯ */
+        .app-details-header {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .app-big-icon {
+            width: 80px; height: 80px;
+            background: #0066CC;
+            border-radius: 18px;
+            color: white; font-size: 36px; display: flex; align-items: center; justify-content: center;
+        }
+        .app-meta h1 { margin: 0 0 6px 0; font-size: 20px; color: var(--ru-text); }
+        .app-meta p { color: var(--ru-blue); margin: 0; font-size: 14px; }
+        .rating { color: #888; margin-top: 6px; font-size: 13px; }
+
+        .main-btn {
+            width: 100%;
+            height: 44px;
+            border-radius: 12px;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .btn-blue { background: var(--ru-blue); color: white; }
+        .btn-white { background: white; color: var(--ru-blue); border: 2px solid var(--ru-blue); }
+
+        /* Прогресс бар */
+        .progress-fill {
+            position: absolute;
+            top: 0; left: 0; bottom: 0;
+            background: rgba(0,0,0,0.15);
+            width: 0%;
+            transition: width 0.1s linear;
+            z-index: 1;
+        }
+        .btn-text-content { position: relative; z-index: 2; }
+
+        .rel-with-pulsating-circle {
+	        position: relative;
+        }
+
+        /* ПОДСКАЗКА ДЛЯ КЛИКА (Исправленная) */
+        /*.pulsating-circle {*/
+        /*    position: absolute;*/
+        /*    background: rgba(255, 215, 0, 0.3);*/
+        /*    border: 2px solid gold;*/
+        /*    pointer-events: none;*/
+        /*    animation: pulse 1.5s infinite;*/
+        /*    z-index: 999;*/
+        /*    box-sizing: border-box;*/
+	    /*    top: -10%;*/
+	    /*    left: -10%;*/
+	    /*    width: 120%;*/
+	    /*    height: 120%;*/
+	    /*    border-radius: 10px;*/
+        /*}*/
+        /* ПОДСКАЗКА ДЛЯ КЛИКА (Исправленная) */
+        .pulsating-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 215, 0, 0.3);
+            border: 2px solid gold;
+            pointer-events: none;
+            animation: pulse 1.5s infinite;
+            z-index: 999;
+            box-sizing: border-box;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 1; box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+            70% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
+            100% { transform: scale(0.95); opacity: 1; box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+        }
+
+        /* Мобильный адаптив */
+        @media (max-width: 800px) {
+            .simulator-wrapper { flex-direction: column-reverse; align-items: center; }
+            .phone-case { transform: scale(0.9); }
+            .guide-panel { width: 90%; min-height: auto; }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="simulator-wrapper">
+    <div class="guide-panel">
+
+        <div id="steps-container">
+            <div class="instruction-step active" id="instr-1">
+                <span class="step-badge">Шаг 1 из 8</span>
+                <h2 class="guide-title">Открываем магазин</h2>
+                <p class="guide-text">
+                    Найдите на экране телефона синий значок с подписью <strong>RuStore</strong>.
+                </p>
+                <p class="guide-text">
+                    Нажмите на него, чтобы запустить приложение.
+                </p>
+            </div>
+
+            <div class="instruction-step" id="instr-2">
+                <span class="step-badge">Шаг 2 из 8</span>
+                <h2 class="guide-title">Поиск приложения</h2>
+                <p class="guide-text">
+                    Вы в магазине приложений.
+                </p>
+                <p class="guide-text">
+                    Нажмите на серую строку <strong>"Поиск приложений"</strong> в самом верху экрана.
+                </p>
+            </div>
+
+            <div class="instruction-step" id="instr-3">
+                <span class="step-badge">Шаг 3 из 8</span>
+                <h2 class="guide-title">Ввод названия</h2>
+                <p class="guide-text">
+                    Нажимайте на буквы на клавиатуре, чтобы ввести слово <strong>ЕМИАС</strong>.
+                </p>
+            </div>
+
+            <div class="instruction-step" id="instr-4">
+                <span class="step-badge">Шаг 4 из 8</span>
+                <h2 class="guide-title">Выбор из списка</h2>
+                <p class="guide-text">
+                    В списке появилось нужное приложение.
+                </p>
+                <p class="guide-text">
+                    Нажмите на строчку <strong>ЕМИАС.ИНФО</strong>.
+                </p>
+            </div>
+
+            <div class="instruction-step" id="instr-5">
+                <span class="step-badge">Шаг 5 из 8</span>
+                <h2 class="guide-title">Установка</h2>
+                <p class="guide-text">
+                    Нажмите большую синюю кнопку <strong>Скачать</strong>.
+                </p>
+            </div>
+
+            <div class="instruction-step" id="instr-6">
+                <span class="step-badge">Шаг 6 из 8</span>
+                <h2 class="guide-title">Ожидание...</h2>
+                <p class="guide-text">
+                    Подождите завершения загрузки.
+                </p>
+                <div style="margin-top: 20px; display: flex; justify-content: center;">
+                    <div style="width: 30px; height: 30px; border: 3px solid #eee; border-top: 3px solid var(--ru-blue); border-radius: 50%; animation: spin 1s infinite linear;"></div>
+                </div>
+                <style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>
+            </div>
+
+            <div class="instruction-step" id="instr-7">
+                <span class="step-badge" style="background: green;">Готово!</span>
+                <h2 class="guide-title">Установка завершена</h2>
+                <p class="guide-text">
+                    Кнопка изменилась на "Открыть".
+                </p>
+                <p class="guide-text">
+                    Нажмите <strong>Открыть</strong>, чтобы запустить приложение.
+                </p>
+            </div>
+
+            <div class="instruction-step" id="instr-8">
+                <span class="step-badge" style="background: #333;">Финал</span>
+                <h2 class="guide-title">Поздравляем! 🎉</h2>
+                <p class="guide-text">
+                    Вы успешно установили приложение через RuStore.
+                </p>
+                <br>
+                <a href="/tutorials" class="step-badge" style="text-decoration: none; background: #555; cursor: pointer;">Вернуться к списку уроков</a>
+            </div>
+        </div>
+
+        <div class="nav-buttons">
+            <button class="nav-btn" id="btn-prev" onclick="manualPrev()">← Назад</button>
+            <button class="nav-btn primary" id="btn-next" onclick="manualNext()">Далее →</button>
+        </div>
+
+    </div>
+
+    <div class="phone-case">
+        <div class="status-bar">
+            <span>12:30</span>
+            <span>100%</span>
+        </div>
+
+	    <div id="click-hint" class="pulsating-circle" style="display: none;"></div>
+
+        <div id="screen-1" class="screen active">
+            <div id="screen-desktop">
+                <div class="app-grid">
+                    <div class="app-icon-wrapper">
+                        <div class="app-icon" style="background: #4CAF50; color: white;">📞</div>
+                        <span class="app-name">Телефон</span>
+                    </div>
+                    <div class="app-icon-wrapper">
+                        <div class="app-icon" style="background: #2196F3; color: white;">💬</div>
+                        <span class="app-name">СМС</span>
+                    </div>
+                    <div class="app-icon-wrapper">
+                        <div class="app-icon" style="background: #FF5722; color: white;">📸</div>
+                        <span class="app-name">Камера</span>
+                    </div>
+	                <div class="rel-with-pulsating-circle">
+		                <div class="app-icon-wrapper" id="target-icon-rustore" onclick="goToStep(2)">
+	                        <div class="app-icon icon-rustore"></div>
+	                        <span class="app-name">RuStore</span>
+	                    </div>
+<!--                        <div id="click-hint" class="pulsating-circle" style="display: none;"></div>-->
+	                </div>
+                    <div class="app-icon-wrapper">
+                        <div class="app-icon" style="background: #FFC107; color: white;">⚙️</div>
+                        <span class="app-name">Настройки</span>
+                    </div>
+                    <div class="app-icon-wrapper">
+                        <div class="app-icon" style="background: #fff; color: #d00;">M</div>
+                        <span class="app-name">Почта</span>
+                    </div>
+                    <div class="app-icon-wrapper">
+                        <div class="app-icon" style="background: #777; color: white;">⏰</div>
+                        <span class="app-name">Часы</span>
+                    </div>
+                     <div class="app-icon-wrapper">
+                        <div class="app-icon" style="background: #fff; color: #333;">📅</div>
+                        <span class="app-name">Встречи</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="screen-2" class="screen">
+            <div class="rustore-header">
+                <div class="search-bar" id="target-search-bar" onclick="goToStep(3)">
+                    <svg class="search-icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                    <span>Поиск приложений</span>
+                </div>
+            </div>
+            <div class="rustore-content">
+                <div class="banner">Важные приложения</div>
+                <div class="section-title">Популярное</div>
+
+                <div class="app-row">
+                    <div class="app-row-icon" style="background: green; color: white;">S</div>
+                    <div class="app-row-info">
+                        <div class="app-row-title">Сбербанк</div>
+                        <div class="app-row-cat">Финансы</div>
+                    </div>
+                    <button class="btn-install-small">Скачать</button>
+                </div>
+
+                <div class="app-row">
+                    <div class="app-row-icon" style="background: red; color: white;">M</div>
+                    <div class="app-row-info">
+                        <div class="app-row-title">МТС</div>
+                        <div class="app-row-cat">Связь</div>
+                    </div>
+                    <button class="btn-install-small">Открыть</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="screen-3" class="screen">
+            <div class="rustore-header">
+                <div class="search-bar" style="color: black; font-weight: 500;">
+                    <span style="font-size: 20px; color: #0077FF; margin-right: 5px;">←</span>
+                    <span id="search-input-text" style="border-right: 2px solid #0077FF; padding-right: 2px;">|</span>
+                </div>
+            </div>
+
+            <div id="search-results-list" class="rustore-content" style="display: none; padding-top: 0;">
+                <div class="app-row" id="target-search-result" onclick="goToStep(5)">
+                    <div class="app-row-icon icon-emias">Е</div>
+                    <div class="app-row-info">
+                        <div class="app-row-title">ЕМИАС.ИНФО</div>
+                        <div class="app-row-cat">Медицина • 38 Мб</div>
+                    </div>
+                    <button class="btn-install-small">Скачать</button>
+                </div>
+            </div>
+
+            <div class="keyboard" id="keyboard-area" onclick="typeLetter()">
+                <div class="key-row">
+                    <div class="key">й</div><div class="key">ц</div><div class="key">у</div><div class="key">к</div><div class="key">е</div><div class="key">н</div><div class="key">г</div><div class="key">ш</div><div class="key">щ</div><div class="key">з</div><div class="key">х</div>
+                </div>
+                <div class="key-row">
+                    <div class="key">ф</div><div class="key">ы</div><div class="key">в</div><div class="key">а</div><div class="key">п</div><div class="key">р</div><div class="key">о</div><div class="key">л</div><div class="key">д</div><div class="key">ж</div><div class="key">э</div>
+                </div>
+                 <div class="key-row" style="padding: 0 15px;">
+                    <div class="key functional">⇧</div>
+                    <div class="key">я</div><div class="key">ч</div><div class="key">с</div><div class="key">м</div><div class="key">и</div><div class="key">т</div><div class="key">ь</div><div class="key">б</div><div class="key">ю</div>
+                    <div class="key functional">⌫</div>
+                </div>
+                <div class="key-row">
+                    <div class="key functional">?123</div>
+                    <div class="key">,</div> <div class="key space"></div> <div class="key">.</div>
+                    <div class="key enter-empty"></div> </div>
+            </div>
+        </div>
+
+        <div id="screen-4" class="screen">
+            <div class="rustore-header" style="border:none;">
+                <span style="font-size: 24px; color: #0077FF;" onclick="prevStep()">←</span>
+                <span style="flex:1; text-align: right; font-size: 20px;">...</span>
+            </div>
+            <div class="rustore-content">
+                <div class="app-details-header">
+                    <div class="app-big-icon">Е</div>
+                    <div class="app-meta">
+                        <h1>ЕМИАС.ИНФО</h1>
+                        <p>Департамент ИТ Москвы</p>
+                        <div class="rating">⭐⭐⭐⭐⭐ 4.8</div>
+                    </div>
+                </div>
+
+                <button id="main-download-btn" class="main-btn btn-blue" onclick="startDownload()">
+                    <div class="progress-fill" id="progress-bar"></div>
+                    <span id="btn-text" class="btn-text-content">Скачать</span>
+                </button>
+
+                <div style="margin-top: 20px; line-height: 1.5; color: #555;">
+                    Официальное приложение для записи к врачу.
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 20px; overflow-x: auto; padding-bottom: 10px;">
+                    <div style="width: 100px; height: 160px; background: #eee; border-radius: 8px; flex-shrink: 0;"></div>
+                    <div style="width: 100px; height: 160px; background: #eee; border-radius: 8px; flex-shrink: 0;"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let currentStep = 1;
+    const searchTarget = "ЕМИАС";
+    let typedText = "";
+    const totalSteps = 8;
+
+    // ОБНОВЛЕННЫЕ КООРДИНАТЫ (Исправление по запросу 2)
+    // Теперь они более точно попадают в элементы
+    const hintConfigs = {
+        1: { top: "72px", right: "14px", width: "78px", height: "92px", borderRadius: "10px" }, // Иконка RuStore (4-й в ряду)
+        2: { top: "34px", left: "14px", right: "15px", height: "55px", borderRadius: "10px", width: "92%" }, // Поиск бар
+        3: { bottom: "10px", left: "5px", right: "5px", height: "200px", width: "auto", borderRadius: "10px", top: "auto" }, // Клавиатура
+        4: { top: "94px", left: "0", right: "0", height: "80px", width: "auto", borderRadius: "0" }, // Строка результата
+        5: { top: "209px", left: "0px", right: "0px", height: "60px", width: "auto", borderRadius: "12px" }, // Кнопка скачать
+        6: { display: "none" }, // Процесс
+        7: { top: "209px", left: "0px", right: "0px", height: "55px", width: "auto", borderRadius: "12px" }, // Кнопка открыть
+        8: { display: "none" }
+    };
+
+    function updateHint(step) {
+        const h = document.getElementById('click-hint');
+        const config = hintConfigs[step];
+
+        if (!config || config.display === "none") {
+            h.style.display = "none";
+            return;
+        }
+
+        h.style.display = "block";
+        h.style.top = config.top || "auto";
+        h.style.left = config.left || "auto";
+        h.style.right = config.right || "auto";
+        h.style.bottom = config.bottom || "auto";
+        h.style.width = config.width || "60px";
+        h.style.height = config.height || "60px";
+        h.style.borderRadius = config.borderRadius || "50%";
+    }
+
+    function goToStep(step) {
+        if (step < 1 || step > totalSteps) return;
+
+        // Обновляем UI инструкций
+        document.querySelectorAll('.instruction-step').forEach(el => el.classList.remove('active'));
+        const instr = document.getElementById('instr-' + step);
+        if (instr) instr.classList.add('active');
+
+        currentStep = step;
+        updateHint(step);
+        updateNavButtons();
+
+        // Логика экранов
+        document.querySelectorAll('.screen').forEach(el => el.style.display = 'none');
+
+        if (step === 1) document.getElementById('screen-1').style.display = 'flex'; // Home
+        if (step === 2) document.getElementById('screen-2').style.display = 'flex'; // Store Main
+        if (step === 3 || step === 4) document.getElementById('screen-3').style.display = 'flex'; // Search
+        if (step >= 5) document.getElementById('screen-4').style.display = 'flex'; // App Details
+
+        // Особые состояния для шагов
+        const kbArea = document.getElementById('keyboard-area');
+        const resultsList = document.getElementById('search-results-list');
+        const searchInput = document.getElementById('search-input-text');
+
+        // Шаг 3: Ввод
+        if (step === 3) {
+            kbArea.style.display = 'flex';
+            resultsList.style.display = 'none';
+            typedText = ""; // Сброс при возврате
+            searchInput.innerText = "|";
+        }
+
+        // Шаг 4: Результаты
+        if (step === 4) {
+            kbArea.style.display = 'none';
+            resultsList.style.display = 'block';
+            searchInput.innerText = "ЕМИАС";
+            searchInput.style.borderRight = "none";
+        }
+
+        // Шаг 7: Кнопка Открыть
+        if (step === 7) {
+            const btn = document.getElementById('main-download-btn');
+            btn.className = "main-btn btn-white";
+            document.getElementById('btn-text').innerText = "Открыть";
+            document.getElementById('progress-bar').style.width = "0%";
+            btn.onclick = function() { goToStep(8); };
+        } else if (step === 5 || step === 6) {
+             // Сброс кнопки если вернулись назад
+            const btn = document.getElementById('main-download-btn');
+            btn.className = "main-btn btn-blue";
+            document.getElementById('btn-text').innerText = "Скачать";
+            btn.onclick = startDownload;
+        }
+
+        // Финал
+        if (step === 8) {
+             document.querySelector('.phone-case').innerHTML = '<div style="background:#0066CC; width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:white; font-size:40px; font-weight:bold;">ЕМИАС</div>';
+        }
+    }
+
+    // Ручная навигация (Запрос 3)
+    function manualPrev() {
+        if (currentStep > 1) goToStep(currentStep - 1);
+    }
+
+    function manualNext() {
+        // Разрешаем идти вперед, если это не шаг с автоматическим процессом (6)
+        if (currentStep < totalSteps && currentStep !== 6) {
+            goToStep(currentStep + 1);
+        }
+    }
+
+    function updateNavButtons() {
+        document.getElementById('btn-prev').disabled = currentStep === 1;
+        document.getElementById('btn-next').disabled = currentStep === totalSteps || currentStep === 6; // Блокируем на загрузке
+    }
+
+    // Симуляция печати
+    function typeLetter() {
+        if (currentStep !== 3) return;
+
+        // Скрываем подсказку при начале ввода
+        document.getElementById('click-hint').style.display = 'none';
+
+        const textEl = document.getElementById('search-input-text');
+        if (typedText.length < searchTarget.length) {
+            typedText += searchTarget[typedText.length];
+            textEl.innerText = typedText + "|";
+        }
+
+        if (typedText === searchTarget) {
+            setTimeout(() => { goToStep(4); }, 400);
+        }
+    }
+
+    // Симуляция скачивания
+    function startDownload() {
+        if (currentStep !== 5) return;
+
+        goToStep(6);
+        const btnText = document.getElementById('btn-text');
+        const progressBar = document.getElementById('progress-bar');
+
+        btnText.innerText = "Загрузка...";
+        let progress = 0;
+
+        const interval = setInterval(() => {
+            progress += 2;
+            progressBar.style.width = progress + "%";
+
+            if (progress >= 100) {
+                clearInterval(interval);
+                goToStep(7);
+            }
+        }, 50);
+    }
+
+    // Старт
+    updateHint(1);
+    updateNavButtons();
+</script>
+
+</body>
+</html>
