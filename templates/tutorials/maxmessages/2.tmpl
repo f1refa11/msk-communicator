@@ -1,0 +1,1020 @@
+<div class="max-sim-root">
+    <style>
+        :root {
+            --bg-color: #17212b;
+            --header-color: #202a38;
+            --text-primary: #eef4ff;
+            --text-secondary: #7f91a4;
+            --accent-blue: #1f87ff;
+            --message-in: #1b2735;
+            --message-out: #2b5278;
+            --keyboard-bg: #1c1c1e;
+            --key-bg: #4a4a4c;
+        }
+
+        .max-sim-root,
+        .max-sim-root * {
+            box-sizing: border-box;
+        }
+
+        .max-sim-root {
+            margin: 0;
+            padding: 24px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #e7edf5;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            overflow: auto;
+        }
+
+        .tutorial-layout {
+            width: min(1080px, 100%);
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .phone-frame {
+            width: 390px;
+            height: 520px;
+            background-color: var(--bg-color);
+            border: 10px solid #1d232b;
+            border-radius: 30px;
+            box-shadow: 0 18px 36px rgba(19, 34, 53, 0.28);
+            overflow: hidden;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .screen {
+            display: none;
+            height: 100%;
+            width: 100%;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .global-click-hint {
+            position: fixed;
+            z-index: 10000;
+            display: none;
+            pointer-events: none;
+            border: 3px solid #2b97ff;
+            border-radius: 14px;
+            box-shadow: 0 0 0 2px rgba(43, 151, 255, 0.35), 0 0 18px rgba(43, 151, 255, 0.65);
+            animation: hintPulse 1.2s ease-in-out infinite;
+        }
+
+        @keyframes hintPulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            60% {
+                transform: scale(1.05);
+                opacity: 0.65;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Chat list screen */
+        .list-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 16px 8px;
+            background: linear-gradient(180deg, #111722 0%, #141d2a 100%);
+        }
+
+        .list-header-title {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 26px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .list-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .list-action-btn {
+            width: 42px;
+            height: 42px;
+            border: none;
+            border-radius: 12px;
+            background: #2a3444;
+            color: #d5e1f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .list-action-btn.accent {
+            background: var(--accent-blue);
+            color: #fff;
+        }
+
+        .list-filters {
+            display: flex;
+            gap: 12px;
+            padding: 10px 16px 6px;
+            background: #141d2a;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .list-filter {
+            font-size: 15px;
+            font-weight: 600;
+            color: #8d9db0;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .list-filter.active {
+            color: #fff;
+            position: relative;
+        }
+
+        .list-filter.active::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -8px;
+            height: 3px;
+            border-radius: 999px;
+            background: var(--accent-blue);
+        }
+
+        .list-badge {
+            min-width: 24px;
+            height: 24px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.16);
+            color: #c7d1de;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 7px;
+        }
+
+        .chat-list {
+	        padding: 10px;
+            flex: 1;
+            overflow-y: hidden;
+            overflow-x: hidden;
+            background: linear-gradient(180deg, #141d2a 0%, #121a26 100%);
+        }
+
+        .chat-item {
+            display: flex;
+            padding: 6px 4px;
+            gap: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+            position: relative;
+        }
+
+        .chat-item:active {
+            background: #1a2634;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #4d64f4;
+            color: white;
+            font-size: 22px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .avatar.yellow {
+            background: #f1c40f;
+            color: #1f242c;
+        }
+
+        .avatar.orange {
+            background: linear-gradient(135deg, #ff4f8b, #ffb347);
+        }
+
+        .chat-main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chat-name {
+            color: var(--text-primary);
+            font-size: 18px;
+            font-weight: 650;
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-preview {
+            color: #8ea0b4;
+            font-size: 15px;
+            margin-top: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-meta {
+            width: 54px;
+            flex-shrink: 0;
+            text-align: right;
+            color: #8ea0b4;
+            font-size: 14px;
+        }
+
+        .chat-counter {
+            margin-top: 8px;
+            display: inline-flex;
+            min-width: 30px;
+            height: 30px;
+            border-radius: 999px;
+            background: var(--accent-blue);
+            color: #fff;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .bottom-tabs {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            background: #1a2432;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            padding: 8px 6px 10px;
+            gap: 2px;
+        }
+
+        .tab-item {
+            border: none;
+            background: transparent;
+            color: #9facbd;
+            display: grid;
+            justify-items: center;
+            gap: 4px;
+            font-size: 15px;
+            font-weight: 550;
+            padding: 4px 0;
+        }
+
+        .tab-item.active {
+            color: var(--accent-blue);
+        }
+
+        /* Chat detail screen */
+        .chat-header {
+            background: var(--header-color);
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-header-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            background: transparent;
+            color: #a4b1c2;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-header-name {
+            font-size: 18px;
+            color: var(--text-primary);
+            font-weight: 650;
+            line-height: 1.2;
+        }
+
+        .chat-header-status {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 10px;
+            background-color: #0f1823;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 0);
+            background-size: 20px 20px;
+        }
+
+        .date-divider {
+            align-self: center;
+            background: rgba(0, 0, 0, 0.28);
+            color: #d0d9e4;
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            margin-bottom: 6px;
+        }
+
+        .message {
+            max-width: 78%;
+            padding: 8px 11px;
+            border-radius: 11px;
+            font-size: 15px;
+            line-height: 1.35;
+            color: #eef4ff;
+            animation: popIn 0.2s ease;
+        }
+
+        .message.in {
+            align-self: flex-start;
+            background: var(--message-in);
+            border-bottom-left-radius: 3px;
+        }
+
+        .message.out {
+            align-self: flex-end;
+            background: var(--message-out);
+            border-bottom-right-radius: 3px;
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .msg-time {
+            margin-left: 8px;
+            font-size: 11px;
+            color: #8fa6bf;
+        }
+
+        .input-area {
+            background: var(--header-color);
+            display: flex;
+            align-items: flex-end;
+            gap: 6px;
+            padding: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .input-icon {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            color: #9fb0c3;
+            background: transparent;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .input-field {
+            flex: 1;
+            min-height: 40px;
+            border-radius: 20px;
+            background: #131d29;
+            color: #eef4ff;
+            padding: 10px 14px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .placeholder {
+            color: #7f91a4;
+        }
+
+        .send-btn {
+            width: 42px;
+            height: 42px;
+            border: none;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            color: white;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #keyboard {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            background: var(--keyboard-bg);
+            padding: 8px 6px 12px;
+        }
+
+        .kb-row {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .key {
+            height: 38px;
+            border-radius: 6px;
+            background: var(--key-bg);
+            color: white;
+            font-size: 20px;
+            min-width: 26px;
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .key.action {
+            background: #38383a;
+            font-size: 14px;
+        }
+
+        .key.space {
+            flex: 4;
+        }
+
+        svg {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+        }
+
+        .info-block {
+            width: min(360px, 100%);
+            background: #fff;
+            border: 1px solid #d7deeb;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(16, 39, 66, 0.1);
+            padding: 18px;
+            display: grid;
+            gap: 12px;
+            align-self: flex-start;
+            height: fit-content;
+        }
+
+        .info-step {
+            font-size: 12px;
+            font-weight: 700;
+            color: #677387;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .info-title {
+            margin: 0;
+            font-size: 24px;
+            line-height: 1.25;
+            color: #111c2c;
+        }
+
+        .info-description {
+            margin: 0;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #2a3646;
+        }
+
+        .info-note {
+            margin: 0;
+            background: #edf5ff;
+            border-radius: 12px;
+            color: #1f5c96;
+            font-size: 14px;
+            line-height: 1.4;
+            padding: 10px 12px;
+        }
+
+        .info-nav {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .info-nav-btn,
+        .info-restart-btn {
+            border: none;
+            border-radius: 12px;
+            padding: 11px 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .info-nav-btn {
+            background: #eef2f9;
+            color: #27384d;
+        }
+
+        .info-nav-btn.primary {
+            background: #0070d2;
+            color: white;
+        }
+
+        .info-nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .info-restart-btn {
+            width: 100%;
+            background: #2d7d46;
+            color: #fff;
+            display: none;
+        }
+    </style>
+<div class="tutorial-layout">
+    <div class="phone-frame">
+        <section id="screen-list" class="screen active">
+            <header class="list-header">
+                <h1 class="list-header-title">Чаты</h1>
+                <div class="list-actions">
+                    <button type="button" class="list-action-btn" aria-label="Поиск">
+                        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28h.79l4.99 5 1.5-1.5-4.99-5zM9.5 14A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+                    </button>
+                    <button type="button" class="list-action-btn accent" aria-label="Новый чат">
+                        <svg viewBox="0 0 24 24"><path d="M19 11h-6V5h-2v6H5v2h6v6h2v-6h6z"/></svg>
+                    </button>
+                </div>
+            </header>
+
+            <div class="list-filters">
+                <span class="list-filter active">Все</span>
+                <span class="list-filter">Сферум <span class="list-badge">1</span></span>
+                <span class="list-filter">Новые <span class="list-badge">4</span></span>
+            </div>
+
+            <div class="chat-list">
+                <article id="target-contact" class="chat-item" onclick="openChat()">
+                    <div class="avatar yellow">А</div>
+                    <div class="chat-main">
+                        <div class="chat-name">Артём Цурганов</div>
+                        <div class="chat-preview">Привет!</div>
+                    </div>
+                    <div class="chat-meta">
+                        <div>00:11</div>
+                        <div class="chat-counter">1</div>
+                    </div>
+                </article>
+
+                <article class="chat-item">
+                    <div class="avatar">1К</div>
+                    <div class="chat-main">
+                        <div class="chat-name">10-Д Класс</div>
+                        <div class="chat-preview">Ольга: Фото</div>
+                    </div>
+                    <div class="chat-meta">
+                        <div>18:00</div>
+                        <div class="chat-counter">18</div>
+                    </div>
+                </article>
+
+                <article class="chat-item">
+                    <div class="avatar orange">ФШ</div>
+                    <div class="chat-main">
+                        <div class="chat-name">Физика_Кузнецов</div>
+                        <div class="chat-preview">Вы вышли из чата</div>
+                    </div>
+                    <div class="chat-meta">6 февр.</div>
+                </article>
+            </div>
+
+            <nav class="bottom-tabs" aria-label="Главные разделы">
+                <button type="button" class="tab-item">
+                    <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5C15 14.17 10.33 13 8 13zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.98 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                    <span>Контакты</span>
+                </button>
+                <button type="button" class="tab-item">
+                    <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.91 15.91 0 0 0 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.61 21 3 13.39 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.24.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                    <span>Звонки</span>
+                </button>
+                <button type="button" class="tab-item active">
+                    <svg viewBox="0 0 24 24"><path d="M4 4h16v12H5.17L4 17.17V4zm2 2v8.34L7.66 14H18V6H6z"/></svg>
+                    <span>Чаты</span>
+                </button>
+                <button type="button" class="tab-item">
+                    <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/></svg>
+                    <span>Профиль</span>
+                </button>
+            </nav>
+        </section>
+
+        <section id="screen-chat" class="screen">
+            <header class="chat-header">
+                <button type="button" class="chat-header-btn" onclick="goToStep('select-chat')" aria-label="Назад к чатам">
+                    <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.58-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                </button>
+                <div class="avatar yellow" style="width:36px;height:36px;font-size:18px;">А</div>
+                <div>
+                    <div class="chat-header-name">Артём Цурганов</div>
+                    <div class="chat-header-status">был(-а) недавно</div>
+                </div>
+            </header>
+
+            <div id="msg-area" class="messages-area"></div>
+
+            <div class="input-area">
+                <button type="button" class="input-icon sticker-btn" aria-label="Стикеры">
+                    <svg viewBox="0 0 24 24"><path d="M20 2H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM8.5 9A1.5 1.5 0 1 1 10 7.5 1.5 1.5 0 0 1 8.5 9zm7 0A1.5 1.5 0 1 1 17 7.5 1.5 1.5 0 0 1 15.5 9zM12 18c-2.76 0-5-1.79-5-4h10c0 2.21-2.24 4-5 4z"/></svg>
+                </button>
+
+                <div id="main-input" class="input-field" onclick="activateInput()">
+                    <span id="placeholder-text" class="placeholder">Сообщение</span>
+                    <span id="typed-text"></span>
+                </div>
+
+                <button id="attach-btn" type="button" class="input-icon attach-btn" aria-label="Вложения">
+                    <svg viewBox="0 0 24 24"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5S13.5 3.62 13.5 5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5a2.5 2.5 0 1 0 5 0V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5a5.5 5.5 0 0 0 11 0V6h-1.5z"/></svg>
+                </button>
+
+                <button id="mic-btn" type="button" class="input-icon" aria-label="Голосовое сообщение">
+                    <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+                </button>
+
+                <button id="send-btn" type="button" class="send-btn" onclick="sendMessage()" aria-label="Отправить сообщение">
+                    <svg viewBox="0 0 24 24"><path d="M12 4l-6 6h4v10h4V10h4z"/></svg>
+                </button>
+            </div>
+
+            <div id="keyboard">
+                <div class="kb-row">
+                    <div class="key">й</div><div class="key">ц</div><div class="key">у</div><div class="key">к</div><div class="key">е</div><div class="key">н</div><div class="key">г</div><div class="key">ш</div><div class="key">щ</div><div class="key">з</div><div class="key">х</div>
+                </div>
+                <div class="kb-row">
+                    <div class="key">ф</div><div class="key">ы</div><div class="key">в</div><div class="key">а</div><div class="key">п</div><div class="key">р</div><div class="key">о</div><div class="key">л</div><div class="key">д</div><div class="key">ж</div><div class="key">э</div>
+                </div>
+                <div class="kb-row">
+                    <div class="key action">shift</div><div class="key">я</div><div class="key">ч</div><div class="key">с</div><div class="key">м</div><div class="key">и</div><div class="key">т</div><div class="key">ь</div><div class="key">б</div><div class="key">ю</div><div class="key action">del</div>
+                </div>
+                <div class="kb-row">
+                    <div class="key action">123</div><div class="key action">🙂</div><div class="key space"></div><div class="key action">.</div><div class="key action">ok</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <aside class="info-block" aria-live="polite">
+        <div id="info-step" class="info-step">Шаг 1 из 4</div>
+        <h2 id="info-title" class="info-title">Откройте чат с Артёмом</h2>
+        <p id="info-description" class="info-description">Найдите контакт «Артём Цурганов» в списке чатов и нажмите на него.</p>
+        <p id="info-note" class="info-note">В этом чате уже есть входящее сообщение: «Привет!».</p>
+
+        <div id="info-nav" class="info-nav">
+            <button id="nav-prev" type="button" class="info-nav-btn" onclick="goBack()">Назад</button>
+            <button id="nav-next" type="button" class="info-nav-btn primary" onclick="goForward()">Вперёд</button>
+        </div>
+
+        <button id="restart-btn" type="button" class="info-restart-btn" onclick="restartTutorial()">Начать инструкцию заново</button>
+    </aside>
+</div>
+
+<div id="global-click-hint" class="global-click-hint" aria-hidden="true"></div>
+
+<script>
+    const steps = {
+        'select-chat': {
+            step: 'Шаг 1 из 4',
+            title: 'Откройте чат с Артёмом',
+            description: 'Найдите контакт «Артём Цурганов» и нажмите на него в списке чатов.',
+            note: 'В этом чате уже есть входящее сообщение: «Привет!».',
+            screen: 'list',
+            hint: { targetId: 'target-contact', radius: 12, padding: 4 }
+        },
+        'open-input': {
+            step: 'Шаг 2 из 4',
+            title: 'Откройте поле ввода',
+            description: 'В чате нажмите на поле «Сообщение» внизу экрана.',
+            note: '',
+            screen: 'chat',
+            hint: { targetId: 'main-input', radius: 22, padding: 4 }
+        },
+        'type-message': {
+            step: 'Шаг 3 из 4',
+            title: 'Наберите сообщение',
+            description: 'Введите текст «Привет.» с помощью экранной клавиатуры.',
+            note: 'Для обучения достаточно нажать любую клавишу — текст появится автоматически.',
+            screen: 'chat',
+            hint: { targetId: 'keyboard', radius: 10, padding: 4 }
+        },
+        'send-message': {
+            step: 'Шаг 4 из 4',
+            title: 'Отправьте сообщение',
+            description: 'Нажмите синюю кнопку отправки справа от поля ввода.',
+            note: 'Сообщение, которое отправляем: «Привет.».',
+            screen: 'chat',
+            hint: { targetId: 'send-btn', radius: 24, padding: 3 }
+        },
+        'completed': {
+            step: 'Готово',
+            title: 'Сообщение отправлено',
+            description: 'Отлично! Вы отправили сообщение «Привет.» собеседнику в чате MAX.',
+            note: 'Нажмите «Начать инструкцию заново», чтобы пройти сценарий ещё раз.',
+            screen: 'chat',
+            hint: null
+        }
+    };
+
+    const stepOrder = ['select-chat', 'open-input', 'type-message', 'send-message'];
+
+    const screenList = document.getElementById('screen-list');
+    const screenChat = document.getElementById('screen-chat');
+    const msgArea = document.getElementById('msg-area');
+    const keyboard = document.getElementById('keyboard');
+    const typedText = document.getElementById('typed-text');
+    const placeholderText = document.getElementById('placeholder-text');
+    const sendBtn = document.getElementById('send-btn');
+    const micBtn = document.getElementById('mic-btn');
+    const globalClickHint = document.getElementById('global-click-hint');
+
+    const infoStep = document.getElementById('info-step');
+    const infoTitle = document.getElementById('info-title');
+    const infoDescription = document.getElementById('info-description');
+    const infoNote = document.getElementById('info-note');
+    const navPrev = document.getElementById('nav-prev');
+    const navNext = document.getElementById('nav-next');
+    const infoNav = document.getElementById('info-nav');
+    const restartBtn = document.getElementById('restart-btn');
+
+    let currentStep = 'select-chat';
+    let activeHintConfig = null;
+    let hasSentMessage = false;
+    let typingToken = 0;
+
+    function getStepIndex(stepKey) {
+        return stepOrder.indexOf(stepKey);
+    }
+
+    function setInputText(text) {
+        typedText.textContent = text;
+        placeholderText.style.display = text ? 'none' : 'inline';
+    }
+
+    function setKeyboardVisible(isVisible) {
+        keyboard.style.display = isVisible ? 'flex' : 'none';
+    }
+
+    function setSendVisible(isVisible) {
+        sendBtn.style.display = isVisible ? 'inline-flex' : 'none';
+        micBtn.style.display = isVisible ? 'none' : 'inline-flex';
+    }
+
+    function renderMessages() {
+        msgArea.innerHTML = `
+            <div class="date-divider">Сегодня</div>
+            <div class="message in">Привет!<span class="msg-time">00:11</span></div>
+            ${hasSentMessage ? '<div class="message out">Привет.<span class="msg-time">00:12 ✓</span></div>' : ''}
+        `;
+        msgArea.scrollTop = msgArea.scrollHeight;
+    }
+
+    function positionGlobalHint() {
+        if (!activeHintConfig || !activeHintConfig.targetId) {
+            globalClickHint.style.display = 'none';
+            return;
+        }
+
+        const target = document.getElementById(activeHintConfig.targetId);
+        if (!target) {
+            globalClickHint.style.display = 'none';
+            return;
+        }
+
+        const rect = target.getBoundingClientRect();
+        const padding = Number(activeHintConfig.padding || 0);
+        const radius = Number(activeHintConfig.radius || 14);
+
+        globalClickHint.style.display = 'block';
+        globalClickHint.style.left = `${rect.left - padding}px`;
+        globalClickHint.style.top = `${rect.top - padding}px`;
+        globalClickHint.style.width = `${rect.width + padding * 2}px`;
+        globalClickHint.style.height = `${rect.height + padding * 2}px`;
+        globalClickHint.style.borderRadius = `${radius}px`;
+    }
+
+    function clearHint() {
+        activeHintConfig = null;
+        globalClickHint.style.display = 'none';
+    }
+
+    function applyHint(hint) {
+        if (!hint || !hint.targetId) {
+            clearHint();
+            return;
+        }
+
+        activeHintConfig = {
+            targetId: String(hint.targetId),
+            radius: Number(hint.radius || 14),
+            padding: Number(hint.padding || 6)
+        };
+
+        requestAnimationFrame(positionGlobalHint);
+        setTimeout(positionGlobalHint, 0);
+    }
+
+    function stopTyping() {
+        typingToken += 1;
+    }
+
+    function showScreen(screen) {
+        screenList.classList.toggle('active', screen === 'list');
+        screenChat.classList.toggle('active', screen === 'chat');
+    }
+
+    function updateInfo(stepKey) {
+        const cfg = steps[stepKey];
+        infoStep.textContent = cfg.step;
+        infoTitle.textContent = cfg.title;
+        infoDescription.textContent = cfg.description;
+        if (cfg.note) {
+            infoNote.style.display = 'block';
+            infoNote.textContent = cfg.note;
+        } else {
+            infoNote.style.display = 'none';
+            infoNote.textContent = '';
+        }
+    }
+
+    function updateNavigation(stepKey) {
+        if (stepKey === 'completed') {
+            infoNav.style.display = 'none';
+            restartBtn.style.display = 'inline-flex';
+            return;
+        }
+
+        infoNav.style.display = 'grid';
+        restartBtn.style.display = 'none';
+
+        const index = getStepIndex(stepKey);
+        navPrev.disabled = index <= 0;
+        navNext.disabled = index < 0 || index >= stepOrder.length - 1;
+    }
+
+    function applyStepState(stepKey) {
+        stopTyping();
+
+        if (stepKey === 'completed') {
+            hasSentMessage = true;
+        } else {
+            hasSentMessage = false;
+        }
+
+        const cfg = steps[stepKey];
+        showScreen(cfg.screen);
+
+        if (cfg.screen === 'chat') {
+            renderMessages();
+        }
+
+        if (stepKey === 'select-chat' || stepKey === 'open-input') {
+            setKeyboardVisible(false);
+            setSendVisible(false);
+            setInputText('');
+        } else if (stepKey === 'type-message') {
+            setKeyboardVisible(true);
+            setSendVisible(false);
+            setInputText('');
+        } else if (stepKey === 'send-message') {
+            setKeyboardVisible(true);
+            setSendVisible(true);
+            setInputText('Привет.');
+        } else if (stepKey === 'completed') {
+            setKeyboardVisible(false);
+            setSendVisible(false);
+            setInputText('');
+            renderMessages();
+        }
+
+        applyHint(cfg.hint);
+        updateInfo(stepKey);
+        updateNavigation(stepKey);
+    }
+
+    function goToStep(stepKey) {
+        if (!steps[stepKey]) {
+            return;
+        }
+        currentStep = stepKey;
+        applyStepState(stepKey);
+    }
+
+    function goBack() {
+        if (currentStep === 'completed') {
+            goToStep('send-message');
+            return;
+        }
+        const index = getStepIndex(currentStep);
+        if (index > 0) {
+            goToStep(stepOrder[index - 1]);
+        }
+    }
+
+    function goForward() {
+        if (currentStep === 'completed') {
+            return;
+        }
+        const index = getStepIndex(currentStep);
+        if (index >= 0 && index < stepOrder.length - 1) {
+            goToStep(stepOrder[index + 1]);
+        }
+    }
+
+    function openChat() {
+        if (currentStep !== 'select-chat') {
+            return;
+        }
+        goToStep('open-input');
+    }
+
+    function activateInput() {
+        if (currentStep === 'open-input') {
+            goToStep('type-message');
+        }
+    }
+
+    function typeDemoMessage() {
+        if (currentStep !== 'type-message') {
+            return;
+        }
+
+        const token = ++typingToken;
+        const text = 'Привет.';
+        let i = 0;
+        setInputText('');
+
+        function tick() {
+            if (token !== typingToken) {
+                return;
+            }
+            if (i < text.length) {
+                i += 1;
+                setInputText(text.slice(0, i));
+                setTimeout(tick, 55);
+            } else {
+                goToStep('send-message');
+            }
+        }
+
+        tick();
+    }
+
+    function sendMessage() {
+        if (currentStep !== 'send-message') {
+            return;
+        }
+        goToStep('completed');
+    }
+
+    function restartTutorial() {
+        goToStep('select-chat');
+    }
+
+    keyboard.addEventListener('click', (event) => {
+        if (!event.target.closest('.key')) {
+            return;
+        }
+        typeDemoMessage();
+    });
+
+    window.addEventListener('resize', positionGlobalHint);
+    document.addEventListener('scroll', positionGlobalHint, true);
+
+    goToStep('select-chat');
+</script>
+</div>

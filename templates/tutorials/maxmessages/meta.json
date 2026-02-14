@@ -1,0 +1,17 @@
+{
+  "title": "Отправка сообщений в MAX",
+  "description": "Отправка сообщений собеседнику в чате мессенджера MAX.",
+  "level": "basic",
+  "course": "smartphone-basics",
+  "viewer_navigation": "style-switch",
+  "style_options": [
+    {
+      "label": "Видео-урок",
+      "page": 1
+    },
+    {
+      "label": "Симулятор",
+      "page": 2
+    }
+  ]
+}
