@@ -30,10 +30,36 @@ page_support = env.get_template("support.tmpl")
 TUTORIALS_DIR = os.path.join("templates", "tutorials")
 TUTORIAL_PAGE_EXTENSIONS = (".tmpl", ".html", ".htm")
 BUGREPORTS_FILE = os.path.join(os.path.dirname(__file__), "bugreports.json")
+TUTORIAL_SLUG_RENAMES = {
+    "rustoredowload": "rustoredownload",
+}
+DEFAULT_COURSE_SLUG = "smartphone-basics"
+COURSE_DEFINITIONS = [
+    {
+        "slug": "smartphone-basics",
+        "title": "Основы смартфона",
+        "description": "Базовые интерактивные модули: подключение к Wi-Fi и установка приложений.",
+    },
+    {
+        "slug": "max-messenger",
+        "title": "Работа с мессенджером MAX",
+        "description": "Курс запланирован. Интерактивные модули скоро появятся.",
+    },
+    {
+        "slug": "online-shopping",
+        "title": "Онлайн-покупки",
+        "description": "Курс запланирован. Интерактивные модули скоро появятся.",
+    },
+    {
+        "slug": "gosuslugi",
+        "title": "Госуслуги",
+        "description": "Курс запланирован. Интерактивные модули скоро появятся.",
+    },
+]
 
 SUPPORT_PROBLEM_LABELS = {
     "video_not_opening": "не открывается видео",
-    "tutorial_not_opening": "не открывается интерактивный туториал",
+    "tutorial_not_opening": "не открывается интерактивный модуль",
     "account_not_created": "не создаётся аккаунт",
     "account_login_failed": "не получается зайти в аккаунт",
 }
@@ -105,9 +131,36 @@ SESSION_SECRET = os.environ.get("SESSION_SECRET", "change-me")
 Session(app, secret_key=SESSION_SECRET)
 
 
-def load_tutorials():
-    """Return tutorials with metadata for title, description and level."""
+def normalize_tutorial_slug(slug: str):
+    """Normalize tutorial slug to the canonical route."""
+    raw_slug = (slug or "").strip().lower()
+    return TUTORIAL_SLUG_RENAMES.get(raw_slug, raw_slug)
+
+
+def resolve_tutorial_directory(tutorial_slug: str):
+    """Map canonical slug to an existing tutorials directory."""
+    normalized_slug = normalize_tutorial_slug(tutorial_slug)
+    if not normalized_slug or not os.path.exists(TUTORIALS_DIR):
+        return None
+
+    for directory_name in sorted(os.listdir(TUTORIALS_DIR)):
+        tutorial_path = os.path.join(TUTORIALS_DIR, directory_name)
+        if not os.path.isdir(tutorial_path):
+            continue
+        if not any(
+            os.path.splitext(filename)[1].lower() in TUTORIAL_PAGE_EXTENSIONS
+            for filename in os.listdir(tutorial_path)
+        ):
+            continue
+        if normalize_tutorial_slug(directory_name) == normalized_slug:
+            return directory_name
+    return None
+
+
+def load_tutorials(include_hidden=False):
+    """Return tutorial metadata for interface and viewer pages."""
     tutorials = []
+    seen_slugs = set()
 
     if not os.path.exists(TUTORIALS_DIR):
         try:
@@ -115,10 +168,23 @@ def load_tutorials():
         except OSError:
             return tutorials
 
-    for name in sorted(os.listdir(TUTORIALS_DIR)):
-        tutorial_path = os.path.join(TUTORIALS_DIR, name)
+    for directory_name in sorted(os.listdir(TUTORIALS_DIR)):
+        tutorial_path = os.path.join(TUTORIALS_DIR, directory_name)
         if not os.path.isdir(tutorial_path):
             continue
+
+        page_files = [
+            f
+            for f in os.listdir(tutorial_path)
+            if os.path.splitext(f)[1].lower() in TUTORIAL_PAGE_EXTENSIONS
+        ]
+        if not page_files:
+            continue
+
+        slug = normalize_tutorial_slug(directory_name)
+        if slug in seen_slugs:
+            continue
+        seen_slugs.add(slug)
 
         meta_path = os.path.join(tutorial_path, "meta.json")
         meta = {}
@@ -134,12 +200,36 @@ def load_tutorials():
         if level not in ("basic", "advanced"):
             level = "basic"
 
+        visible_in_interface = meta.get("visible_in_interface", True)
+        if isinstance(visible_in_interface, str):
+            visible_in_interface = (
+                visible_in_interface.strip().lower() not in ("0", "false", "no")
+            )
+        else:
+            visible_in_interface = bool(visible_in_interface)
+
+        if not include_hidden and not visible_in_interface:
+            continue
+
+        course = str(meta.get("course", DEFAULT_COURSE_SLUG)).strip() or DEFAULT_COURSE_SLUG
+        viewer_navigation = str(meta.get("viewer_navigation", "pages")).strip().lower()
+        if viewer_navigation not in ("pages", "style-switch"):
+            viewer_navigation = "pages"
+
+        style_options = meta.get("style_options")
+        if not isinstance(style_options, list):
+            style_options = []
+
         tutorials.append(
             {
-                "slug": name,
-                "title": meta.get("title") or name,
+                "slug": slug,
+                "directory": directory_name,
+                "title": meta.get("title") or slug,
                 "description": meta.get("description") or "Описание появится позже.",
                 "level": level,
+                "course": course,
+                "viewer_navigation": viewer_navigation,
+                "style_options": style_options,
             }
         )
 
@@ -176,7 +266,10 @@ def get_user_tutorial_progress(user_id: int):
         "SELECT tutorial_slug, completed_at FROM tutorial_progress WHERE user_id = ?",
         (user_id,),
     )
-    completed_by_slug = {row[0]: row[1] for row in cur.fetchall()}
+    completed_by_slug = {}
+    for row in cur.fetchall():
+        normalized_slug = normalize_tutorial_slug(row[0])
+        completed_by_slug[normalized_slug] = row[1]
 
     progress = []
     for tutorial in tutorials:
@@ -386,7 +479,10 @@ async def tutorial_assets(request, tutorial_name, path):
     """Serve per-tutorial static assets (css, images) located next to templates."""
     if ".." in path or path.startswith("/"):
         return "Not found", 404
-    asset_path = os.path.join(TUTORIALS_DIR, tutorial_name, path)
+    resolved_tutorial_name = resolve_tutorial_directory(tutorial_name)
+    if not resolved_tutorial_name:
+        return "Not found", 404
+    asset_path = os.path.join(TUTORIALS_DIR, resolved_tutorial_name, path)
     if not os.path.isfile(asset_path):
         return "Not found", 404
     # Basic Range support for media files (videos) so seeking works
@@ -427,15 +523,28 @@ async def tutorials_list(request, session):
     user = get_current_user(session)
 
     tutorials = load_tutorials()
+    courses = [
+        {
+            "slug": course["slug"],
+            "title": course["title"],
+            "description": course["description"],
+            "modules": [],
+        }
+        for course in COURSE_DEFINITIONS
+    ]
+    course_map = {course["slug"]: course for course in courses}
 
-    tutorials_basic = [t for t in tutorials if t["level"] == "basic"]
-    tutorials_advanced = [t for t in tutorials if t["level"] == "advanced"]
+    for tutorial in tutorials:
+        course_slug = tutorial.get("course") or DEFAULT_COURSE_SLUG
+        course = course_map.get(course_slug)
+        if course is None:
+            continue
+        course["modules"].append(tutorial)
 
     return (
         page_tutorial.render(
-            tutorials_basic=tutorials_basic,
-            tutorials_advanced=tutorials_advanced,
-            has_any=bool(tutorials),
+            courses=courses,
+            has_any=any(course["modules"] for course in courses),
             yes_login=bool(user),
             user_name=user[2] if user else "",
         ),
@@ -444,20 +553,37 @@ async def tutorials_list(request, session):
     )
 
 
+@app.route("/tutorials/<tutorial_name>")
+@app.route("/tutorials/<tutorial_name>/")
+@with_session
+async def tutorial_entrypoint(request, session, tutorial_name):
+    canonical_slug = normalize_tutorial_slug(tutorial_name)
+    return redirect(f"/tutorials/{canonical_slug}/1")
+
+
 # 3. Добавляем новый маршрут для просмотра страницы туториала
 @app.route("/tutorials/<tutorial_name>/<int:page_num>")
 @with_session
 async def tutorial_viewer(request, session, tutorial_name, page_num):
     user = get_current_user(session)
 
+    canonical_slug = normalize_tutorial_slug(tutorial_name)
+    if tutorial_name != canonical_slug:
+        return redirect(f"/tutorials/{canonical_slug}/{page_num}")
+
     # Путь к папке конкретного туториала
-    tutorial_path = os.path.join(TUTORIALS_DIR, tutorial_name)
+    resolved_tutorial_name = resolve_tutorial_directory(canonical_slug)
+    if not resolved_tutorial_name:
+        return "Интерактивный модуль не найден", 404
+
+    tutorial_path = os.path.join(TUTORIALS_DIR, resolved_tutorial_name)
 
     if not os.path.exists(tutorial_path):
-        return "Туториал не найден", 404
+        return "Интерактивный модуль не найден", 404
 
     tutorial_meta = next(
-        (t for t in load_tutorials() if t["slug"] == tutorial_name), None
+        (t for t in load_tutorials(include_hidden=True) if t["slug"] == canonical_slug),
+        None,
     )
 
     # Ищем страницы туториала: Jinja-шаблоны (.tmpl) и обычные HTML (.html/.htm)
@@ -472,18 +598,37 @@ async def tutorial_viewer(request, session, tutorial_name, page_num):
     total_pages = len(files)
 
     if total_pages == 0:
-        return "В этом туториале нет страниц", 404
+        return "В этом интерактивном модуле нет страниц", 404
 
     if page_num < 1 or page_num > total_pages:
         return "Такой страницы не существует", 404
 
     current_file = files[page_num - 1]
     if user and page_num == total_pages:
-        mark_tutorial_completed(user[0], tutorial_name)
+        mark_tutorial_completed(user[0], canonical_slug)
+
+    viewer_navigation = (
+        tutorial_meta["viewer_navigation"] if tutorial_meta else "pages"
+    )
+    style_options = []
+    if tutorial_meta and viewer_navigation == "style-switch":
+        for item in tutorial_meta.get("style_options", []):
+            if not isinstance(item, dict):
+                continue
+            option_label = str(item.get("label", "")).strip()
+            option_page = item.get("page")
+            if not option_label or not isinstance(option_page, int):
+                continue
+            if option_page < 1 or option_page > total_pages:
+                continue
+            style_options.append({"label": option_label, "page": option_page})
+        if len(style_options) < 2:
+            viewer_navigation = "pages"
+            style_options = []
 
     # Формируем путь для Jinja (относительно папки templates)
     # Например: "tutorials/taxi/1.tmpl" или "tutorials/taxi/1.html"
-    template_name = f"tutorials/{tutorial_name}/{current_file}"
+    template_name = f"tutorials/{resolved_tutorial_name}/{current_file}"
 
     try:
         # 1. Рендерим саму страницу туториала (контент)
@@ -494,11 +639,13 @@ async def tutorial_viewer(request, session, tutorial_name, page_num):
         # 2. Рендерим оболочку-вьювер и вставляем туда контент
         return (
             page_tutorial_viewer.render(
-                tutorial_name=tutorial_name,
+                tutorial_name=canonical_slug,
                 tutorial_title=(
-                    tutorial_meta["title"] if tutorial_meta else tutorial_name
+                    tutorial_meta["title"] if tutorial_meta else canonical_slug
                 ),
                 tutorial_level=(tutorial_meta["level"] if tutorial_meta else "basic"),
+                viewer_navigation=viewer_navigation,
+                style_options=style_options,
                 current_page=page_num,
                 total_pages=total_pages,
                 content=rendered_content,  # Передаем готовый HTML
@@ -893,4 +1040,3 @@ async def logout(request, session):
 
 
 app.run()
-

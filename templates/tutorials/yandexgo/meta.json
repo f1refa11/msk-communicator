@@ -1,5 +1,7 @@
 {
   "title": "Яндекс GO",
   "description": "Учимся заказать поездку и оплатить её шаг за шагом в симуляторе приложения MAX.",
-  "level": "basic"
+  "level": "basic",
+  "course": "online-shopping",
+  "visible_in_interface": false
 }
