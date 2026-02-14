@@ -1,5 +1,17 @@
 {
   "title": "Подключение к Wifi",
-  "description": "Учимся заказать поездку и оплатить её шаг за шагом в симуляторе приложения MAX.",
-  "level": "advanced"
+  "description": "Пошаговое подключение смартфона к домашней или общественной сети Wi-Fi.",
+  "level": "basic",
+  "course": "smartphone-basics",
+  "viewer_navigation": "style-switch",
+  "style_options": [
+    {
+      "label": "Видео-урок",
+      "page": 1
+    },
+    {
+      "label": "Симулятор",
+      "page": 2
+    }
+  ]
 }

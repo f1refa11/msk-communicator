@@ -10,9 +10,20 @@
             background-color: #f4f4f4;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
+            padding: 24px;
             margin: 0;
+            box-sizing: border-box;
+        }
+
+        .tutorial-layout {
+            width: min(1040px, 100%);
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 24px;
+            align-items: flex-start;
+            justify-content: center;
         }
 
         /* --- Рамка телефона --- */
@@ -25,6 +36,59 @@
             position: relative;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            flex-shrink: 0;
+        }
+
+        .phone-frame::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 40;
+            transition: opacity 0.2s ease;
+        }
+
+        .phone-frame.dimmed::after {
+            opacity: 1;
+        }
+
+        .click-target-active {
+            position: relative;
+            z-index: 95;
+            isolation: isolate;
+            --click-hint-radius: 14px;
+            --click-hint-padding: 6px;
+        }
+
+        .click-target-active::after {
+            content: "";
+            position: absolute;
+            inset: calc(var(--click-hint-padding) * -1);
+            border: 4px solid #ffd400;
+            border-radius: var(--click-hint-radius);
+            pointer-events: none;
+            box-shadow: 0 0 0 2px rgba(255, 160, 0, 0.45), 0 0 16px rgba(255, 212, 0, 0.7);
+            animation: clickHintBorderPulse 1.1s ease-in-out infinite;
+        }
+
+        @keyframes clickHintBorderPulse {
+            0% {
+                transform: scale(1);
+                border-color: #ffd400;
+                box-shadow: 0 0 0 2px rgba(255, 160, 0, 0.45), 0 0 16px rgba(255, 212, 0, 0.7);
+            }
+            50% {
+                transform: scale(1.06);
+                border-color: #ff9f00;
+                box-shadow: 0 0 0 3px rgba(255, 128, 0, 0.55), 0 0 22px rgba(255, 170, 0, 0.85);
+            }
+            100% {
+                transform: scale(1);
+                border-color: #ffd400;
+                box-shadow: 0 0 0 2px rgba(255, 160, 0, 0.45), 0 0 16px rgba(255, 212, 0, 0.7);
+            }
         }
 
         /* --- Статус-бар (время, батарея) --- */
@@ -65,7 +129,7 @@
 
         /* --- Шаг 1: Домашний экран --- */
         .home-screen {
-            background: url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1000&auto=format&fit=crop') center/cover;
+            background: url('/assets/tutorials/wificonnect/photo.jpeg') center/cover;
             color: white;
         }
         .home-screen .status-bar { color: white; }
@@ -102,8 +166,13 @@
             background: linear-gradient(135deg, #5c5c5c, #8a8a8a);
         }
         .app-name {
-            font-size: 12px;
+            font-size: 13px;
             text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .home-screen .app-name {
+            font-size: 15px;
+            font-weight: 600;
         }
 
         /* --- Шапка настроек (One UI Style) --- */
@@ -215,14 +284,29 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
         .modal-title { font-size: 18px; margin-bottom: 15px; font-weight: bold; }
+        .pass-input-wrap {
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid #0070d2;
+            margin-bottom: 5px;
+        }
         .pass-input {
             width: 100%;
             padding: 10px 0;
             border: none;
-            border-bottom: 2px solid #0070d2;
             outline: none;
             font-size: 16px;
-            margin-bottom: 5px;
+            margin-bottom: 0;
+            background: transparent;
+        }
+        .pass-toggle {
+            border: none;
+            background: transparent;
+            color: #666;
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+            padding: 6px;
         }
         .error-msg { color: red; font-size: 12px; min-height: 15px; margin-bottom: 15px; }
         .modal-buttons {
@@ -241,25 +325,161 @@
         }
         .modal-btn.cancel { color: #666; }
 
-        /* --- Инструкция для пользователя (всплывашка) --- */
+        /* --- Информационный блок справа --- */
+        .info-block {
+            width: min(420px, 100%);
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e8e8e8;
+            padding: 20px;
+            display: grid;
+            gap: 14px;
+            align-self: flex-start;
+            height: fit-content;
+        }
+
+        .info-step {
+            font-size: 13px;
+            color: #5f6368;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-weight: 700;
+        }
+
+        .info-progress {
+            display: grid;
+            gap: 8px;
+        }
+
+        .info-progress-label {
+            font-size: 12px;
+            color: #5f6368;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+        }
+
+        .info-progress-track {
+            display: grid;
+            grid-template-columns: repeat(var(--segments-count, 5), minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .progress-segment {
+            height: 10px;
+            border-radius: 999px;
+            background: #dfe6ef;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .progress-segment.is-complete {
+            background: #1f9d55;
+        }
+
+        .progress-segment.is-current {
+            background: #0070d2;
+            box-shadow: 0 0 0 3px rgba(0, 112, 210, 0.2);
+        }
+
+        .info-step-title {
+            margin: 0;
+            font-size: 26px;
+            line-height: 1.3;
+            color: #111;
+        }
+
+        .info-step-description {
+            margin: 0;
+            color: #2f3640;
+            line-height: 1.5;
+            font-size: 17px;
+        }
+
+        .info-helper {
+            margin: 0;
+            border-radius: 12px;
+            background: #eef6ff;
+            color: #1f5f9f;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .info-nav {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .info-nav-btn,
+        .info-restart-btn {
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: transform 0.12s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        }
+
+        .info-nav-btn {
+            background: #eef2f7;
+            color: #243244;
+            box-shadow: inset 0 0 0 1px rgba(36, 50, 68, 0.14);
+        }
+
+        .info-nav-btn.primary {
+            background: #0070d2;
+            color: #fff;
+            box-shadow: 0 6px 16px rgba(0, 112, 210, 0.35);
+        }
+
+        .info-nav-btn:hover:not(:disabled),
+        .info-restart-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .info-nav-btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: inset 0 0 0 1px rgba(36, 50, 68, 0.08);
+        }
+
+        .info-restart-btn {
+            background: #2d7d46;
+            color: #fff;
+            width: 100%;
+            box-shadow: 0 6px 16px rgba(45, 125, 70, 0.35);
+        }
+
         .instruction-toast {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
             background: rgba(0,0,0,0.8);
             color: white;
             padding: 10px 20px;
-            border-radius: 20px;
+            border-radius: 14px;
             font-size: 14px;
-            pointer-events: none;
-            width: 80%;
+            width: 100%;
+            box-sizing: border-box;
             text-align: center;
-            z-index: 100;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
         }
+
+        .instruction-toast.is-error {
+            background: rgba(200, 0, 0, 0.85);
+        }
+
+        .instruction-toast.is-success {
+            background: #28a745;
+        }
+
     </style>
 </head>
 <body>
+
+<div class="tutorial-layout">
 
 <div class="phone-frame">
     
@@ -275,8 +495,6 @@
         </div>
     </div>
 
-    <div id="toast" class="instruction-toast">Нажмите на иконку "Настройки"</div>
-
     <div id="screen-home" class="screen home-screen active">
         <div class="app-grid">
             <div class="app-icon">
@@ -289,7 +507,7 @@
                 </div>
                 <span class="app-name">YouTube</span>
             </div>
-            <div class="app-icon" onclick="goToScreen('screen-settings')">
+            <div class="app-icon" id="target-settings-app" onclick="goToScreen('screen-settings')">
                 <div class="icon-img settings-icon">
                     <svg width="32" height="32" viewBox="0 0 24 24" fill="#fff">
                         <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84a.484.484 0 0 0-.48.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.488.488 0 0 0-.59.22L2.09 8.87a.49.49 0 0 0 .12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.27.41.48.41h3.84c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.57 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.49.49 0 0 0-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
@@ -310,7 +528,7 @@
         </div>
 
         <div class="menu-list">
-            <div class="menu-item" onclick="goToScreen('screen-connections')">
+            <div class="menu-item" id="target-connections-item" onclick="goToScreen('screen-connections')">
                 <div class="item-icon" style="background: #0070d2; border-radius: 8px;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff">
                         <path d="M12 11c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 2c0-3.31-2.69-6-6-6s-6 2.69-6 6c0 2.22 1.21 4.15 3 5.19l1-1.74c-1.19-.7-2-1.97-2-3.45 0-2.21 1.79-4 4-4s4 1.79 4 4c0 1.48-.81 2.75-2 3.45l1 1.74c1.79-1.04 3-2.97 3-5.19zM12 3C6.48 3 2 7.48 2 13c0 3.7 2.01 6.92 4.99 8.65l1-1.73C5.61 18.53 4 15.96 4 13c0-4.42 3.58-8 8-8s8 3.58 8 8c0 2.96-1.61 5.53-4 6.92l1 1.73c2.99-1.73 5-4.95 5-8.65 0-5.52-4.48-10-10-10z"/>
@@ -347,7 +565,7 @@
         </div>
 
         <div class="menu-list">
-            <div class="menu-item" onclick="goToScreen('screen-wifi')">
+            <div class="menu-item" id="target-wifi-item" onclick="goToScreen('screen-wifi')">
                 <div class="item-text">Wi-Fi</div>
                 <div style="color: #0070d2; margin-right: 10px;">Вкл</div>
             </div>
@@ -417,127 +635,427 @@
     <div id="password-overlay" class="password-overlay">
         <div class="password-modal">
             <div class="modal-title">Home_WiFi</div>
-            <input type="password" id="wifi-password" class="pass-input" placeholder="Пароль">
+            <div class="pass-input-wrap" id="target-password-input-wrap">
+                <input type="password" id="wifi-password" class="pass-input" placeholder="Пароль">
+                <button
+                    type="button"
+                    class="pass-toggle"
+                    id="toggle-password-btn"
+                    onclick="togglePasswordVisibility()"
+                    aria-label="Показать пароль"
+                >👁</button>
+            </div>
             <div id="pass-error" class="error-msg"></div>
             
             <div class="modal-buttons">
                 <button class="modal-btn cancel" onclick="closePasswordModal()">Отмена</button>
-                <button class="modal-btn" onclick="checkPassword()">Подключиться</button>
-            </div>
-            
-            <div style="margin-top: 15px; font-size: 12px; color: #888; text-align: center;">
-                (Пароль: 12345678)
+                <button class="modal-btn" id="target-connect-button" onclick="checkPassword()">Подключиться</button>
             </div>
         </div>
     </div>
 
 </div>
 
+<aside class="info-block" aria-live="polite">
+    <div id="toast" class="instruction-toast">Нажмите на иконку "Настройки"</div>
+    <div class="info-progress">
+        <div class="info-progress-label">Прогресс прохождения</div>
+        <div id="info-progress-track" class="info-progress-track"></div>
+    </div>
+    <div id="info-step" class="info-step">Шаг 1 из 5</div>
+    <h3 id="info-step-title" class="info-step-title">Открываем настройки</h3>
+    <p id="info-step-description" class="info-step-description">
+        Найдите на домашнем экране иконку «Настройки» и нажмите на нее.
+    </p>
+    <p id="info-helper" class="info-helper" style="display: none;"></p>
+    <div id="info-nav" class="info-nav">
+        <button id="info-prev-btn" type="button" class="info-nav-btn" onclick="goToPreviousStep()">Назад</button>
+        <button id="info-next-btn" type="button" class="info-nav-btn primary" onclick="goToNextStep()">Далее</button>
+    </div>
+    <button id="restart-tutorial-btn" type="button" class="info-restart-btn" onclick="restartTutorial()" style="display: none;">
+        Начать туториал заново
+    </button>
+</aside>
+
+</div>
+
 <script>
-    /* --- Логика туториала --- */
-    
-    // Подсказки для каждого шага
-    const instructions = {
-        'screen-home': 'Нажмите на иконку "Настройки"',
-        'screen-settings': 'Выберите пункт "Подключения"',
-        'screen-connections': 'Нажмите на "Wi-Fi"',
-        'screen-wifi': 'Выберите сеть "Home_WiFi"'
+    const tutorialSteps = {
+        'screen-home': {
+            stepLabel: 'Шаг 1 из 5',
+            title: 'Открываем настройки',
+            description: 'Найдите на домашнем экране иконку «Настройки» и нажмите на нее.',
+            instruction: 'Нажмите на иконку «Настройки».',
+            helper: '',
+            clickHint: { targetId: 'target-settings-app', radius: 20, padding: 8 },
+            tone: 'default'
+        },
+        'screen-settings': {
+            stepLabel: 'Шаг 2 из 5',
+            title: 'Переходим в раздел подключения',
+            description: 'В меню настроек выберите пункт «Подключения».',
+            instruction: 'Откройте пункт «Подключения».',
+            helper: '',
+            clickHint: { targetId: 'target-connections-item', radius: 14, padding: 6 },
+            tone: 'default'
+        },
+        'screen-connections': {
+            stepLabel: 'Шаг 3 из 5',
+            title: 'Открываем настройки Wi-Fi',
+            description: 'В разделе «Подключения» нажмите строку «Wi-Fi».',
+            instruction: 'Нажмите на «Wi-Fi».',
+            helper: '',
+            clickHint: { targetId: 'target-wifi-item', radius: 14, padding: 6 },
+            tone: 'default'
+        },
+        'screen-wifi': {
+            stepLabel: 'Шаг 4 из 5',
+            title: 'Выбираем домашнюю сеть',
+            description: 'Нажмите на сеть «Home_WiFi», чтобы открыть окно ввода пароля.',
+            instruction: 'Выберите сеть «Home_WiFi».',
+            helper: '',
+            clickHint: { targetId: 'network-home', radius: 14, padding: 6 },
+            tone: 'default'
+        },
+        'password-step': {
+            stepLabel: 'Шаг 5 из 5',
+            title: 'Вводим пароль и подключаемся',
+            description: 'Введите пароль в поле. Можно нажать на глаз, чтобы показать или скрыть пароль. Затем нажмите «Подключиться».',
+            instruction: 'Введите пароль и нажмите «Подключиться».',
+            helper: 'Подсказка для обучения: пароль сети — 12345678.',
+            clickHint: { targetId: 'target-connect-button', radius: 12, padding: 6 },
+            tone: 'default'
+        },
+        'completed': {
+            stepLabel: 'Завершено',
+            title: 'Вы успешно подключились к Wi-Fi',
+            description: 'Сеть «Home_WiFi» подключена. Значок Wi-Fi в статус-баре стал активным.',
+            instruction: 'Отлично! Учебный модуль завершен.',
+            helper: 'Можете повторить шаги еще раз, чтобы закрепить результат.',
+            clickHint: null,
+            tone: 'success'
+        }
     };
 
-    function updateToast(screenId) {
-        const toast = document.getElementById('toast');
-        if (instructions[screenId]) {
-            toast.innerText = instructions[screenId];
-            toast.style.display = 'block';
-        } else {
-            toast.style.display = 'none';
+    const tutorialStepOrder = ['screen-home', 'screen-settings', 'screen-connections', 'screen-wifi', 'password-step'];
+
+    let currentStepKey = 'screen-home';
+    let activeHintTargetId = null;
+
+    function getStepIndex(stepKey) {
+        return tutorialStepOrder.indexOf(stepKey);
+    }
+
+    function getStepData(stepKey) {
+        return tutorialSteps[stepKey] || tutorialSteps['screen-home'];
+    }
+
+    function ensureProgressSegments() {
+        const track = document.getElementById('info-progress-track');
+        const segmentsCount = tutorialStepOrder.length;
+
+        track.style.setProperty('--segments-count', String(segmentsCount));
+        if (track.childElementCount === segmentsCount) {
+            return;
+        }
+
+        track.innerHTML = '';
+        for (let i = 0; i < segmentsCount; i += 1) {
+            const segment = document.createElement('span');
+            segment.className = 'progress-segment';
+            track.appendChild(segment);
         }
     }
 
-    function goToScreen(screenId) {
-        // Убираем активный класс у всех экранов
-        document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
-        // Добавляем активный класс нужному
-        document.getElementById(screenId).classList.add('active');
-        updateToast(screenId);
+    function updateProgressBar(stepKey) {
+        ensureProgressSegments();
+        const track = document.getElementById('info-progress-track');
+        const segments = Array.from(track.children);
+        const stepIndex = getStepIndex(stepKey);
+        const isCompleted = stepKey === 'completed';
+        const currentIndex = isCompleted ? tutorialStepOrder.length - 1 : stepIndex;
+
+        segments.forEach((segment, index) => {
+            segment.classList.remove('is-complete', 'is-current');
+
+            if (isCompleted || index < currentIndex) {
+                segment.classList.add('is-complete');
+            } else if (index === currentIndex) {
+                segment.classList.add('is-current');
+            }
+        });
     }
 
-    // Если кликнули не туда
+    function normalizeClickHint(hintConfig) {
+        if (!hintConfig) {
+            return null;
+        }
+        if (typeof hintConfig === 'string') {
+            return { targetId: hintConfig, radius: 14, padding: 6 };
+        }
+        if (typeof hintConfig === 'object' && hintConfig.targetId) {
+            return {
+                targetId: String(hintConfig.targetId),
+                radius: Number(hintConfig.radius || 14),
+                padding: Number(hintConfig.padding || 6)
+            };
+        }
+        return null;
+    }
+
+    function updateClickHint(hintConfig) {
+        const frame = document.querySelector('.phone-frame');
+
+        if (activeHintTargetId) {
+            const previousTarget = document.getElementById(activeHintTargetId);
+            if (previousTarget) {
+                previousTarget.classList.remove('click-target-active');
+                previousTarget.style.removeProperty('--click-hint-radius');
+                previousTarget.style.removeProperty('--click-hint-padding');
+            }
+            activeHintTargetId = null;
+        }
+
+        const resolvedHint = normalizeClickHint(hintConfig);
+        if (!resolvedHint) {
+            if (frame) {
+                frame.classList.remove('dimmed');
+            }
+            return;
+        }
+
+        const target = document.getElementById(resolvedHint.targetId);
+        if (!target) {
+            if (frame) {
+                frame.classList.remove('dimmed');
+            }
+            return;
+        }
+
+        if (frame) {
+            frame.classList.add('dimmed');
+        }
+
+        target.style.setProperty('--click-hint-radius', `${resolvedHint.radius}px`);
+        target.style.setProperty('--click-hint-padding', `${resolvedHint.padding}px`);
+        target.classList.add('click-target-active');
+        activeHintTargetId = resolvedHint.targetId;
+    }
+
+    function updateInfoBlock(stepKey) {
+        const data = getStepData(stepKey);
+        currentStepKey = stepKey;
+
+        const toast = document.getElementById('toast');
+        const infoStep = document.getElementById('info-step');
+        const infoTitle = document.getElementById('info-step-title');
+        const infoDescription = document.getElementById('info-step-description');
+        const infoHelper = document.getElementById('info-helper');
+
+        toast.classList.remove('is-error', 'is-success');
+        if (data.tone === 'success') {
+            toast.classList.add('is-success');
+        }
+
+        toast.innerText = data.instruction;
+        infoStep.innerText = data.stepLabel;
+        infoTitle.innerText = data.title;
+        infoDescription.innerText = data.description;
+
+        if (data.helper) {
+            infoHelper.style.display = 'block';
+            infoHelper.innerText = data.helper;
+        } else {
+            infoHelper.style.display = 'none';
+            infoHelper.innerText = '';
+        }
+
+        updateProgressBar(stepKey);
+        updateClickHint(data.clickHint);
+        updateStepNavigation(stepKey);
+    }
+
+    function updateStepNavigation(stepKey) {
+        const navContainer = document.getElementById('info-nav');
+        const prevButton = document.getElementById('info-prev-btn');
+        const nextButton = document.getElementById('info-next-btn');
+        const restartButton = document.getElementById('restart-tutorial-btn');
+        const stepIndex = getStepIndex(stepKey);
+
+        if (stepKey === 'completed') {
+            navContainer.style.display = 'none';
+            restartButton.style.display = 'inline-flex';
+            return;
+        }
+
+        navContainer.style.display = 'grid';
+        restartButton.style.display = 'none';
+
+        prevButton.disabled = stepIndex <= 0;
+        nextButton.disabled = stepIndex < 0 || stepIndex >= tutorialStepOrder.length - 1;
+    }
+
+    function showErrorToast(message) {
+        const toast = document.getElementById('toast');
+        toast.classList.remove('is-success');
+        toast.classList.add('is-error');
+        toast.innerText = message;
+    }
+
+    function setActiveScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
+
+    function hidePasswordModal(resetInput = true) {
+        const overlay = document.getElementById('password-overlay');
+        overlay.style.display = 'none';
+
+        if (resetInput) {
+            document.getElementById('wifi-password').value = '';
+            document.getElementById('pass-error').innerText = '';
+        }
+
+        setPasswordVisibility(false);
+    }
+
+    function goToScreen(screenId) {
+        hidePasswordModal(true);
+        setActiveScreen(screenId);
+        updateInfoBlock(screenId);
+    }
+
+    function goToStepByIndex(stepIndex) {
+        const stepKey = tutorialStepOrder[stepIndex];
+        if (!stepKey) {
+            return;
+        }
+
+        if (stepKey === 'password-step') {
+            openPasswordModal();
+            return;
+        }
+
+        goToScreen(stepKey);
+    }
+
+    function goToPreviousStep() {
+        if (currentStepKey === 'completed') {
+            goToStepByIndex(tutorialStepOrder.length - 1);
+            return;
+        }
+
+        const currentIndex = getStepIndex(currentStepKey);
+        if (currentIndex > 0) {
+            goToStepByIndex(currentIndex - 1);
+        }
+    }
+
+    function goToNextStep() {
+        const currentIndex = getStepIndex(currentStepKey);
+        if (currentIndex >= 0 && currentIndex < tutorialStepOrder.length - 1) {
+            goToStepByIndex(currentIndex + 1);
+        }
+    }
+
     function wrongAction(element) {
         element.classList.add('shake');
-        const originalText = document.getElementById('toast').innerText;
-        const toast = document.getElementById('toast');
-        
-        toast.innerText = "Неверно. Попробуйте другой пункт.";
-        toast.style.background = "rgba(200, 0, 0, 0.8)";
-        
+        showErrorToast('Неверно. Нажмите на подсвеченный элемент.');
+
         setTimeout(() => {
             element.classList.remove('shake');
-            toast.innerText = originalText; // Возврат к инструкции
-            toast.style.background = "rgba(0, 0, 0, 0.8)";
-        }, 1000);
+            updateInfoBlock(currentStepKey);
+        }, 900);
     }
 
-    // --- Логика пароля ---
+    function setPasswordVisibility(isVisible) {
+        const input = document.getElementById('wifi-password');
+        const toggleButton = document.getElementById('toggle-password-btn');
+        input.type = isVisible ? 'text' : 'password';
+        toggleButton.innerText = isVisible ? '🙈' : '👁';
+        toggleButton.setAttribute('aria-label', isVisible ? 'Скрыть пароль' : 'Показать пароль');
+    }
+
+    function togglePasswordVisibility() {
+        const input = document.getElementById('wifi-password');
+        setPasswordVisibility(input.type === 'password');
+    }
+
     function openPasswordModal() {
+        setActiveScreen('screen-wifi');
         document.getElementById('password-overlay').style.display = 'flex';
+        document.getElementById('pass-error').innerText = '';
         document.getElementById('wifi-password').focus();
-        document.getElementById('toast').style.display = 'none'; // Скрыть подсказку
+        updateInfoBlock('password-step');
     }
 
     function closePasswordModal() {
-        document.getElementById('password-overlay').style.display = 'none';
-        document.getElementById('wifi-password').value = '';
-        document.getElementById('pass-error').innerText = '';
-        updateToast('screen-wifi');
+        hidePasswordModal(true);
+        updateInfoBlock('screen-wifi');
     }
 
     function checkPassword() {
         const input = document.getElementById('wifi-password');
         const error = document.getElementById('pass-error');
-        
+
         if (input.value === '12345678') {
-            // УСПЕХ
-            document.getElementById('password-overlay').style.display = 'none';
+            hidePasswordModal(true);
             finishTutorial();
         } else {
             error.innerText = 'Неверный пароль. Попробуйте еще раз.';
             input.classList.add('shake');
-            setTimeout(() => input.classList.remove('shake'), 500);
+            showErrorToast('Пароль неверный. Проверьте ввод и повторите попытку.');
+            setTimeout(() => {
+                input.classList.remove('shake');
+                updateInfoBlock('password-step');
+            }, 600);
         }
     }
 
-    // Обработка Enter в поле пароля
     document.getElementById('wifi-password').addEventListener('keyup', function(e) {
-        if (e.key === 'Enter') checkPassword();
+        if (e.key === 'Enter') {
+            checkPassword();
+        }
     });
 
     function finishTutorial() {
-        // Меняем визуализацию сети на "Подключено"
         const netName = document.getElementById('home-wifi-name');
         const netStatus = document.getElementById('home-wifi-status');
         const netItem = document.getElementById('network-home');
-        
+
         netName.style.color = '#0070d2';
         netStatus.style.display = 'block';
-        netItem.style.background = '#e8f4fd'; // Голубой фон
-        
-        // Меняем иконку в статус-баре
+        netItem.style.background = '#e8f4fd';
+
         document.getElementById('status-wifi').setAttribute('fill', '#000');
         document.getElementById('status-wifi').querySelector('path').setAttribute('fill-opacity', '1');
 
-        // Финальное сообщение
-        const toast = document.getElementById('toast');
-        toast.innerText = "Отлично! Вы подключены к Wi-Fi.";
-        toast.style.background = "#28a745";
-        toast.style.display = 'block';
-        toast.style.bottom = '50%'; // По центру
-        
-        // Кнопка выхода (можно добавить редирект)
-        setTimeout(() => {
-             alert("Урок пройден!");
-        }, 1000);
+        updateInfoBlock('completed');
     }
+
+    function resetTutorialState() {
+        const netName = document.getElementById('home-wifi-name');
+        const netStatus = document.getElementById('home-wifi-status');
+        const netItem = document.getElementById('network-home');
+        const statusWifi = document.getElementById('status-wifi');
+
+        netName.style.color = '';
+        netStatus.style.display = 'none';
+        netItem.style.background = '';
+
+        statusWifi.setAttribute('fill', '#999');
+        statusWifi.querySelector('path').setAttribute('fill-opacity', '0.3');
+
+        hidePasswordModal(true);
+    }
+
+    function restartTutorial() {
+        resetTutorialState();
+        goToScreen('screen-home');
+    }
+
+    setPasswordVisibility(false);
+    updateInfoBlock('screen-home');
 </script>
 
 </body>
