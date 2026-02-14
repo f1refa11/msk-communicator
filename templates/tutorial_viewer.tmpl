@@ -15,7 +15,11 @@
                 <div>
                     <div class="section-kicker">режим: {{ level_label }}</div>
                     <h1 class="page-title">{{ tutorial_title }}</h1>
-                    <p class="page-note">Страница {{ current_page }} из {{ total_pages }}. Используйте крупные стрелки для перехода между шагами.</p>
+                    {% if viewer_navigation == 'style-switch' and style_options %}
+                        <p class="page-note">Выберите формат прохождения: видео или симулятор.</p>
+                    {% else %}
+                        <p class="page-note">Страница {{ current_page }} из {{ total_pages }}. Используйте крупные стрелки для перехода между шагами.</p>
+                    {% endif %}
                 </div>
                 <div class="viewer-meta">
                     <span class="pill">{{ current_page }} / {{ total_pages }}</span>
@@ -23,19 +27,31 @@
                 </div>
             </header>
 
-            <div class="viewer-nav">
-                {% if current_page > 1 %}
-                    <a href="/tutorials/{{ tutorial_name }}/{{ current_page - 1 }}" class="btn btn-ghost btn-lg">⬅️ Предыдущий шаг</a>
-                {% else %}
-                    <span class="btn btn-ghost btn-lg disabled">⬅️ Предыдущий шаг</span>
-                {% endif %}
+            {% if viewer_navigation == 'style-switch' and style_options %}
+                <div class="viewer-style-switch">
+                    {% for option in style_options %}
+                        {% if option.page == current_page %}
+                            <span class="btn btn-primary btn-lg viewer-style-active">{{ option.label }}</span>
+                        {% else %}
+                            <a href="/tutorials/{{ tutorial_name }}/{{ option.page }}" class="btn btn-ghost btn-lg">{{ option.label }}</a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="viewer-nav">
+                    {% if current_page > 1 %}
+                        <a href="/tutorials/{{ tutorial_name }}/{{ current_page - 1 }}" class="btn btn-ghost btn-lg">⬅️ Предыдущий шаг</a>
+                    {% else %}
+                        <span class="btn btn-ghost btn-lg disabled">⬅️ Предыдущий шаг</span>
+                    {% endif %}
 
-                {% if current_page < total_pages %}
-                    <a href="/tutorials/{{ tutorial_name }}/{{ current_page + 1 }}" class="btn btn-primary btn-lg">Следующий шаг ➡️</a>
-                {% else %}
-                    <span class="btn btn-primary btn-lg disabled">Это последняя страница</span>
-                {% endif %}
-            </div>
+                    {% if current_page < total_pages %}
+                        <a href="/tutorials/{{ tutorial_name }}/{{ current_page + 1 }}" class="btn btn-primary btn-lg">Следующий шаг ➡️</a>
+                    {% else %}
+                        <span class="btn btn-primary btn-lg disabled">Это последняя страница</span>
+                    {% endif %}
+                </div>
+            {% endif %}
 
             <div class="viewer-content">
                 {{ content | safe }}

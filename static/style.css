@@ -834,6 +834,10 @@ img { max-width: 100%; height: auto; }
     gap: 16px;
 }
 
+.tutorials-page .tutorial-section {
+    margin-top: 20px;
+}
+
 .tutorial-card {
     background: #fff;
     border: 1px solid var(--border);
@@ -987,6 +991,16 @@ img { max-width: 100%; height: auto; }
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 12px;
+}
+
+.viewer-style-switch {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+}
+
+.viewer-style-active {
+    cursor: default;
 }
 
 .viewer-content {

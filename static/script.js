@@ -12,7 +12,7 @@
 
     const problemOptions = [
         { key: 'video_not_opening', label: '1. не открывается видео' },
-        { key: 'tutorial_not_opening', label: '2. не открывается интерактивный туториал' },
+        { key: 'tutorial_not_opening', label: '2. не открывается интерактивный модуль' },
         { key: 'account_not_created', label: '3. не создаётся аккаунт' },
         { key: 'account_login_failed', label: '4. не получается зайти в аккаунт' }
     ];
@@ -257,4 +257,3 @@
         }
     });
 })();
-
