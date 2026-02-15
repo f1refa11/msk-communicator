@@ -124,7 +124,7 @@ img { max-width: 100%; height: auto; }
     background: #eef2ff;
     color: #1f2a44;
     font-weight: 700;
-    font-size: 14px;
+    font-size: clamp(18px, 2.2vw, 21px);
 }
 
 .form-card { gap: 12px; }
@@ -967,7 +967,7 @@ img { max-width: 100%; height: auto; }
 .course-track-stats {
     display: grid;
     gap: 6px;
-    font-size: 16px;
+    font-size: clamp(18px, 2.2vw, 21px);
     font-weight: 700;
     color: #1f2a44;
     background: #f0f3fb;
@@ -1051,12 +1051,13 @@ img { max-width: 100%; height: auto; }
 
 .course-module-main h3 {
     margin: 0;
-    font-size: 22px;
+    font-size: clamp(22px, 2.6vw, 30px);
 }
 
 .course-module-desc {
     margin: 6px 0 0;
     color: var(--muted);
+    font-size: clamp(22px, 1.7vw, 29px);
 }
 
 .course-module-status {
@@ -1064,7 +1065,7 @@ img { max-width: 100%; height: auto; }
     align-items: center;
     padding: 5px 10px;
     border-radius: 999px;
-    font-size: 13px;
+    font-size: clamp(18px, 2.2vw, 21px);
     font-weight: 700;
     white-space: nowrap;
 }
@@ -1202,9 +1203,7 @@ img { max-width: 100%; height: auto; }
 }
 
 .viewer-content {
-    border: 2px solid #e0e0e0;
     border-radius: 16px;
-    padding: 18px;
     min-height: 260px;
     background: #fff;
     font-size: 20px;

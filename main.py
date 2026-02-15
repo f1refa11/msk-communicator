@@ -939,16 +939,6 @@ async def tutorial_viewer(request, session, tutorial_name, page_num):
     if page_num < 1 or page_num > total_pages:
         return "Такой страницы не существует", 404
 
-    current_file = files[page_num - 1]
-    should_update_guest_cookie = False
-    if page_num == total_pages:
-        if user:
-            mark_tutorial_completed(user[0], canonical_slug)
-            completed_slugs.add(canonical_slug)
-        elif canonical_slug not in completed_slugs:
-            completed_slugs.add(canonical_slug)
-            should_update_guest_cookie = True
-
     viewer_navigation = (
         tutorial_meta["viewer_navigation"] if tutorial_meta else "pages"
     )
@@ -967,6 +957,19 @@ async def tutorial_viewer(request, session, tutorial_name, page_num):
         if len(style_options) < 2:
             viewer_navigation = "pages"
             style_options = []
+
+    current_file = files[page_num - 1]
+    should_update_guest_cookie = False
+    should_mark_completed = (
+        page_num == total_pages or viewer_navigation == "style-switch"
+    )
+    if should_mark_completed:
+        if user:
+            mark_tutorial_completed(user[0], canonical_slug)
+            completed_slugs.add(canonical_slug)
+        elif canonical_slug not in completed_slugs:
+            completed_slugs.add(canonical_slug)
+            should_update_guest_cookie = True
 
     # Формируем путь для Jinja (относительно папки templates)
     # Например: "tutorials/taxi/1.tmpl" или "tutorials/taxi/1.html"

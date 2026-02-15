@@ -47,7 +47,6 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 400px;
         }
 
         .step-badge {
@@ -57,7 +56,7 @@
             padding: 6px 14px;
             border-radius: 50px;
             font-weight: 600;
-            font-size: 14px;
+            font-size: clamp(18px, 2.4vw, 20px);
             margin-bottom: 20px;
             text-transform: uppercase;
         }
@@ -69,7 +68,7 @@
         }
 
         .info-progress-label {
-            font-size: 12px;
+            font-size: clamp(18px, 2.4vw, 20px);
             color: #5f6368;
             text-transform: uppercase;
             letter-spacing: 0.05em;
@@ -100,12 +99,12 @@
 
         .guide-title {
             margin: 0 0 15px 0;
-            font-size: 28px;
+            font-size: clamp(26px, 3.2vw, 36px);
             color: var(--ru-text);
         }
 
         .guide-text {
-            font-size: 20px;
+            font-size: clamp(24px, 1.9vw, 33px);
             line-height: 1.6;
             color: #444;
             margin-bottom: 25px;
@@ -136,7 +135,7 @@
             border: none;
             padding: 10px 20px;
             border-radius: 10px;
-            font-size: 16px;
+            font-size: clamp(18px, 2.4vw, 20px);
             cursor: pointer;
             transition: background 0.2s;
             color: #333;
@@ -169,7 +168,7 @@
             justify-content: space-between;
             padding: 5px 20px;
             color: black;
-            font-size: 13px;
+            font-size: 15px;
             font-weight: 600;
             pointer-events: none;
         }
@@ -219,12 +218,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 26px;
+            font-size: 28px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .app-name {
-            font-size: 12px;
+            font-size: 14px;
             color: #333;
             text-shadow: 0 1px 1px rgba(255,255,255,0.8);
             font-weight: 500;
@@ -239,7 +238,7 @@
             overflow: hidden;
             font-weight: 900;
         }
-        .icon-rustore::before { content: "Ru"; font-size: 20px; z-index: 2; }
+        .icon-rustore::before { content: "Ru"; font-size: 22px; z-index: 2; }
         .icon-rustore::after {
             content: ""; position: absolute; bottom: -5px; right: -5px;
             width: 25px; height: 25px; background: rgba(255,255,255,0.2); border-radius: 50%;
@@ -263,7 +262,7 @@
             align-items: center;
             padding: 0 12px;
             color: var(--ru-subtext);
-            font-size: 16px;
+            font-size: 18px;
             gap: 8px;
             cursor: text;
             flex: 1;
@@ -288,10 +287,10 @@
             justify-content: center;
             color: white;
             font-weight: bold;
-            font-size: 20px;
+            font-size: 22px;
         }
 
-        .section-title { font-size: 20px; font-weight: 700; margin-bottom: 16px; }
+        .section-title { font-size: 22px; font-weight: 700; margin-bottom: 16px; }
 
         .app-row {
             display: flex;
@@ -307,13 +306,13 @@
             width: 56px; height: 56px;
             background: #eee;
             border-radius: 12px;
-            display: flex; align-items: center; justify-content: center; font-size: 24px;
+            display: flex; align-items: center; justify-content: center; font-size: 26px;
         }
         .icon-emias { background: #0066CC; color: white; font-weight: bold; }
 
         .app-row-info { flex: 1; }
-        .app-row-title { font-weight: 600; font-size: 16px; margin-bottom: 4px; color: var(--ru-text); }
-        .app-row-cat { color: var(--ru-subtext); font-size: 13px; }
+        .app-row-title { font-weight: 600; font-size: 18px; margin-bottom: 4px; color: var(--ru-text); }
+        .app-row-cat { color: var(--ru-subtext); font-size: 15px; }
 
         .btn-install-small {
             background: var(--ru-gray);
@@ -322,7 +321,7 @@
             padding: 8px 16px;
             border-radius: 20px;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 16px;
         }
 
         /* --- КЛАВИАТУРА (Исправленная) --- */
@@ -373,18 +372,18 @@
             width: 80px; height: 80px;
             background: #0066CC;
             border-radius: 18px;
-            color: white; font-size: 36px; display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 40px; display: flex; align-items: center; justify-content: center;
         }
-        .app-meta h1 { margin: 0 0 6px 0; font-size: 20px; color: var(--ru-text); }
-        .app-meta p { color: var(--ru-blue); margin: 0; font-size: 14px; }
-        .rating { color: #888; margin-top: 6px; font-size: 13px; }
+        .app-meta h1 { margin: 0 0 6px 0; font-size: 22px; color: var(--ru-text); }
+        .app-meta p { color: var(--ru-blue); margin: 0; font-size: 16px; }
+        .rating { color: #888; margin-top: 6px; font-size: 15px; }
 
         .main-btn {
             width: 100%;
             height: 44px;
             border-radius: 12px;
             border: none;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
@@ -401,7 +400,7 @@
             color: white;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
+            font-size: 44px;
             font-weight: bold;
         }
 
@@ -457,7 +456,7 @@
         @media (max-width: 800px) {
             .simulator-wrapper { flex-direction: column-reverse; align-items: center; }
             .phone-case { transform: scale(0.9); }
-            .guide-panel { width: 90%; min-height: auto; }
+            .guide-panel { min-height: auto; }
         }
 
     </style>
@@ -648,7 +647,7 @@
         <div id="screen-3" class="screen">
             <div class="rustore-header">
                 <div class="search-bar" style="color: black; font-weight: 500;">
-                    <span style="font-size: 20px; color: #0077FF; margin-right: 5px;">←</span>
+                    <span style="font-size: 22px; color: #0077FF; margin-right: 5px;">←</span>
                     <span id="search-input-text" style="border-right: 2px solid #0077FF; padding-right: 2px;">|</span>
                 </div>
             </div>
@@ -685,8 +684,8 @@
 
         <div id="screen-4" class="screen">
             <div class="rustore-header" style="border:none;">
-                <span style="font-size: 24px; color: #0077FF;" onclick="prevStep()">←</span>
-                <span style="flex:1; text-align: right; font-size: 20px;">...</span>
+                <span style="font-size: 26px; color: #0077FF;" onclick="prevStep()">←</span>
+                <span style="flex:1; text-align: right; font-size: 22px;">...</span>
             </div>
             <div class="rustore-content">
                 <div class="app-details-header">
@@ -760,16 +759,15 @@
         });
     }
 
-    // ОБНОВЛЕННЫЕ КООРДИНАТЫ (Исправление по запросу 2)
-    // Теперь они более точно попадают в элементы
+    // Конфигурация подсветки по шагам
     const hintConfigs = {
-        1: { top: "72px", right: "14px", width: "78px", height: "92px", borderRadius: "10px" }, // Иконка RuStore (4-й в ряду)
-        2: { top: "34px", left: "14px", right: "15px", height: "55px", borderRadius: "10px", width: "92%" }, // Поиск бар
-        3: { bottom: "10px", left: "5px", right: "5px", height: "200px", width: "auto", borderRadius: "10px", top: "auto" }, // Клавиатура
-        4: { top: "94px", left: "0", right: "0", height: "80px", width: "auto", borderRadius: "0" }, // Строка результата
-        5: { top: "209px", left: "0px", right: "0px", height: "60px", width: "auto", borderRadius: "12px" }, // Кнопка скачать
+        1: { targetId: "target-icon-rustore", padding: 8, borderRadius: "12px" },
+        2: { targetId: "target-search-bar", padding: 6, borderRadius: "10px" },
+        3: { targetId: "keyboard-area", padding: 6, borderRadius: "10px" },
+        4: { targetId: "target-search-result", padding: 2, borderRadius: "10px" },
+        5: { targetId: "main-download-btn", padding: 4, borderRadius: "12px" },
         6: { display: "none" }, // Процесс
-        7: { top: "209px", left: "0px", right: "0px", height: "55px", width: "auto", borderRadius: "12px" }, // Кнопка открыть
+        7: { targetId: "main-download-btn", padding: 4, borderRadius: "12px" },
         8: { display: "none" }
     };
 
@@ -779,6 +777,49 @@
 
         if (!config || config.display === "none") {
             h.style.display = "none";
+            return;
+        }
+
+        if (config.targetId) {
+            const target = document.getElementById(config.targetId);
+            const container = document.querySelector('.phone-case');
+            if (!target || !container) {
+                h.style.display = "none";
+                return;
+            }
+
+            const targetRect = target.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            if (!targetRect.width || !targetRect.height) {
+                h.style.display = "none";
+                return;
+            }
+
+            const scaleX = containerRect.width / container.offsetWidth || 1;
+            const scaleY = containerRect.height / container.offsetHeight || 1;
+            const padding = Number(config.padding || 0);
+
+            const top = (
+                (targetRect.top - containerRect.top) / scaleY
+                - container.clientTop
+                - padding
+            );
+            const left = (
+                (targetRect.left - containerRect.left) / scaleX
+                - container.clientLeft
+                - padding
+            );
+            const width = (targetRect.width / scaleX) + (padding * 2);
+            const height = (targetRect.height / scaleY) + (padding * 2);
+
+            h.style.display = "block";
+            h.style.top = `${top}px`;
+            h.style.left = `${left}px`;
+            h.style.right = "auto";
+            h.style.bottom = "auto";
+            h.style.width = `${width}px`;
+            h.style.height = `${height}px`;
+            h.style.borderRadius = config.borderRadius || "12px";
             return;
         }
 
@@ -806,7 +847,6 @@
         if (instr) instr.classList.add('active');
 
         currentStep = step;
-        updateHint(step);
         updateNavButtons();
         updateProgressBar(step);
 
@@ -854,6 +894,8 @@
             document.getElementById('btn-text').innerText = "Скачать";
             btn.onclick = startDownload;
         }
+
+        updateHint(step);
 
     }
 
@@ -925,6 +967,8 @@
     updateProgressBar(1);
     updateHint(1);
     updateNavButtons();
+
+    window.addEventListener('resize', () => updateHint(currentStep));
 </script>
 
 </body>

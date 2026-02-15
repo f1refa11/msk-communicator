@@ -16,7 +16,7 @@
         .pw-layout {
             display: flex;
             gap: 22px;
-            justify-content: center;
+            justify-content: stretch;
             align-items: flex-start;
             flex-wrap: wrap;
         }
@@ -230,7 +230,7 @@
         }
 
         .pw-info {
-            width: min(360px, 100%);
+            flex: 1;
             background: #fff;
             border: 1px solid #d4deea;
             border-radius: 18px;
@@ -238,6 +238,7 @@
             padding: 18px;
             display: grid;
             gap: 12px;
+	        min-width: 240px;
         }
 
         .pw-progress {
@@ -246,7 +247,7 @@
         }
 
         .pw-progress-label {
-            font-size: 12px;
+            font-size: clamp(16px, 2.2vw, 18px);
             color: #5f6368;
             text-transform: uppercase;
             letter-spacing: 0.05em;
@@ -276,7 +277,7 @@
         }
 
         .pw-step {
-            font-size: 12px;
+            font-size: clamp(16px, 2.2vw, 18px);
             font-weight: 700;
             color: #677387;
             text-transform: uppercase;
@@ -285,14 +286,14 @@
 
         .pw-title {
             margin: 0;
-            font-size: 24px;
+            font-size: clamp(24px, 3vw, 32px);
             line-height: 1.25;
             color: #111c2c;
         }
 
         .pw-description {
             margin: 0;
-            font-size: 16px;
+            font-size: clamp(22px, 1.7vw, 29px);
             line-height: 1.5;
             color: #2a3646;
         }
@@ -302,7 +303,7 @@
             background: #edf5ff;
             border-radius: 12px;
             color: #1f5c96;
-            font-size: 14px;
+            font-size: clamp(16px, 2.2vw, 18px);
             line-height: 1.4;
             padding: 10px 12px;
         }
@@ -318,7 +319,7 @@
             border: none;
             border-radius: 12px;
             padding: 11px 14px;
-            font-size: 15px;
+            font-size: clamp(16px, 2.2vw, 18px);
             font-weight: 700;
             cursor: pointer;
         }
@@ -396,9 +397,9 @@
 
                     <div class="pw-screen">
                         <div id="pw-state-sleep" class="pw-state pw-state-sleep pw-active">
-                            <div class="pw-aod-time">12:30</div>
-                            <div class="pw-aod-date">Вт, 21 мая</div>
-                            <div class="pw-aod-hint">Экран спит</div>
+{#                            <div class="pw-aod-time">12:30</div>#}
+{#                            <div class="pw-aod-date">Вт, 21 мая</div>#}
+{#                            <div class="pw-aod-hint">Экран спит</div>#}
                         </div>
 
                         <div id="pw-state-awake" class="pw-state pw-state-awake">
