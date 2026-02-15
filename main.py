@@ -550,7 +550,6 @@ def init_db():
                 name TEXT NOT NULL,
                 pass TEXT NOT NULL,
                 admin INTEGER DEFAULT 0,
-                avatar TEXT DEFAULT 'avatar-1',
                 PRIMARY KEY(id AUTOINCREMENT)
             )
         """)
@@ -560,12 +559,6 @@ def init_db():
 
 # Run the check on startup
 init_db()
-
-# add missing columns for existing dbs
-cur.execute("PRAGMA table_info(users)")
-_cols = [row[1] for row in cur.fetchall()]
-if "avatar" not in _cols:
-    cur.execute("ALTER TABLE users ADD COLUMN avatar TEXT DEFAULT 'avatar-1'")
 
 cur.execute(
     """
@@ -577,9 +570,6 @@ cur.execute(
     )
     """
 )
-
-AVATARS = ["avatar-1", "avatar-2", "avatar-3", "avatar-4", "avatar-5"]
-
 
 def _load_bug_reports():
     if not os.path.exists(BUGREPORTS_FILE):
@@ -1096,20 +1086,11 @@ async def account_settings(request, session):
     user = get_current_user(session)
     if not user:
         return redirect("/login")
-    if user[5] is None:
-        cur.execute("UPDATE users SET avatar = ? WHERE id = ?", ("avatar-1", user[0]))
-        user = get_current_user(session)
-    tutorial_progress = get_user_tutorial_progress(user[0])
-    completed_tutorials_count = sum(1 for t in tutorial_progress if t["completed"])
     return (
         page_account.render(
             yes_login=True,
             user=user,
-            avatars=AVATARS,
             user_name=user[2],
-            tutorial_progress=tutorial_progress,
-            completed_tutorials_count=completed_tutorials_count,
-            total_tutorials_count=len(tutorial_progress),
         ),
         200,
         {"Content-Type": "text/html"},
@@ -1257,19 +1238,6 @@ async def handle_update_password(request, session):
     new_hash = hashlib.sha256(new_pwd.encode("utf-8")).hexdigest()
     cur.execute("UPDATE users SET pass = ? WHERE id = ?", (new_hash, user[0]))
     return redirect("/account/?pwd=success")
-
-
-@app.route("/api/account/update_avatar", methods=["POST"])
-@with_session
-async def handle_update_avatar(request, session):
-    user = get_current_user(session)
-    if not user:
-        return redirect("/login")
-    avatar = request.form.get("avatar")
-    if avatar not in AVATARS:
-        return redirect("/account/?avatar=invalid")
-    cur.execute("UPDATE users SET avatar = ? WHERE id = ?", (avatar, user[0]))
-    return redirect("/account/?avatar=success")
 
 
 @app.route("/api/account/delete", methods=["POST"])

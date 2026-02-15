@@ -15,38 +15,6 @@
         <p class="page-note">Все поля и кнопки увеличены для удобства. Настройки сгруппированы по разделам.</p>
 
         <div class="settings-grid">
-            <section class="card form-card progress-card">
-                <div class="progress-header">
-                    <h2>Прогресс по интерактивным модулям</h2>
-                    <span class="pill">{{ completed_tutorials_count }} / {{ total_tutorials_count }}</span>
-                </div>
-
-                {% if tutorial_progress %}
-                    <div class="progress-grid">
-                        {% for tut in tutorial_progress %}
-                        <article class="progress-item {% if tut.completed %}progress-complete{% else %}progress-pending{% endif %}">
-                            <div class="progress-item-top">
-                                <h3>{{ tut.title }}</h3>
-                                {% if tut.completed %}
-                                    <span class="progress-badge progress-badge-complete">Пройден</span>
-                                {% else %}
-                                    <span class="progress-badge progress-badge-pending">Не пройден</span>
-                                {% endif %}
-                            </div>
-                            <p class="tutorial-desc">{{ tut.description }}</p>
-                            <div class="tutorial-actions">
-                                <a class="btn btn-primary btn-lg" href="/tutorials/{{ tut.slug }}/1">
-                                    {% if tut.completed %}Открыть снова{% else %}Начать{% endif %}
-                                </a>
-                            </div>
-                        </article>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <p class="empty-state">Интерактивные модули пока не добавлены.</p>
-                {% endif %}
-            </section>
-
             <section class="card form-card">
                 <h2>Имя пользователя</h2>
                 <form action="/api/account/update_name" method="post" class="form-grid">
@@ -95,20 +63,11 @@
             </section>
 
             <section class="card form-card">
-                <h2>Аватар профиля</h2>
-                <form action="/api/account/update_avatar" method="post" class="form-grid">
-                    <div class="avatar-grid">
-                        {% for a in avatars %}
-                        <label class="avatar-card">
-                            <div class="avatar-placeholder">{{ a[-1] }}</div>
-                            <input type="radio" name="avatar" value="{{ a }}" {% if user[5] == a %}checked{% endif %}>
-                        </label>
-                        {% endfor %}
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary btn-lg">Сохранить аватар</button>
-                    </div>
-                </form>
+                <h2>Выход из аккаунта</h2>
+                <p class="page-note">Нажмите кнопку ниже, чтобы выйти из текущего аккаунта на этом устройстве.</p>
+                <div class="form-actions">
+                    <a class="btn btn-ghost btn-lg" href="/logout">Выйти из аккаунта</a>
+                </div>
             </section>
 
             <section class="card form-card danger-card">
@@ -128,6 +87,7 @@
                     </div>
                 </form>
             </section>
+
         </div>
     </main>
 </body>
