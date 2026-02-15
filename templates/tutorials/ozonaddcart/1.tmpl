@@ -1,0 +1,1213 @@
+<div class="oac-sim">
+    <style>
+        .oac-sim,
+        .oac-sim * {
+            box-sizing: border-box;
+        }
+
+        .oac-sim {
+            background: #edf2fb;
+            border-radius: 16px;
+            padding: 18px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        }
+
+        .oac-layout {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .oac-layout.is-hidden {
+            display: none;
+        }
+
+        .oac-hidden {
+            display: none !important;
+        }
+
+        .oac-intro-screen {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            gap: 16px;
+        }
+
+        .oac-intro-card,
+        .oac-prep-card {
+            border-radius: 20px;
+            border: 1px solid #d4d9e4;
+            background: #f5f6f8;
+            padding: 26px;
+        }
+
+        .oac-intro-card {
+            text-align: center;
+        }
+
+        .oac-intro-title {
+            margin: 0;
+            font-size: clamp(26px, 3.2vw, 44px);
+            line-height: 1.06;
+            color: #0f172a;
+        }
+
+        .oac-intro-text {
+            margin: 16px 0 0;
+            font-size: clamp(16px, 1.55vw, 28px);
+            font-weight: 700;
+            color: #3b3c40;
+            line-height: 1.28;
+        }
+
+        .oac-example {
+            margin: 24px auto 0;
+            max-width: 900px;
+            text-align: left;
+            border-radius: 18px;
+            border: 3px solid #f0b400;
+            background: #efe4bf;
+            padding: 20px 24px;
+            color: #836100;
+        }
+
+        .oac-example-title {
+            margin: 0;
+            font-size: clamp(26px, 2.3vw, 38px);
+            font-weight: 800;
+            line-height: 1.12;
+        }
+
+        .oac-example-text {
+            margin: 16px 0 0;
+            font-size: clamp(16px, 1.45vw, 26px);
+            line-height: 1.35;
+        }
+
+        .oac-intro-actions {
+            display: flex;
+            justify-content: center;
+        }
+
+        .oac-start-btn {
+            border: 3px solid #101827;
+            border-radius: 24px;
+            background: #ffd800;
+            color: #101827;
+            font-size: clamp(22px, 1.9vw, 30px);
+            font-weight: 800;
+            padding: 12px 32px;
+            cursor: pointer;
+        }
+
+        .oac-step-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 210px;
+            padding: 10px 24px;
+            border-radius: 999px;
+            background: #45ae4f;
+            color: #fff;
+            font-size: clamp(18px, 1.4vw, 24px);
+            font-weight: 700;
+        }
+
+        .oac-prep-title {
+            margin: 18px 0 0;
+            font-size: clamp(30px, 2.7vw, 44px);
+            line-height: 1.12;
+            color: #0b1019;
+        }
+
+        .oac-prep-lead {
+            margin: 18px 0 0;
+            font-size: clamp(16px, 1.5vw, 26px);
+            color: #3f3f44;
+            line-height: 1.35;
+        }
+
+        .oac-prep-list {
+            list-style: none;
+            margin: 18px 0 0;
+            padding: 0;
+            display: grid;
+            gap: 12px;
+        }
+
+        .oac-prep-item {
+            border-left: 6px solid #45ae4f;
+            border-radius: 12px;
+            background: #ebedf1;
+            padding: 14px 16px;
+            font-size: clamp(17px, 1.45vw, 25px);
+            color: #0f141d;
+            line-height: 1.28;
+        }
+
+        .oac-safety-box {
+            margin-top: 16px;
+            border: 3px solid #268fe8;
+            border-radius: 18px;
+            background: #d3e3f2;
+            padding: 16px 18px;
+            color: #141923;
+        }
+
+        .oac-safety-box p {
+            margin: 0 0 10px;
+            font-size: clamp(16px, 1.4vw, 24px);
+            line-height: 1.32;
+        }
+
+        .oac-safety-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .oac-phone-wrap {
+            width: 360px;
+            display: flex;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .oac-phone {
+            width: 340px;
+            height: 650px;
+            border-radius: 28px;
+            border: 8px solid #1a1f27;
+            background: #fff;
+            overflow: hidden;
+            box-shadow: 0 18px 34px rgba(16, 30, 53, 0.32);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .oac-header {
+            height: 56px;
+            padding: 0 10px 0 12px;
+            background: #005bff;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+        }
+
+        .oac-logo {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+        }
+
+        .oac-screen {
+            display: none;
+            height: calc(100% - 110px);
+            background: #fff;
+        }
+
+        .oac-screen.active {
+            display: block;
+        }
+
+        .oac-body-scroll {
+            height: 100%;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .oac-search-bar {
+            flex: 1;
+            min-width: 0;
+            height: 36px;
+            border: none;
+            border-radius: 10px;
+            background: #ffffff;
+            color: #4b5668;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 0 10px;
+            cursor: pointer;
+            transition: box-shadow 0.2s ease, background-color 0.2s ease;
+        }
+
+        .oac-search-bar.active {
+            background: #fff6d8;
+            box-shadow: 0 0 0 2px rgba(255, 211, 77, 0.45);
+        }
+
+        .oac-search-bar span:last-child {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .oac-categories {
+            margin-top: 10px;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .oac-category {
+            flex: 0 0 auto;
+            min-width: 76px;
+            border: 1px solid #e1e6ef;
+            border-radius: 10px;
+            background: #f7f9fd;
+            padding: 8px 6px;
+            text-align: center;
+            font-size: 12px;
+            color: #344055;
+        }
+
+        .oac-category-icon {
+            font-size: 22px;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .oac-grid {
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .oac-product {
+            border: 1px solid #e2e7f0;
+            border-radius: 12px;
+            padding: 8px;
+            background: #fff;
+        }
+
+        .oac-product.clickable {
+            cursor: pointer;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .oac-product.clickable:hover {
+            border-color: #83b0ff;
+            box-shadow: 0 3px 10px rgba(0, 91, 255, 0.15);
+        }
+
+        .oac-product.selected {
+            border-color: #ffd34d;
+            box-shadow: 0 0 0 3px rgba(255, 211, 77, 0.3);
+            background: #fffdf3;
+        }
+
+        .oac-img {
+            height: 116px;
+            border-radius: 10px;
+            background: #f5f7fb;
+            border: 1px solid #e8edf6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 44px;
+            position: relative;
+        }
+
+        .oac-badge {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            background: #ff5252;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
+
+        .oac-price {
+            margin-top: 7px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #0f1725;
+        }
+
+        .oac-old {
+            margin-left: 6px;
+            font-size: 12px;
+            color: #8c95a3;
+            text-decoration: line-through;
+            font-weight: 500;
+        }
+
+        .oac-name {
+            margin-top: 4px;
+            font-size: 12px;
+            line-height: 1.3;
+            color: #313b4b;
+            min-height: 30px;
+        }
+
+        .oac-rating {
+            margin-top: 3px;
+            font-size: 11px;
+            color: #6a7380;
+        }
+
+        .oac-suggestions {
+            margin-top: 10px;
+            border: 1px solid #e1e7f0;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .oac-suggestion {
+            padding: 10px 12px;
+            font-size: 13px;
+            border-bottom: 1px solid #eef2f7;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+
+        .oac-suggestion:last-child {
+            border-bottom: none;
+        }
+
+        .oac-suggestion:hover {
+            background: #f3f8ff;
+        }
+
+        .oac-suggestion.selected {
+            background: #e8f2ff;
+            font-weight: 600;
+        }
+
+        .oac-detail {
+            padding: 10px;
+        }
+
+        .oac-detail-image {
+            height: 190px;
+            border-radius: 12px;
+            background: #f5f7fb;
+            border: 1px solid #e5ebf4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 84px;
+        }
+
+        .oac-detail-title {
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #141d2b;
+            line-height: 1.3;
+        }
+
+        .oac-detail-rating {
+            margin-top: 5px;
+            color: #5f6978;
+            font-size: 12px;
+        }
+
+        .oac-detail-price-row {
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .oac-detail-price {
+            font-size: 23px;
+            font-weight: 800;
+            color: #101827;
+        }
+
+        .oac-discount {
+            background: #ff5252;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 6px;
+            padding: 2px 6px;
+        }
+
+        .oac-chars {
+            margin-top: 10px;
+            background: #f6f8fc;
+            border: 1px solid #e3e8f1;
+            border-radius: 10px;
+            padding: 8px;
+        }
+
+        .oac-char {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #2f3a4a;
+            padding: 6px 0;
+            border-bottom: 1px solid #e7ecf4;
+        }
+
+        .oac-char:last-child {
+            border-bottom: none;
+        }
+
+        .oac-add-btn {
+            width: 100%;
+            margin-top: 10px;
+            border: none;
+            background: #005bff;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            padding: 11px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .oac-add-btn.done {
+            background: #2e9d4f;
+        }
+
+        .oac-tabs {
+            height: 54px;
+            border-top: 1px solid #e2e8f3;
+            background: #fff;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            flex-shrink: 0;
+        }
+
+        .oac-tab {
+            border: none;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            color: #687385;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: default;
+        }
+
+        .oac-tab-icon {
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .oac-tab.active {
+            color: #005bff;
+        }
+
+        .oac-cart-block {
+            margin-top: 10px;
+            border: 1px solid #dfe6f1;
+            border-radius: 12px;
+            background: #fff;
+            padding: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .oac-cart-img {
+            width: 70px;
+            height: 70px;
+            border-radius: 10px;
+            border: 1px solid #e8edf6;
+            background: #f6f8fc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+        }
+
+        .oac-cart-info {
+            flex: 1;
+        }
+
+        .oac-cart-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1f2937;
+            line-height: 1.3;
+        }
+
+        .oac-cart-price {
+            margin-top: 7px;
+            font-size: 16px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .oac-summary {
+            margin-top: 10px;
+            border: 1px solid #dfe6f1;
+            border-radius: 12px;
+            background: #fff;
+            padding: 10px;
+        }
+
+        .oac-summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #1f2a3a;
+            margin-bottom: 6px;
+        }
+
+        .oac-summary-total {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #e5eaf3;
+            padding-top: 7px;
+            margin-top: 2px;
+            font-size: 15px;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .oac-summary-free {
+            color: #2f9b52;
+            font-weight: 700;
+        }
+
+        .oac-info {
+            width: min(360px, 100%);
+            background: #fff;
+            border: 1px solid #d8dfeb;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(16, 39, 66, 0.1);
+            padding: 16px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .oac-progress-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #6b7280;
+        }
+
+        .oac-progress-track {
+            display: grid;
+            grid-template-columns: repeat(var(--oac-segments, 4), minmax(0, 1fr));
+            gap: 7px;
+        }
+
+        .oac-progress-segment {
+            height: 8px;
+            border-radius: 999px;
+            background: #dfe6ef;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .oac-progress-segment.done {
+            background: #1f9d55;
+        }
+
+        .oac-progress-segment.current {
+            background: #0070d2;
+            box-shadow: 0 0 0 2px rgba(0, 112, 210, 0.18);
+        }
+
+        .oac-step {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #667085;
+        }
+
+        .oac-title {
+            margin: 0;
+            font-size: 23px;
+            line-height: 1.2;
+            color: #101827;
+        }
+
+        .oac-desc {
+            margin: 0;
+            font-size: 15px;
+            line-height: 1.45;
+            color: #2b3545;
+        }
+
+        .oac-note {
+            margin: 0;
+            padding: 9px 10px;
+            border-radius: 10px;
+            background: #edf5ff;
+            color: #225d95;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .oac-nav {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .oac-btn,
+        .oac-restart {
+            border: none;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .oac-btn.prev {
+            background: #eef2f9;
+            color: #27384d;
+        }
+
+        .oac-btn.next {
+            background: #0070d2;
+            color: #fff;
+        }
+
+        .oac-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .oac-restart {
+            width: 100%;
+            display: none;
+            background: #2d7d46;
+            color: #fff;
+        }
+
+        .oac-click-hint {
+            position: fixed;
+            z-index: 10000;
+            display: none;
+            pointer-events: none;
+            border: 3px solid #2b97ff;
+            border-radius: 12px;
+            box-shadow: 0 0 0 2px rgba(43, 151, 255, 0.32), 0 0 16px rgba(43, 151, 255, 0.55);
+            animation: oacHintPulse 1.15s ease-in-out infinite;
+        }
+
+        @keyframes oacHintPulse {
+            0% { transform: scale(1); opacity: 1; }
+            60% { transform: scale(1.05); opacity: 0.66; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @media (max-width: 780px) {
+            .oac-sim {
+                padding: 12px;
+            }
+
+            .oac-phone {
+                transform: scale(0.94);
+                transform-origin: top center;
+            }
+        }
+    </style>
+
+    <section id="oac-intro-screen" class="oac-intro-screen">
+        <article class="oac-intro-card">
+            <h1 class="oac-intro-title">Добавление товаров в корзину на OZON</h1>
+            <p class="oac-intro-text">В этом модуле вы научитесь искать товар через поиск в приложении OZON.</p>
+            <p class="oac-intro-text">Потренируетесь выбирать точный запрос и открывать карточку товара.</p>
+            <p class="oac-intro-text">В финале добавите нужный товар в корзину и проверите результат.</p>
+            <div class="oac-example">
+                <p class="oac-example-title">Что будет в уроке:</p>
+                <p class="oac-example-text">Найдём запрос «тёплые носки мужские»</p>
+                <p class="oac-example-text">Откроем карточку товара и нажмём «В корзину»</p>
+            </div>
+        </article>
+
+        <article class="oac-prep-card">
+            <div class="oac-step-pill">Подготовка</div>
+            <h2 class="oac-prep-title">Перед добавлением товара</h2>
+            <p class="oac-prep-lead"><strong>Понадобится:</strong></p>
+            <ul class="oac-prep-list">
+                <li class="oac-prep-item"><strong>Установленное приложение OZON</strong></li>
+                <li class="oac-prep-item"><strong>Интернет</strong> - мобильный или Wi-Fi</li>
+                <li class="oac-prep-item"><strong>3-5 минут</strong> спокойного времени на тренировку</li>
+                <li class="oac-prep-item"><strong>Внимание к запросу</strong> «тёплые носки мужские»</li>
+            </ul>
+            <div class="oac-safety-box">
+                <p><strong>Перед добавлением в корзину проверьте:</strong></p>
+                <p>Название товара и цену в карточке</p>
+                <p>Рейтинг и отзывы, если сомневаетесь в выборе</p>
+                <p>Что вы не переходите по подозрительным внешним ссылкам</p>
+                <p><strong>ВАЖНО:</strong> Никогда не сообщайте код из СМС посторонним!</p>
+            </div>
+        </article>
+
+        <div class="oac-intro-actions">
+            <button id="oac-intro-start" class="oac-start-btn" type="button">Начать обучение</button>
+        </div>
+    </section>
+
+    <div id="oac-layout" class="oac-layout is-hidden">
+        <div class="oac-phone-wrap">
+            <div class="oac-phone">
+                <div class="oac-header">
+                    <span class="oac-logo">OZON</span>
+                    <button id="oac-search-trigger" type="button" class="oac-search-bar"><span>🔍</span><span id="oac-search-text">Искать на Ozon</span></button>
+                </div>
+
+                <section id="oac-screen-home" class="oac-screen active">
+                    <div class="oac-body-scroll">
+                        <div class="oac-categories">
+                            <div class="oac-category"><div class="oac-category-icon">👕</div>Одежда</div>
+                            <div class="oac-category"><div class="oac-category-icon">📱</div>Электроника</div>
+                            <div class="oac-category"><div class="oac-category-icon">🏠</div>Дом</div>
+                            <div class="oac-category"><div class="oac-category-icon">📚</div>Книги</div>
+                        </div>
+
+                        <div class="oac-grid">
+                            <article class="oac-product">
+                                <div class="oac-img">🧦</div>
+                                <div class="oac-price">299₽</div>
+                                <div class="oac-name">Носки тёплые</div>
+                                <div class="oac-rating">★★★★★ 4.8</div>
+                            </article>
+                            <article class="oac-product">
+                                <div class="oac-img">🎧</div>
+                                <div class="oac-price">1 499₽</div>
+                                <div class="oac-name">Наушники</div>
+                                <div class="oac-rating">★★★★★ 4.7</div>
+                            </article>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="oac-screen-search" class="oac-screen">
+                    <div class="oac-body-scroll">
+                        <div class="oac-suggestions">
+                            <div id="oac-suggestion-male" class="oac-suggestion">тёплые носки мужские</div>
+                            <div class="oac-suggestion">тёплые носки женские</div>
+                            <div class="oac-suggestion">тёплые носки шерстяные</div>
+                            <div class="oac-suggestion">тёплые носки махровые</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="oac-screen-results" class="oac-screen">
+                    <div class="oac-body-scroll">
+                        <div class="oac-grid">
+                            <article id="oac-product-target" class="oac-product clickable">
+                                <div class="oac-img"><span class="oac-badge">-25%</span>🧦</div>
+                                <div class="oac-price">299₽<span class="oac-old">399₽</span></div>
+                                <div class="oac-name">Носки тёплые шерстяные мужские</div>
+                                <div class="oac-rating">★★★★★ 4.8</div>
+                            </article>
+
+                            <article class="oac-product">
+                                <div class="oac-img">🧦</div>
+                                <div class="oac-price">450₽</div>
+                                <div class="oac-name">Носки махровые</div>
+                                <div class="oac-rating">★★★★★ 4.9</div>
+                            </article>
+
+                            <article class="oac-product">
+                                <div class="oac-img">🧦</div>
+                                <div class="oac-price">340₽</div>
+                                <div class="oac-name">Носки термо</div>
+                                <div class="oac-rating">★★★★★ 4.6</div>
+                            </article>
+
+                            <article class="oac-product">
+                                <div class="oac-img">🧦</div>
+                                <div class="oac-price">520₽</div>
+                                <div class="oac-name">Носки шерсть</div>
+                                <div class="oac-rating">★★★★★ 4.7</div>
+                            </article>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="oac-screen-product" class="oac-screen">
+                    <div class="oac-body-scroll oac-detail">
+                        <div class="oac-detail-image">🧦</div>
+                        <div class="oac-detail-title">Носки тёплые шерстяные мужские</div>
+                        <div class="oac-detail-rating">★★★★★ 4.8 · 523 отзыва</div>
+                        <div class="oac-detail-price-row">
+                            <span class="oac-detail-price">299₽</span>
+                            <span class="oac-old">399₽</span>
+                            <span class="oac-discount">-25%</span>
+                        </div>
+
+                        <div class="oac-chars">
+                            <div class="oac-char"><span>Размер:</span><span>41-47</span></div>
+                            <div class="oac-char"><span>Состав:</span><span>80% шерсть</span></div>
+                            <div class="oac-char"><span>Цвет:</span><span>Серый</span></div>
+                        </div>
+
+                        <button id="oac-add-btn" class="oac-add-btn" type="button">В корзину</button>
+                    </div>
+                </section>
+
+                <section id="oac-screen-cart" class="oac-screen">
+                    <div class="oac-body-scroll">
+                        <div class="oac-cart-block">
+                            <div class="oac-cart-img">🧦</div>
+                            <div class="oac-cart-info">
+                                <div class="oac-cart-name">Носки тёплые шерстяные мужские</div>
+                                <div class="oac-cart-price">299₽</div>
+                            </div>
+                        </div>
+
+                        <div class="oac-summary">
+                            <div class="oac-summary-row"><span>Товары (1)</span><span>299₽</span></div>
+                            <div class="oac-summary-row"><span>Доставка</span><span class="oac-summary-free">Бесплатно</span></div>
+                            <div class="oac-summary-total"><span>Итого</span><span>299₽</span></div>
+                        </div>
+                    </div>
+                </section>
+
+                <nav class="oac-tabs" aria-label="Нижняя навигация">
+                    <button id="oac-tab-home" class="oac-tab active" type="button" aria-label="Главная">
+                        <span class="oac-tab-icon">🏠</span>
+                        <span>Главная</span>
+                    </button>
+                    <button id="oac-tab-cart" class="oac-tab" type="button" aria-label="Корзина">
+                        <span class="oac-tab-icon">🛒</span>
+                        <span>Корзина</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <aside class="oac-info" aria-live="polite">
+            <div>
+                <div class="oac-progress-label">Прогресс прохождения</div>
+                <div id="oac-progress" class="oac-progress-track"></div>
+            </div>
+
+            <div id="oac-step" class="oac-step">Шаг 1 из 4</div>
+            <h2 id="oac-title" class="oac-title">Откройте поиск</h2>
+            <p id="oac-desc" class="oac-desc">Нажмите на строку поиска в приложении OZON.</p>
+            <p id="oac-note" class="oac-note"></p>
+
+            <div id="oac-nav" class="oac-nav">
+                <button id="oac-prev" type="button" class="oac-btn prev">Назад</button>
+                <button id="oac-next" type="button" class="oac-btn next">Вперёд</button>
+            </div>
+
+            <button id="oac-restart" type="button" class="oac-restart">Начать инструкцию заново</button>
+        </aside>
+    </div>
+
+    <div id="oac-hint" class="oac-click-hint" aria-hidden="true"></div>
+
+    <script>
+        const oacSteps = {
+            'open-search': {
+                step: 'Шаг 1 из 4',
+                title: 'Откройте поиск',
+                desc: 'Нажмите на строку поиска в приложении OZON.',
+                note: 'Сначала открываем поиск по каталогу.',
+                screen: 'home',
+                action: 'open-search',
+                hint: { id: 'oac-search-trigger', padding: 4, radius: 12 }
+            },
+            'pick-suggestion': {
+                step: 'Шаг 2 из 4',
+                title: 'Выберите точный запрос',
+                desc: 'Выберите подсказку «тёплые носки мужские».',
+                note: 'Нужно выбрать именно мужские носки, чтобы товар совпадал с запросом.',
+                screen: 'search',
+                action: 'pick-male-suggestion',
+                hint: { id: 'oac-suggestion-male', padding: 2, radius: 10 }
+            },
+            'pick-product': {
+                step: 'Шаг 3 из 4',
+                title: 'Откройте карточку товара',
+                desc: 'Нажмите на первую карточку с ценой 299₽.',
+                note: 'Обращайте внимание на цену, название и рейтинг.',
+                screen: 'results',
+                action: 'pick-product',
+                hint: { id: 'oac-product-target', padding: 3, radius: 12 }
+            },
+            'add-cart': {
+                step: 'Шаг 4 из 4',
+                title: 'Добавьте в корзину',
+                desc: 'Нажмите кнопку «В корзину».',
+                note: 'После этого товар появится в корзине.',
+                screen: 'product',
+                action: 'add-cart',
+                hint: { id: 'oac-add-btn', padding: 4, radius: 10 }
+            },
+            completed: {
+                step: 'Готово',
+                title: 'Товар добавлен в корзину',
+                desc: 'Отлично! Вы нашли нужный товар и добавили его в корзину.',
+                note: 'Теперь можно перейти к оформлению доставки в следующем модуле.',
+                screen: 'cart',
+                action: null,
+                hint: null
+            }
+        };
+
+        const oacOrder = ['open-search', 'pick-suggestion', 'pick-product', 'add-cart'];
+
+        const oacEls = {
+            screens: {
+                home: document.getElementById('oac-screen-home'),
+                search: document.getElementById('oac-screen-search'),
+                results: document.getElementById('oac-screen-results'),
+                product: document.getElementById('oac-screen-product'),
+                cart: document.getElementById('oac-screen-cart')
+            },
+            searchTrigger: document.getElementById('oac-search-trigger'),
+            searchText: document.getElementById('oac-search-text'),
+            maleSuggestion: document.getElementById('oac-suggestion-male'),
+            productTarget: document.getElementById('oac-product-target'),
+            addBtn: document.getElementById('oac-add-btn'),
+            tabHome: document.getElementById('oac-tab-home'),
+            tabCart: document.getElementById('oac-tab-cart'),
+            progress: document.getElementById('oac-progress'),
+            step: document.getElementById('oac-step'),
+            title: document.getElementById('oac-title'),
+            desc: document.getElementById('oac-desc'),
+            note: document.getElementById('oac-note'),
+            nav: document.getElementById('oac-nav'),
+            prev: document.getElementById('oac-prev'),
+            next: document.getElementById('oac-next'),
+            restart: document.getElementById('oac-restart'),
+            hint: document.getElementById('oac-hint'),
+            introScreen: document.getElementById('oac-intro-screen'),
+            introStart: document.getElementById('oac-intro-start'),
+            layout: document.getElementById('oac-layout')
+        };
+
+        let oacCurrent = 'open-search';
+        let oacHintConfig = null;
+        let oacStarted = false;
+
+        function oacGetIndex(stepKey) {
+            return oacOrder.indexOf(stepKey);
+        }
+
+        function oacEnsureProgress() {
+            const count = oacOrder.length;
+            oacEls.progress.style.setProperty('--oac-segments', String(count));
+            if (oacEls.progress.childElementCount === count) return;
+            oacEls.progress.innerHTML = '';
+            for (let i = 0; i < count; i += 1) {
+                const seg = document.createElement('span');
+                seg.className = 'oac-progress-segment';
+                oacEls.progress.appendChild(seg);
+            }
+        }
+
+        function oacUpdateProgress(stepKey) {
+            oacEnsureProgress();
+            const isDone = stepKey === 'completed';
+            const idx = oacGetIndex(stepKey);
+            const currentIdx = isDone ? oacOrder.length - 1 : idx;
+            Array.from(oacEls.progress.children).forEach((seg, segIdx) => {
+                seg.classList.remove('done', 'current');
+                if (isDone || segIdx < currentIdx) seg.classList.add('done');
+                else if (segIdx === currentIdx) seg.classList.add('current');
+            });
+        }
+
+        function oacSetScreen(screenKey) {
+            Object.values(oacEls.screens).forEach((screen) => screen.classList.remove('active'));
+            if (oacEls.screens[screenKey]) oacEls.screens[screenKey].classList.add('active');
+
+            const cartActive = screenKey === 'cart';
+            oacEls.tabHome.classList.toggle('active', !cartActive);
+            oacEls.tabCart.classList.toggle('active', cartActive);
+        }
+
+        function oacUpdateHeaderSearch(stepKey) {
+            if (stepKey === 'open-search') {
+                oacEls.searchText.textContent = 'Искать на Ozon';
+                oacEls.searchTrigger.classList.remove('active');
+                return;
+            }
+
+            oacEls.searchText.textContent = 'тёплые носки';
+            oacEls.searchTrigger.classList.add('active');
+        }
+
+        function oacPositionHint() {
+            if (!oacHintConfig || !oacHintConfig.id) {
+                oacEls.hint.style.display = 'none';
+                return;
+            }
+
+            const target = document.getElementById(oacHintConfig.id);
+            if (!target) {
+                oacEls.hint.style.display = 'none';
+                return;
+            }
+
+            const rect = target.getBoundingClientRect();
+            if (!rect.width || !rect.height) {
+                oacEls.hint.style.display = 'none';
+                return;
+            }
+
+            const padding = Number(oacHintConfig.padding || 0);
+            const radius = Number(oacHintConfig.radius || 12);
+            oacEls.hint.style.display = 'block';
+            oacEls.hint.style.left = `${rect.left - padding}px`;
+            oacEls.hint.style.top = `${rect.top - padding}px`;
+            oacEls.hint.style.width = `${rect.width + padding * 2}px`;
+            oacEls.hint.style.height = `${rect.height + padding * 2}px`;
+            oacEls.hint.style.borderRadius = `${radius}px`;
+        }
+
+        function oacApplyHint(hint) {
+            if (!hint || !hint.id) {
+                oacHintConfig = null;
+                oacEls.hint.style.display = 'none';
+                return;
+            }
+
+            oacHintConfig = {
+                id: String(hint.id),
+                padding: Number(hint.padding || 0),
+                radius: Number(hint.radius || 12)
+            };
+
+            requestAnimationFrame(oacPositionHint);
+            setTimeout(oacPositionHint, 0);
+        }
+
+        function oacUpdateInfo(stepKey) {
+            const cfg = oacSteps[stepKey];
+            oacEls.step.textContent = cfg.step;
+            oacEls.title.textContent = cfg.title;
+            oacEls.desc.textContent = cfg.desc;
+            oacEls.note.textContent = cfg.note;
+
+            if (stepKey === 'completed') {
+                oacEls.nav.style.display = 'none';
+                oacEls.restart.style.display = 'inline-flex';
+            } else {
+                oacEls.nav.style.display = 'grid';
+                oacEls.restart.style.display = 'none';
+                const idx = oacGetIndex(stepKey);
+                oacEls.prev.disabled = idx <= 0;
+                oacEls.next.disabled = stepKey === 'pick-suggestion';
+            }
+
+            oacUpdateProgress(stepKey);
+        }
+
+        function oacGoTo(stepKey) {
+            if (!oacSteps[stepKey]) return;
+
+            if (stepKey !== 'pick-product') {
+                oacEls.productTarget.classList.remove('selected');
+            }
+            if (stepKey !== 'pick-suggestion') {
+                oacEls.maleSuggestion.classList.remove('selected');
+            }
+            if (stepKey !== 'add-cart' && stepKey !== 'completed') {
+                oacEls.addBtn.textContent = 'В корзину';
+                oacEls.addBtn.classList.remove('done');
+            }
+
+            oacCurrent = stepKey;
+            const cfg = oacSteps[stepKey];
+            oacSetScreen(cfg.screen);
+            oacUpdateHeaderSearch(stepKey);
+            oacUpdateInfo(stepKey);
+            oacApplyHint(cfg.hint);
+        }
+
+        function oacNextFromCurrent() {
+            const idx = oacGetIndex(oacCurrent);
+            if (idx >= 0 && idx < oacOrder.length - 1) {
+                oacGoTo(oacOrder[idx + 1]);
+            } else if (oacCurrent === 'add-cart') {
+                oacGoTo('completed');
+            }
+        }
+
+        function oacHandle(action) {
+            const cfg = oacSteps[oacCurrent];
+            if (!cfg || !cfg.action || cfg.action !== action) return;
+
+            if (action === 'open-search') {
+                oacEls.searchTrigger.classList.add('active');
+                oacEls.searchText.textContent = 'тёплые носки';
+                setTimeout(() => {
+                    oacNextFromCurrent();
+                }, 250);
+                return;
+            }
+
+            if (action === 'pick-male-suggestion') {
+                oacEls.maleSuggestion.classList.add('selected');
+                setTimeout(() => oacNextFromCurrent(), 180);
+                return;
+            }
+
+            if (action === 'pick-product') {
+                oacEls.productTarget.classList.add('selected');
+                setTimeout(() => oacNextFromCurrent(), 180);
+                return;
+            }
+
+            if (action === 'add-cart') {
+                oacEls.addBtn.textContent = '✓ Добавлено';
+                oacEls.addBtn.classList.add('done');
+                setTimeout(() => oacGoTo('completed'), 350);
+            }
+        }
+
+        function oacBack() {
+            if (oacCurrent === 'completed') {
+                oacGoTo('add-cart');
+                return;
+            }
+            const idx = oacGetIndex(oacCurrent);
+            if (idx > 0) oacGoTo(oacOrder[idx - 1]);
+        }
+
+        function oacForward() {
+            if (oacCurrent === 'completed') return;
+            if (oacCurrent === 'pick-suggestion') return;
+            const idx = oacGetIndex(oacCurrent);
+            if (idx >= 0 && idx < oacOrder.length - 1) {
+                oacGoTo(oacOrder[idx + 1]);
+                return;
+            }
+            if (oacCurrent === 'add-cart') oacGoTo('completed');
+        }
+
+        oacEls.searchTrigger.addEventListener('click', () => oacHandle('open-search'));
+        oacEls.maleSuggestion.addEventListener('click', () => oacHandle('pick-male-suggestion'));
+        oacEls.productTarget.addEventListener('click', () => oacHandle('pick-product'));
+        oacEls.addBtn.addEventListener('click', () => oacHandle('add-cart'));
+
+        oacEls.prev.addEventListener('click', oacBack);
+        oacEls.next.addEventListener('click', oacForward);
+        oacEls.restart.addEventListener('click', () => oacGoTo('open-search'));
+
+        oacEls.introStart.addEventListener('click', () => {
+            if (oacStarted) return;
+            oacStarted = true;
+            oacEls.introScreen.classList.add('oac-hidden');
+            oacEls.layout.classList.remove('is-hidden');
+            oacGoTo('open-search');
+        });
+
+        window.addEventListener('resize', oacPositionHint);
+        document.addEventListener('scroll', oacPositionHint, true);
+    </script>
+</div>

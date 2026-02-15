@@ -1,0 +1,18 @@
+{
+  "title": "Отправка эмодзи и стикеров",
+  "description": "Отправка эмодзи и стикеров в групповом чате в приложении MAX",
+  "level": "advanced",
+  "course": "max-messenger",
+  "order": 50,
+  "viewer_navigation": "style-switch",
+  "style_options": [
+    {
+      "label": "Видео-урок",
+      "page": 1
+    },
+    {
+      "label": "Симулятор",
+      "page": 2
+    }
+  ]
+}

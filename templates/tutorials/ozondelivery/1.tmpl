@@ -1,0 +1,1148 @@
+<div class="odl-sim">
+    <style>
+        .odl-sim,
+        .odl-sim * {
+            box-sizing: border-box;
+        }
+
+        .odl-sim {
+            background: #edf2fb;
+            border-radius: 16px;
+            padding: 18px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        }
+
+        .odl-layout {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .odl-layout.is-hidden {
+            display: none;
+        }
+
+        .odl-hidden {
+            display: none !important;
+        }
+
+        .odl-intro-screen {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            gap: 16px;
+        }
+
+        .odl-intro-card,
+        .odl-prep-card {
+            border-radius: 20px;
+            border: 1px solid #d4d9e4;
+            background: #f5f6f8;
+            padding: 26px;
+        }
+
+        .odl-intro-card {
+            text-align: center;
+        }
+
+        .odl-intro-title {
+            margin: 0;
+            font-size: clamp(26px, 3.2vw, 44px);
+            line-height: 1.06;
+            color: #0f172a;
+        }
+
+        .odl-intro-text {
+            margin: 16px 0 0;
+            font-size: clamp(16px, 1.55vw, 28px);
+            font-weight: 700;
+            color: #3b3c40;
+            line-height: 1.28;
+        }
+
+        .odl-example {
+            margin: 24px auto 0;
+            max-width: 900px;
+            text-align: left;
+            border-radius: 18px;
+            border: 3px solid #f0b400;
+            background: #efe4bf;
+            padding: 20px 24px;
+            color: #836100;
+        }
+
+        .odl-example-title {
+            margin: 0;
+            font-size: clamp(26px, 2.3vw, 38px);
+            font-weight: 800;
+            line-height: 1.12;
+        }
+
+        .odl-example-text {
+            margin: 16px 0 0;
+            font-size: clamp(16px, 1.45vw, 26px);
+            line-height: 1.35;
+        }
+
+        .odl-intro-actions {
+            display: flex;
+            justify-content: center;
+        }
+
+        .odl-start-btn {
+            border: 3px solid #101827;
+            border-radius: 24px;
+            background: #ffd800;
+            color: #101827;
+            font-size: clamp(22px, 1.9vw, 30px);
+            font-weight: 800;
+            padding: 12px 32px;
+            cursor: pointer;
+        }
+
+        .odl-step-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 210px;
+            padding: 10px 24px;
+            border-radius: 999px;
+            background: #45ae4f;
+            color: #fff;
+            font-size: clamp(18px, 1.4vw, 24px);
+            font-weight: 700;
+        }
+
+        .odl-prep-title {
+            margin: 18px 0 0;
+            font-size: clamp(30px, 2.7vw, 44px);
+            line-height: 1.12;
+            color: #0b1019;
+        }
+
+        .odl-prep-lead {
+            margin: 18px 0 0;
+            font-size: clamp(16px, 1.5vw, 26px);
+            color: #3f3f44;
+            line-height: 1.35;
+        }
+
+        .odl-prep-list {
+            list-style: none;
+            margin: 18px 0 0;
+            padding: 0;
+            display: grid;
+            gap: 12px;
+        }
+
+        .odl-prep-item {
+            border-left: 6px solid #45ae4f;
+            border-radius: 12px;
+            background: #ebedf1;
+            padding: 14px 16px;
+            font-size: clamp(17px, 1.45vw, 25px);
+            color: #0f141d;
+            line-height: 1.28;
+        }
+
+        .odl-safety-box {
+            margin-top: 16px;
+            border: 3px solid #268fe8;
+            border-radius: 18px;
+            background: #d3e3f2;
+            padding: 16px 18px;
+            color: #141923;
+        }
+
+        .odl-safety-box p {
+            margin: 0 0 10px;
+            font-size: clamp(16px, 1.4vw, 24px);
+            line-height: 1.32;
+        }
+
+        .odl-safety-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .odl-phone-wrap {
+            width: 360px;
+            display: flex;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .odl-phone {
+            width: 340px;
+            height: 650px;
+            border-radius: 28px;
+            border: 8px solid #1a1f27;
+            background: #fff;
+            overflow: hidden;
+            box-shadow: 0 18px 34px rgba(16, 30, 53, 0.32);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .odl-header {
+            height: 56px;
+            padding: 0 12px;
+            background: #005bff;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+        }
+
+        .odl-header-title {
+            font-size: 18px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .odl-screen {
+            display: none;
+            height: calc(100% - 56px);
+        }
+
+        .odl-screen.active {
+            display: block;
+        }
+
+        .odl-scroll {
+            height: 100%;
+            overflow-y: auto;
+            padding: 10px;
+            background: #fff;
+        }
+
+        .odl-cart-item {
+            border: 1px solid #dfe6f1;
+            border-radius: 12px;
+            background: #fff;
+            padding: 10px;
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .odl-cart-img {
+            width: 70px;
+            height: 70px;
+            border-radius: 10px;
+            border: 1px solid #e8edf6;
+            background: #f6f8fc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+        }
+
+        .odl-cart-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1f2937;
+            line-height: 1.3;
+        }
+
+        .odl-cart-price {
+            margin-top: 7px;
+            font-size: 16px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .odl-summary {
+            border: 1px solid #dfe6f1;
+            border-radius: 12px;
+            background: #fff;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .odl-summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #1f2a3a;
+            margin-bottom: 6px;
+            gap: 12px;
+        }
+
+        .odl-summary-row span:last-child {
+            text-align: right;
+        }
+
+        .odl-summary-total {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #e5eaf3;
+            padding-top: 7px;
+            margin-top: 2px;
+            font-size: 15px;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .odl-primary-btn {
+            width: 100%;
+            border: none;
+            border-radius: 10px;
+            background: #005bff;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            padding: 11px 12px;
+            cursor: pointer;
+        }
+
+        .odl-primary-btn:disabled {
+            opacity: 0.7;
+            cursor: wait;
+        }
+
+        .odl-section-title {
+            margin: 2px 0 10px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #223149;
+        }
+
+        .odl-options {
+            display: grid;
+            gap: 8px;
+        }
+
+        .odl-option {
+            border: 1px solid #d8e0ed;
+            border-radius: 10px;
+            background: #fff;
+            padding: 9px 10px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            cursor: pointer;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .odl-option:hover {
+            border-color: #8fb7ff;
+        }
+
+        .odl-option.selected {
+            border-color: #ffd34d;
+            box-shadow: 0 0 0 3px rgba(255, 211, 77, 0.28);
+            background: #fffdf3;
+        }
+
+        .odl-radio {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #98a3b5;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            flex-shrink: 0;
+            color: transparent;
+        }
+
+        .odl-option.selected .odl-radio {
+            border-color: #ffd34d;
+            background: #ffd34d;
+            color: #000;
+        }
+
+        .odl-option-main {
+            flex: 1;
+        }
+
+        .odl-option-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #122135;
+            margin: 0;
+        }
+
+        .odl-option-sub {
+            margin-top: 3px;
+            font-size: 11px;
+            color: #606c7d;
+        }
+
+        .odl-note-box {
+            margin-top: 9px;
+            border: 1px solid #dce7f9;
+            border-radius: 10px;
+            background: #f4f8ff;
+            padding: 8px 10px;
+            font-size: 12px;
+            color: #25528a;
+            line-height: 1.35;
+        }
+
+        .odl-success {
+            text-align: center;
+            border: 1px solid #dbe6f5;
+            border-radius: 12px;
+            background: #f9fcff;
+            padding: 18px 12px;
+        }
+
+        .odl-success-icon {
+            font-size: 46px;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .odl-success-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #182337;
+            margin-bottom: 4px;
+        }
+
+        .odl-success-sub {
+            font-size: 12px;
+            color: #5f6b7c;
+            margin-bottom: 10px;
+        }
+
+        .odl-info {
+            width: min(360px, 100%);
+            background: #fff;
+            border: 1px solid #d8dfeb;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(16, 39, 66, 0.1);
+            padding: 16px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .odl-progress-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #6b7280;
+        }
+
+        .odl-progress-track {
+            display: grid;
+            grid-template-columns: repeat(var(--odl-segments, 4), minmax(0, 1fr));
+            gap: 7px;
+        }
+
+        .odl-progress-segment {
+            height: 8px;
+            border-radius: 999px;
+            background: #dfe6ef;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .odl-progress-segment.done {
+            background: #1f9d55;
+        }
+
+        .odl-progress-segment.current {
+            background: #0070d2;
+            box-shadow: 0 0 0 2px rgba(0, 112, 210, 0.18);
+        }
+
+        .odl-step {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #667085;
+        }
+
+        .odl-title {
+            margin: 0;
+            font-size: 23px;
+            line-height: 1.2;
+            color: #101827;
+        }
+
+        .odl-desc {
+            margin: 0;
+            font-size: 15px;
+            line-height: 1.45;
+            color: #2b3545;
+        }
+
+        .odl-note {
+            margin: 0;
+            padding: 9px 10px;
+            border-radius: 10px;
+            background: #edf5ff;
+            color: #225d95;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .odl-nav {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .odl-btn,
+        .odl-restart {
+            border: none;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .odl-btn.prev {
+            background: #eef2f9;
+            color: #27384d;
+        }
+
+        .odl-btn.next {
+            background: #0070d2;
+            color: #fff;
+        }
+
+        .odl-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .odl-restart {
+            width: 100%;
+            display: none;
+            background: #2d7d46;
+            color: #fff;
+        }
+
+        .odl-click-hint {
+            position: fixed;
+            z-index: 10000;
+            display: none;
+            pointer-events: none;
+            border: 3px solid #2b97ff;
+            border-radius: 12px;
+            box-shadow: 0 0 0 2px rgba(43, 151, 255, 0.32), 0 0 16px rgba(43, 151, 255, 0.55);
+            animation: odlHintPulse 1.15s ease-in-out infinite;
+        }
+
+        @keyframes odlHintPulse {
+            0% { transform: scale(1); opacity: 1; }
+            60% { transform: scale(1.05); opacity: 0.66; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @media (max-width: 780px) {
+            .odl-sim {
+                padding: 12px;
+            }
+
+            .odl-phone {
+                transform: scale(0.94);
+                transform-origin: top center;
+            }
+        }
+    </style>
+
+    <section id="odl-intro-screen" class="odl-intro-screen">
+        <article class="odl-intro-card">
+            <h1 class="odl-intro-title">Оформление доставки на OZON</h1>
+            <p class="odl-intro-text">В этом модуле вы пройдёте этапы оформления заказа из корзины.</p>
+            <p class="odl-intro-text">Выберете способ доставки, адрес и удобный способ оплаты.</p>
+            <p class="odl-intro-text">В финале подтвердите заказ и увидите экран успешного оформления.</p>
+            <div class="odl-example">
+                <p class="odl-example-title">Что отработаем:</p>
+                <p class="odl-example-text">Оформим доставку товара, который уже лежит в корзине</p>
+                <p class="odl-example-text">Проверим заказ перед нажатием «Оформить заказ»</p>
+            </div>
+        </article>
+
+        <article class="odl-prep-card">
+            <div class="odl-step-pill">Подготовка</div>
+            <h2 class="odl-prep-title">Перед оформлением доставки</h2>
+            <p class="odl-prep-lead"><strong>Понадобится:</strong></p>
+            <ul class="odl-prep-list">
+                <li class="odl-prep-item"><strong>Товар в корзине</strong>, готовый к оформлению</li>
+                <li class="odl-prep-item"><strong>Интернет</strong> - мобильный или Wi-Fi</li>
+                <li class="odl-prep-item"><strong>Адрес доставки</strong> или выбранный пункт выдачи</li>
+                <li class="odl-prep-item"><strong>Способ оплаты</strong> - карта, СБП или при получении</li>
+            </ul>
+            <div class="odl-safety-box">
+                <p><strong>Безопасность:</strong></p>
+                <p>Проверяйте адрес и получателя перед подтверждением</p>
+                <p>Оплачивайте только внутри официального приложения OZON</p>
+                <p>Код из SMS вводите только на экране подтверждения оплаты</p>
+                <p><strong>ВАЖНО:</strong> Никогда не сообщайте код из СМС посторонним!</p>
+            </div>
+        </article>
+
+        <div class="odl-intro-actions">
+            <button id="odl-intro-start" class="odl-start-btn" type="button">Начать обучение</button>
+        </div>
+    </section>
+
+    <div id="odl-layout" class="odl-layout is-hidden">
+        <div class="odl-phone-wrap">
+            <div class="odl-phone">
+                <div class="odl-header">
+                    <span>←</span>
+                    <span id="odl-header-title" class="odl-header-title">Корзина</span>
+                </div>
+
+                <section id="odl-screen-cart" class="odl-screen active">
+                    <div class="odl-scroll">
+                        <div class="odl-cart-item">
+                            <div class="odl-cart-img">🧦</div>
+                            <div>
+                                <div class="odl-cart-name">Носки тёплые шерстяные мужские</div>
+                                <div class="odl-cart-price">299₽</div>
+                            </div>
+                        </div>
+
+                        <div class="odl-summary">
+                            <div class="odl-summary-row"><span>Товары (1)</span><span>299₽</span></div>
+                            <div class="odl-summary-row"><span>Доставка</span><span style="color:#2f9b52;font-weight:700;">Бесплатно</span></div>
+                            <div class="odl-summary-total"><span>Итого</span><span>299₽</span></div>
+                        </div>
+
+                        <button id="odl-checkout-btn" type="button" class="odl-primary-btn">Перейти к оформлению</button>
+                    </div>
+                </section>
+
+                <section id="odl-screen-delivery" class="odl-screen">
+                    <div class="odl-scroll">
+                        <div class="odl-section-title">📍 Способ доставки</div>
+                        <div class="odl-options">
+                            <article id="odl-delivery-courier" class="odl-option" data-value="Доставка курьером">
+                                <span class="odl-radio">●</span>
+                                <div class="odl-option-main">
+                                    <p class="odl-option-title">🏠 Доставка курьером</p>
+                                    <p class="odl-option-sub">Завтра, бесплатно</p>
+                                </div>
+                            </article>
+
+                            <article id="odl-delivery-pickup" class="odl-option" data-value="Пункт выдачи">
+                                <span class="odl-radio">●</span>
+                                <div class="odl-option-main">
+                                    <p class="odl-option-title">📦 Пункт выдачи</p>
+                                    <p class="odl-option-sub">Сегодня, бесплатно</p>
+                                </div>
+                            </article>
+                        </div>
+                        <div class="odl-note-box">Можно выбрать любой удобный вариант: курьер или ПВЗ.</div>
+                    </div>
+                </section>
+
+                <section id="odl-screen-address" class="odl-screen">
+                    <div class="odl-scroll">
+                        <div class="odl-section-title">📌 Адрес доставки</div>
+                        <div class="odl-options">
+                            <article id="odl-address-home" class="odl-option" data-value="ул. Ленина, д. 10, кв. 15">
+                                <span class="odl-radio">●</span>
+                                <div class="odl-option-main">
+                                    <p class="odl-option-title">Дом</p>
+                                    <p class="odl-option-sub">ул. Ленина, д. 10, кв. 15</p>
+                                </div>
+                            </article>
+
+                            <article id="odl-address-pvz" class="odl-option" data-value="ПВЗ OZON, пр-т Мира, 12">
+                                <span class="odl-radio">●</span>
+                                <div class="odl-option-main">
+                                    <p class="odl-option-title">Пункт выдачи OZON</p>
+                                    <p class="odl-option-sub">пр-т Мира, 12</p>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="odl-screen-payment" class="odl-screen">
+                    <div class="odl-scroll">
+                        <div class="odl-section-title">💳 Способ оплаты</div>
+                        <div class="odl-options">
+                            <article id="odl-payment-card" class="odl-option" data-value="Картой онлайн">
+                                <span class="odl-radio">●</span>
+                                <div class="odl-option-main">
+                                    <p class="odl-option-title">💳 Картой онлайн</p>
+                                    <p class="odl-option-sub">Безопасная оплата</p>
+                                </div>
+                            </article>
+
+                            <article id="odl-payment-sbp" class="odl-option" data-value="СБП">
+                                <span class="odl-radio">●</span>
+                                <div class="odl-option-main">
+                                    <p class="odl-option-title">📱 СБП</p>
+                                    <p class="odl-option-sub">Система быстрых платежей</p>
+                                </div>
+                            </article>
+
+                            <article id="odl-payment-cash" class="odl-option" data-value="При получении">
+                                <span class="odl-radio">●</span>
+                                <div class="odl-option-main">
+                                    <p class="odl-option-title">💵 При получении</p>
+                                    <p class="odl-option-sub">Наличными или картой при выдаче</p>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="odl-screen-confirm" class="odl-screen">
+                    <div class="odl-scroll">
+                        <div class="odl-summary">
+                            <div style="font-size:14px;font-weight:700;margin-bottom:8px;color:#162438;">Проверка заказа</div>
+                            <div class="odl-summary-row"><span>Товар</span><span>Носки × 1</span></div>
+                            <div class="odl-summary-row"><span>Доставка</span><span id="odl-summary-delivery">Доставка курьером</span></div>
+                            <div class="odl-summary-row"><span>Адрес</span><span id="odl-summary-address">ул. Ленина, д. 10, кв. 15</span></div>
+                            <div class="odl-summary-row"><span>Оплата</span><span id="odl-summary-payment">При получении</span></div>
+                            <div class="odl-summary-total"><span>Итого</span><span>299₽</span></div>
+                        </div>
+
+                        <button id="odl-confirm-btn" type="button" class="odl-primary-btn">Оформить заказ</button>
+                    </div>
+                </section>
+
+                <section id="odl-screen-success" class="odl-screen">
+                    <div class="odl-scroll">
+                        <div class="odl-success">
+                            <div class="odl-success-icon">✅</div>
+                            <div class="odl-success-title">Заказ оформлен!</div>
+                            <div class="odl-success-sub">Номер заказа: #12345678</div>
+
+                            <div class="odl-summary">
+                                <div class="odl-summary-row"><span>Доставка</span><span id="odl-done-delivery">Доставка курьером</span></div>
+                                <div class="odl-summary-row"><span>Адрес</span><span id="odl-done-address">ул. Ленина, д. 10, кв. 15</span></div>
+                                <div class="odl-summary-row"><span>Оплата</span><span id="odl-done-payment">При получении</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <aside class="odl-info" aria-live="polite">
+            <div>
+                <div class="odl-progress-label">Прогресс прохождения</div>
+                <div id="odl-progress" class="odl-progress-track"></div>
+            </div>
+
+            <div id="odl-step" class="odl-step">Шаг 1 из 4</div>
+            <h2 id="odl-title" class="odl-title">Перейдите к оформлению</h2>
+            <p id="odl-desc" class="odl-desc">В корзине нажмите «Перейти к оформлению».</p>
+            <p id="odl-note" class="odl-note"></p>
+
+            <div id="odl-nav" class="odl-nav">
+                <button id="odl-prev" type="button" class="odl-btn prev">Назад</button>
+                <button id="odl-next" type="button" class="odl-btn next">Вперёд</button>
+            </div>
+
+            <button id="odl-restart" type="button" class="odl-restart">Начать инструкцию заново</button>
+        </aside>
+    </div>
+
+    <div id="odl-hint" class="odl-click-hint" aria-hidden="true"></div>
+
+    <script>
+        const odlState = {
+            delivery: 'Доставка курьером',
+            address: 'ул. Ленина, д. 10, кв. 15',
+            payment: 'При получении'
+        };
+
+        const odlSteps = {
+            checkout: {
+                step: 'Шаг 1 из 4',
+                title: 'Перейдите к оформлению',
+                desc: 'В корзине нажмите кнопку «Перейти к оформлению».',
+                note: 'С этого шага начинается процесс оформления доставки.',
+                screen: 'cart',
+                header: 'Корзина',
+                action: 'checkout',
+                hint: { id: 'odl-checkout-btn', padding: 4, radius: 10 }
+            },
+            delivery: {
+                step: 'Шаг 2 из 4',
+                title: 'Выберите способ доставки',
+                desc: 'Выберите вариант: курьер или пункт выдачи.',
+                note: 'Оба варианта допустимы в этом сценарии.',
+                screen: 'delivery',
+                header: 'Оформление',
+                action: 'select-delivery',
+                hint: { id: 'odl-delivery-courier', padding: 3, radius: 10 }
+            },
+            address: {
+                step: 'Шаг 3 из 4',
+                title: 'Выберите адрес',
+                desc: 'Укажите, куда доставить заказ.',
+                note: 'Можно выбрать домашний адрес или ПВЗ.',
+                screen: 'address',
+                header: 'Адрес доставки',
+                action: 'select-address',
+                hint: { id: 'odl-address-home', padding: 3, radius: 10 }
+            },
+            payment: {
+                step: 'Шаг 4 из 4',
+                title: 'Выберите способ оплаты',
+                desc: 'Выберите: карта, СБП или оплата при получении.',
+                note: 'Выбранный метод будет показан в финальной проверке.',
+                screen: 'payment',
+                header: 'Способ оплаты',
+                action: 'select-payment',
+                hint: { id: 'odl-payment-card', padding: 3, radius: 10 }
+            },
+            confirm: {
+                step: 'Подтверждение',
+                title: 'Проверьте и подтвердите заказ',
+                desc: 'Нажмите «Оформить заказ».',
+                note: 'Перед подтверждением проверьте доставку, адрес и оплату.',
+                screen: 'confirm',
+                header: 'Проверка заказа',
+                action: 'confirm-order',
+                hint: { id: 'odl-confirm-btn', padding: 4, radius: 10 }
+            },
+            completed: {
+                step: 'Готово',
+                title: 'Доставка оформлена',
+                desc: 'Заказ успешно создан.',
+                note: 'Вы выбрали способ доставки, адрес и оплату.',
+                screen: 'success',
+                header: 'Заказ оформлен',
+                action: null,
+                hint: null
+            }
+        };
+
+        const odlOrder = ['checkout', 'delivery', 'address', 'payment'];
+
+        const odlEls = {
+            headerTitle: document.getElementById('odl-header-title'),
+            screens: {
+                cart: document.getElementById('odl-screen-cart'),
+                delivery: document.getElementById('odl-screen-delivery'),
+                address: document.getElementById('odl-screen-address'),
+                payment: document.getElementById('odl-screen-payment'),
+                confirm: document.getElementById('odl-screen-confirm'),
+                success: document.getElementById('odl-screen-success')
+            },
+            checkoutBtn: document.getElementById('odl-checkout-btn'),
+            deliveryCourier: document.getElementById('odl-delivery-courier'),
+            deliveryPickup: document.getElementById('odl-delivery-pickup'),
+            addressHome: document.getElementById('odl-address-home'),
+            addressPvz: document.getElementById('odl-address-pvz'),
+            paymentCard: document.getElementById('odl-payment-card'),
+            paymentSbp: document.getElementById('odl-payment-sbp'),
+            paymentCash: document.getElementById('odl-payment-cash'),
+            confirmBtn: document.getElementById('odl-confirm-btn'),
+            summaryDelivery: document.getElementById('odl-summary-delivery'),
+            summaryAddress: document.getElementById('odl-summary-address'),
+            summaryPayment: document.getElementById('odl-summary-payment'),
+            doneDelivery: document.getElementById('odl-done-delivery'),
+            doneAddress: document.getElementById('odl-done-address'),
+            donePayment: document.getElementById('odl-done-payment'),
+            progress: document.getElementById('odl-progress'),
+            step: document.getElementById('odl-step'),
+            title: document.getElementById('odl-title'),
+            desc: document.getElementById('odl-desc'),
+            note: document.getElementById('odl-note'),
+            nav: document.getElementById('odl-nav'),
+            prev: document.getElementById('odl-prev'),
+            next: document.getElementById('odl-next'),
+            restart: document.getElementById('odl-restart'),
+            hint: document.getElementById('odl-hint'),
+            introScreen: document.getElementById('odl-intro-screen'),
+            introStart: document.getElementById('odl-intro-start'),
+            layout: document.getElementById('odl-layout')
+        };
+
+        let odlCurrent = 'checkout';
+        let odlHintConfig = null;
+        let odlStarted = false;
+
+        function odlGetIndex(stepKey) {
+            return odlOrder.indexOf(stepKey);
+        }
+
+        function odlEnsureProgress() {
+            const count = odlOrder.length;
+            odlEls.progress.style.setProperty('--odl-segments', String(count));
+            if (odlEls.progress.childElementCount === count) return;
+            odlEls.progress.innerHTML = '';
+            for (let i = 0; i < count; i += 1) {
+                const seg = document.createElement('span');
+                seg.className = 'odl-progress-segment';
+                odlEls.progress.appendChild(seg);
+            }
+        }
+
+        function odlUpdateProgress(stepKey) {
+            odlEnsureProgress();
+            const doneStates = ['confirm', 'completed'];
+            const isDone = stepKey === 'completed';
+            let idx = odlGetIndex(stepKey);
+            if (stepKey === 'confirm') idx = odlOrder.length - 1;
+            if (isDone) idx = odlOrder.length - 1;
+
+            Array.from(odlEls.progress.children).forEach((seg, segIdx) => {
+                seg.classList.remove('done', 'current');
+                if (isDone || segIdx < idx) seg.classList.add('done');
+                else if (segIdx === idx) seg.classList.add('current');
+            });
+        }
+
+        function odlSetScreen(screenKey) {
+            Object.values(odlEls.screens).forEach((screen) => screen.classList.remove('active'));
+            if (odlEls.screens[screenKey]) odlEls.screens[screenKey].classList.add('active');
+        }
+
+        function odlUpdateSummary() {
+            odlEls.summaryDelivery.textContent = odlState.delivery;
+            odlEls.summaryAddress.textContent = odlState.address;
+            odlEls.summaryPayment.textContent = odlState.payment;
+            odlEls.doneDelivery.textContent = odlState.delivery;
+            odlEls.doneAddress.textContent = odlState.address;
+            odlEls.donePayment.textContent = odlState.payment;
+        }
+
+        function odlSelectOption(optionList, selectedEl) {
+            optionList.forEach((el) => {
+                el.classList.remove('selected');
+                const radio = el.querySelector('.odl-radio');
+                if (radio) radio.textContent = '●';
+            });
+            selectedEl.classList.add('selected');
+            const radio = selectedEl.querySelector('.odl-radio');
+            if (radio) radio.textContent = '●';
+        }
+
+        function odlResetSelectionsForStep(stepKey) {
+            if (stepKey === 'delivery') {
+                odlSelectOption([odlEls.deliveryCourier, odlEls.deliveryPickup], odlState.delivery === 'Пункт выдачи' ? odlEls.deliveryPickup : odlEls.deliveryCourier);
+            }
+            if (stepKey === 'address') {
+                odlSelectOption([odlEls.addressHome, odlEls.addressPvz], odlState.address === 'ПВЗ OZON, пр-т Мира, 12' ? odlEls.addressPvz : odlEls.addressHome);
+            }
+            if (stepKey === 'payment') {
+                const paymentMap = {
+                    'Картой онлайн': odlEls.paymentCard,
+                    'СБП': odlEls.paymentSbp,
+                    'При получении': odlEls.paymentCash
+                };
+                odlSelectOption([odlEls.paymentCard, odlEls.paymentSbp, odlEls.paymentCash], paymentMap[odlState.payment] || odlEls.paymentCash);
+            }
+        }
+
+        function odlPositionHint() {
+            if (!odlHintConfig || !odlHintConfig.id) {
+                odlEls.hint.style.display = 'none';
+                return;
+            }
+
+            const target = document.getElementById(odlHintConfig.id);
+            if (!target) {
+                odlEls.hint.style.display = 'none';
+                return;
+            }
+
+            const rect = target.getBoundingClientRect();
+            if (!rect.width || !rect.height) {
+                odlEls.hint.style.display = 'none';
+                return;
+            }
+
+            const padding = Number(odlHintConfig.padding || 0);
+            const radius = Number(odlHintConfig.radius || 12);
+            odlEls.hint.style.display = 'block';
+            odlEls.hint.style.left = `${rect.left - padding}px`;
+            odlEls.hint.style.top = `${rect.top - padding}px`;
+            odlEls.hint.style.width = `${rect.width + padding * 2}px`;
+            odlEls.hint.style.height = `${rect.height + padding * 2}px`;
+            odlEls.hint.style.borderRadius = `${radius}px`;
+        }
+
+        function odlApplyHint(hint) {
+            if (!hint || !hint.id) {
+                odlHintConfig = null;
+                odlEls.hint.style.display = 'none';
+                return;
+            }
+
+            odlHintConfig = {
+                id: String(hint.id),
+                padding: Number(hint.padding || 0),
+                radius: Number(hint.radius || 12)
+            };
+
+            requestAnimationFrame(odlPositionHint);
+            setTimeout(odlPositionHint, 0);
+        }
+
+        function odlUpdateInfo(stepKey) {
+            const cfg = odlSteps[stepKey];
+            odlEls.step.textContent = cfg.step;
+            odlEls.title.textContent = cfg.title;
+            odlEls.desc.textContent = cfg.desc;
+            odlEls.note.textContent = cfg.note;
+            odlEls.headerTitle.textContent = cfg.header;
+
+            if (stepKey === 'completed') {
+                odlEls.nav.style.display = 'none';
+                odlEls.restart.style.display = 'inline-flex';
+            } else {
+                odlEls.nav.style.display = 'grid';
+                odlEls.restart.style.display = 'none';
+                const idx = stepKey === 'confirm' ? odlOrder.length - 1 : odlGetIndex(stepKey);
+                odlEls.prev.disabled = idx <= 0;
+                odlEls.next.disabled = false;
+            }
+
+            odlUpdateProgress(stepKey);
+        }
+
+        function odlGoTo(stepKey) {
+            if (!odlSteps[stepKey]) return;
+
+            odlCurrent = stepKey;
+            const cfg = odlSteps[stepKey];
+            odlSetScreen(cfg.screen);
+            odlResetSelectionsForStep(stepKey);
+            odlUpdateSummary();
+            odlUpdateInfo(stepKey);
+            odlApplyHint(cfg.hint);
+        }
+
+        function odlNextFromCurrent() {
+            const idx = odlGetIndex(odlCurrent);
+            if (idx >= 0 && idx < odlOrder.length - 1) {
+                odlGoTo(odlOrder[idx + 1]);
+                return;
+            }
+            if (odlCurrent === 'payment') {
+                odlGoTo('confirm');
+                return;
+            }
+            if (odlCurrent === 'confirm') {
+                odlGoTo('completed');
+            }
+        }
+
+        function odlHandle(action, payload) {
+            const cfg = odlSteps[odlCurrent];
+            if (!cfg || !cfg.action) return;
+
+            if (cfg.action === 'checkout' && action === 'checkout') {
+                odlNextFromCurrent();
+                return;
+            }
+
+            if (cfg.action === 'select-delivery' && action === 'select-delivery') {
+                if (payload === 'courier') {
+                    odlState.delivery = 'Доставка курьером';
+                } else {
+                    odlState.delivery = 'Пункт выдачи';
+                }
+                odlNextFromCurrent();
+                return;
+            }
+
+            if (cfg.action === 'select-address' && action === 'select-address') {
+                if (payload === 'home') {
+                    odlState.address = 'ул. Ленина, д. 10, кв. 15';
+                } else {
+                    odlState.address = 'ПВЗ OZON, пр-т Мира, 12';
+                }
+                odlNextFromCurrent();
+                return;
+            }
+
+            if (cfg.action === 'select-payment' && action === 'select-payment') {
+                if (payload === 'card') odlState.payment = 'Картой онлайн';
+                if (payload === 'sbp') odlState.payment = 'СБП';
+                if (payload === 'cash') odlState.payment = 'При получении';
+                odlNextFromCurrent();
+                return;
+            }
+
+            if (cfg.action === 'confirm-order' && action === 'confirm-order') {
+                odlEls.confirmBtn.textContent = '⏳ Оформляем...';
+                odlEls.confirmBtn.disabled = true;
+                setTimeout(() => {
+                    odlEls.confirmBtn.textContent = 'Оформить заказ';
+                    odlEls.confirmBtn.disabled = false;
+                    odlGoTo('completed');
+                }, 750);
+            }
+        }
+
+        function odlBack() {
+            if (odlCurrent === 'completed') {
+                odlGoTo('confirm');
+                return;
+            }
+            if (odlCurrent === 'confirm') {
+                odlGoTo('payment');
+                return;
+            }
+            const idx = odlGetIndex(odlCurrent);
+            if (idx > 0) odlGoTo(odlOrder[idx - 1]);
+        }
+
+        function odlForward() {
+            if (odlCurrent === 'completed') return;
+            if (odlCurrent === 'confirm') {
+                odlGoTo('completed');
+                return;
+            }
+            const idx = odlGetIndex(odlCurrent);
+            if (idx >= 0 && idx < odlOrder.length - 1) {
+                odlGoTo(odlOrder[idx + 1]);
+                return;
+            }
+            if (odlCurrent === 'payment') odlGoTo('confirm');
+        }
+
+        odlEls.checkoutBtn.addEventListener('click', () => odlHandle('checkout'));
+
+        odlEls.deliveryCourier.addEventListener('click', () => odlHandle('select-delivery', 'courier'));
+        odlEls.deliveryPickup.addEventListener('click', () => odlHandle('select-delivery', 'pickup'));
+
+        odlEls.addressHome.addEventListener('click', () => odlHandle('select-address', 'home'));
+        odlEls.addressPvz.addEventListener('click', () => odlHandle('select-address', 'pvz'));
+
+        odlEls.paymentCard.addEventListener('click', () => odlHandle('select-payment', 'card'));
+        odlEls.paymentSbp.addEventListener('click', () => odlHandle('select-payment', 'sbp'));
+        odlEls.paymentCash.addEventListener('click', () => odlHandle('select-payment', 'cash'));
+
+        odlEls.confirmBtn.addEventListener('click', () => odlHandle('confirm-order'));
+
+        odlEls.prev.addEventListener('click', odlBack);
+        odlEls.next.addEventListener('click', odlForward);
+        odlEls.restart.addEventListener('click', () => {
+            odlState.delivery = 'Доставка курьером';
+            odlState.address = 'ул. Ленина, д. 10, кв. 15';
+            odlState.payment = 'При получении';
+            odlGoTo('checkout');
+        });
+
+        odlEls.introStart.addEventListener('click', () => {
+            if (odlStarted) return;
+            odlStarted = true;
+            odlEls.introScreen.classList.add('odl-hidden');
+            odlEls.layout.classList.remove('is-hidden');
+            odlGoTo('checkout');
+        });
+
+        window.addEventListener('resize', odlPositionHint);
+        document.addEventListener('scroll', odlPositionHint, true);
+    </script>
+</div>

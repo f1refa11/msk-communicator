@@ -3,6 +3,7 @@
   "description": "Пошаговое подключение смартфона к домашней или общественной сети Wi-Fi.",
   "level": "advanced",
   "course": "smartphone-basics",
+  "order": 30,
   "viewer_navigation": "style-switch",
   "style_options": [
     {

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ course.title }} — {{ difficulty_label }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="app-page">
+    {% include "topbar.tmpl" %}
+
+    <main class="page-shell course-track-page">
+        <header class="page-header">
+            <div>
+{#                <div class="section-kicker">курс</div>#}
+                <h1 class="page-title">{{ course.title }}</h1>
+                <p class="page-note">{{ course.description }}</p>
+            </div>
+            <div class="section-actions">
+                <a class="btn btn-ghost btn-lg" href="/tutorials">Ко всем курсам</a>
+            </div>
+        </header>
+
+        <section class="card course-track-card">
+            <div class="course-track-head">
+                <div>
+                    <span class="pill">Сложность: {{ difficulty_label }}</span>
+                    <h2 class="section-title">Программа прохождения</h2>
+                    <p class="section-text">{{ difficulty_note }}</p>
+                </div>
+                <div class="course-track-stats">
+                    <span>{{ module_count_label }}</span>
+                    <span>завершено: {{ completed_count_label }}</span>
+                </div>
+            </div>
+
+            <div class="course-track-switch">
+                {% if difficulty == 'basic' %}
+                    <span class="btn btn-primary btn-lg course-track-switch-active">Базовый</span>
+                {% else %}
+                    <a class="btn btn-ghost btn-lg" href="{{ basic_href }}">Базовый</a>
+                {% endif %}
+
+                {% if difficulty == 'advanced' %}
+                    <span class="btn btn-primary btn-lg course-track-switch-active">Расширенный</span>
+                {% else %}
+                    <a class="btn btn-ghost btn-lg" href="{{ advanced_href }}">Расширенный</a>
+                {% endif %}
+            </div>
+
+            <p class="course-track-counts">Базовый: {{ basic_count_label }} · Расширенный: {{ advanced_count_label }}</p>
+
+            {% if locked_notice %}
+                <div class="course-track-alert">Нужно соблюдать порядок: сначала завершите предыдущий модуль.</div>
+            {% endif %}
+
+            {% if modules %}
+                <div class="course-module-list">
+                    {% for module in modules %}
+                    <article class="course-module-card status-{{ module.status }}">
+                        <div class="course-module-head">
+                            <span class="course-module-order">{{ module.sequence_number }}</span>
+                            <div class="course-module-main">
+                                <h3>{{ module.title }}</h3>
+                                <p class="course-module-desc">{{ module.description }}</p>
+                            </div>
+                            <span class="course-module-status status-{{ module.status }}">
+                                {% if module.status == 'completed' %}
+                                    Завершен
+                                {% elif module.status == 'current' %}
+                                    Текущий
+                                {% else %}
+                                    Заблокирован
+                                {% endif %}
+                            </span>
+                        </div>
+
+                        {% if module.unlocked %}
+                            <a class="btn btn-primary btn-lg" href="{{ module.start_url }}">
+                                {% if module.completed %}
+                                    Открыть снова
+                                {% elif module.status == 'current' %}
+                                    Продолжить
+                                {% else %}
+                                    Открыть модуль
+                                {% endif %}
+                            </a>
+                        {% else %}
+                            <span class="btn btn-ghost btn-lg disabled">Недоступно</span>
+                            <p class="course-module-lock-note">{{ module.locked_reason }}</p>
+                        {% endif %}
+                    </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="empty-state">Для этого уровня пока нет интерактивных модулей.</p>
+            {% endif %}
+        </section>
+    </main>
+</body>
+</html>

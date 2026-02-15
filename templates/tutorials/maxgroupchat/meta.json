@@ -1,0 +1,18 @@
+{
+  "title": "Создание группового чата",
+  "description": "Создание нового группового чата с несколькими контактами в приложении MAX",
+  "level": "advanced",
+  "course": "max-messenger",
+  "order": 40,
+  "viewer_navigation": "style-switch",
+  "style_options": [
+    {
+      "label": "Видео-урок",
+      "page": 1
+    },
+    {
+      "label": "Симулятор",
+      "page": 2
+    }
+  ]
+}

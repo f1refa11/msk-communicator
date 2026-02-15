@@ -1,0 +1,698 @@
+<div class="pw-sim">
+    <style>
+        .pw-sim,
+        .pw-sim * {
+            box-sizing: border-box;
+        }
+
+        .pw-sim {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #e8eff8;
+            border-radius: 16px;
+            padding: 22px;
+            position: relative;
+        }
+
+        .pw-layout {
+            display: flex;
+            gap: 22px;
+            justify-content: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .pw-phone-stage {
+            width: 348px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .pw-phone-shell {
+            width: 330px;
+            height: 668px;
+            border-radius: 38px;
+            padding: 10px;
+            position: relative;
+            background: linear-gradient(165deg, #26313f 0%, #0f1620 100%);
+            box-shadow: 0 24px 42px rgba(17, 27, 40, 0.34);
+        }
+
+        .pw-phone-frame {
+            width: 100%;
+            height: 100%;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: #050608;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .pw-earpiece {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            width: 72px;
+            height: 7px;
+            transform: translateX(-50%);
+            border-radius: 999px;
+            background: #141a22;
+            z-index: 7;
+        }
+
+        .pw-front-camera {
+            position: absolute;
+            top: 8px;
+            left: 57%;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: radial-gradient(circle at 30% 30%, #374352, #0b1016 72%);
+            z-index: 7;
+        }
+
+        .pw-side-button {
+            position: absolute;
+            right: -8px;
+            border-radius: 10px;
+            background: #4c5868;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+        }
+
+        .pw-side-button.pw-volume-up {
+            top: 132px;
+            width: 13px;
+            height: 104px;
+        }
+
+        .pw-side-button.pw-volume-down {
+            top: 248px;
+            width: 13px;
+            height: 104px;
+        }
+
+        .pw-side-button.pw-power {
+            top: 366px;
+            width: 11px;
+            height: 76px;
+            border: none;
+            cursor: pointer;
+            background: #5a6779;
+            border-radius: 8px;
+        }
+
+        .pw-side-button.pw-power:active {
+            transform: translateX(1px);
+        }
+
+        .pw-screen {
+            position: absolute;
+            inset: 0;
+            border-radius: 30px;
+            overflow: hidden;
+        }
+
+        .pw-state {
+            width: 100%;
+            height: 100%;
+            display: none;
+            position: relative;
+        }
+
+        .pw-state.pw-active {
+            display: flex;
+        }
+
+        .pw-state-sleep {
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            background: radial-gradient(circle at 40% 20%, #0f1520 0%, #020306 72%);
+            color: #d2d9e2;
+        }
+
+        .pw-aod-time {
+            font-size: 46px;
+            font-weight: 520;
+            line-height: 1;
+            letter-spacing: 0.02em;
+        }
+
+        .pw-aod-date {
+            font-size: 14px;
+            color: rgba(210, 217, 226, 0.82);
+        }
+
+        .pw-aod-hint {
+            margin-top: 8px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(210, 217, 226, 0.52);
+        }
+
+        .pw-state-awake {
+            flex-direction: column;
+            color: #fff;
+            background: linear-gradient(180deg, #0d1b34 0%, #1f4c88 38%, #2b74b5 62%, #1a3f70 100%);
+        }
+
+        .pw-statusbar {
+            height: 42px;
+            padding: 12px 16px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0.96;
+        }
+
+        .pw-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px 10px;
+            padding: 0 12px;
+            margin-top: 4px;
+        }
+
+        .pw-app {
+            display: grid;
+            justify-items: center;
+            gap: 6px;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .pw-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 18px;
+            display: grid;
+            place-items: center;
+            font-size: 24px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+            background: rgba(255, 255, 255, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .pw-dock {
+            margin: auto 10px 12px;
+            height: 72px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.26);
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            align-items: center;
+            padding: 0 10px;
+        }
+
+        .pw-dock-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            margin: 0 auto;
+            display: grid;
+            place-items: center;
+            font-size: 22px;
+            background: rgba(255, 255, 255, 0.28);
+        }
+
+        .pw-gesture {
+            width: 116px;
+            height: 5px;
+            border-radius: 999px;
+            margin: 0 auto 8px;
+            background: rgba(255, 255, 255, 0.84);
+        }
+
+        .pw-info {
+            width: min(360px, 100%);
+            background: #fff;
+            border: 1px solid #d4deea;
+            border-radius: 18px;
+            box-shadow: 0 8px 24px rgba(16, 39, 66, 0.1);
+            padding: 18px;
+            display: grid;
+            gap: 12px;
+        }
+
+        .pw-progress {
+            display: grid;
+            gap: 8px;
+        }
+
+        .pw-progress-label {
+            font-size: 12px;
+            color: #5f6368;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+        }
+
+        .pw-progress-track {
+            display: grid;
+            grid-template-columns: repeat(var(--segments-count, 2), minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .pw-progress-segment {
+            height: 10px;
+            border-radius: 999px;
+            background: #dfe6ef;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .pw-progress-segment.is-complete {
+            background: #1f9d55;
+        }
+
+        .pw-progress-segment.is-current {
+            background: #0070d2;
+            box-shadow: 0 0 0 3px rgba(0, 112, 210, 0.2);
+        }
+
+        .pw-step {
+            font-size: 12px;
+            font-weight: 700;
+            color: #677387;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .pw-title {
+            margin: 0;
+            font-size: 24px;
+            line-height: 1.25;
+            color: #111c2c;
+        }
+
+        .pw-description {
+            margin: 0;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #2a3646;
+        }
+
+        .pw-note {
+            margin: 0;
+            background: #edf5ff;
+            border-radius: 12px;
+            color: #1f5c96;
+            font-size: 14px;
+            line-height: 1.4;
+            padding: 10px 12px;
+        }
+
+        .pw-nav {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .pw-nav-btn,
+        .pw-restart-btn {
+            border: none;
+            border-radius: 12px;
+            padding: 11px 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .pw-nav-btn {
+            background: #eef2f9;
+            color: #27384d;
+        }
+
+        .pw-nav-btn.pw-primary {
+            background: #0070d2;
+            color: #fff;
+        }
+
+        .pw-nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pw-restart-btn {
+            width: 100%;
+            background: #2d7d46;
+            color: #fff;
+            display: none;
+        }
+
+        .pw-click-hint {
+            position: fixed;
+            z-index: 10000;
+            display: none;
+            pointer-events: none;
+            border: 3px solid #2b97ff;
+            border-radius: 16px;
+            box-shadow: 0 0 0 2px rgba(43, 151, 255, 0.35), 0 0 18px rgba(43, 151, 255, 0.65);
+            animation: pwHintPulse 1.2s ease-in-out infinite;
+        }
+
+        @keyframes pwHintPulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            60% {
+                transform: scale(1.06);
+                opacity: 0.65;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .pw-sim {
+                padding: 14px;
+            }
+
+            .pw-phone-shell {
+                transform: scale(0.94);
+                transform-origin: top center;
+            }
+        }
+    </style>
+
+    <div class="pw-layout">
+        <div class="pw-phone-stage">
+            <div class="pw-phone-shell">
+                <span class="pw-side-button pw-volume-up" aria-hidden="true"></span>
+                <span class="pw-side-button pw-volume-down" aria-hidden="true"></span>
+                <button id="pw-power-btn" type="button" class="pw-side-button pw-power" aria-label="Кнопка питания"></button>
+
+                <div class="pw-phone-frame">
+                    <div class="pw-earpiece" aria-hidden="true"></div>
+                    <div class="pw-front-camera" aria-hidden="true"></div>
+
+                    <div class="pw-screen">
+                        <div id="pw-state-sleep" class="pw-state pw-state-sleep pw-active">
+                            <div class="pw-aod-time">12:30</div>
+                            <div class="pw-aod-date">Вт, 21 мая</div>
+                            <div class="pw-aod-hint">Экран спит</div>
+                        </div>
+
+                        <div id="pw-state-awake" class="pw-state pw-state-awake">
+                            <div class="pw-statusbar">
+                                <span>12:30</span>
+                                <span>4G ▂▄▆█ 82%</span>
+                            </div>
+
+                            <div class="pw-grid">
+                                <div class="pw-app"><div class="pw-icon">📞</div><span>Телефон</span></div>
+                                <div class="pw-app"><div class="pw-icon">💬</div><span>Сообщения</span></div>
+                                <div class="pw-app"><div class="pw-icon">📷</div><span>Камера</span></div>
+                                <div class="pw-app"><div class="pw-icon">🛒</div><span>Store</span></div>
+                                <div class="pw-app"><div class="pw-icon">🗺️</div><span>Карты</span></div>
+                                <div class="pw-app"><div class="pw-icon">🎧</div><span>Музыка</span></div>
+                                <div class="pw-app"><div class="pw-icon">⚙️</div><span>Настройки</span></div>
+                                <div class="pw-app"><div class="pw-icon">🖼️</div><span>Галерея</span></div>
+                                <div class="pw-app"><div class="pw-icon">🧭</div><span>Навигатор</span></div>
+                                <div class="pw-app"><div class="pw-icon">📺</div><span>Видео</span></div>
+                                <div class="pw-app"><div class="pw-icon">📘</div><span>Книги</span></div>
+                                <div class="pw-app"><div class="pw-icon">🧮</div><span>Кальк.</span></div>
+                            </div>
+
+                            <div class="pw-dock">
+                                <div class="pw-dock-icon">📱</div>
+                                <div class="pw-dock-icon">🌐</div>
+                                <div class="pw-dock-icon">✉️</div>
+                                <div class="pw-dock-icon">📁</div>
+                                <div class="pw-dock-icon">🎵</div>
+                            </div>
+
+                            <div class="pw-gesture"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <aside class="pw-info" aria-live="polite">
+            <div class="pw-progress">
+                <div class="pw-progress-label">Прогресс прохождения</div>
+                <div id="pw-progress-track" class="pw-progress-track"></div>
+            </div>
+
+            <div id="pw-step" class="pw-step">Шаг 1 из 2</div>
+            <h2 id="pw-title" class="pw-title">Разбудите смартфон</h2>
+            <p id="pw-description" class="pw-description">Нажмите кнопку питания справа, чтобы вывести экран из сна.</p>
+            <p id="pw-note" class="pw-note">Телефон уже включен. Мы тренируем именно пробуждение и блокировку экрана.</p>
+
+            <div id="pw-nav" class="pw-nav">
+                <button id="pw-prev" type="button" class="pw-nav-btn">Назад</button>
+                <button id="pw-next" type="button" class="pw-nav-btn pw-primary">Вперёд</button>
+            </div>
+
+            <button id="pw-restart" type="button" class="pw-restart-btn">Начать инструкцию заново</button>
+        </aside>
+    </div>
+
+    <div id="pw-click-hint" class="pw-click-hint" aria-hidden="true"></div>
+
+    <script>
+        const pwSteps = {
+            wake: {
+                step: 'Шаг 1 из 2',
+                title: 'Разбудите смартфон',
+                description: 'Нажмите большую боковую кнопку питания справа.',
+                note: 'Смартфон не выключен полностью: он просто спит.',
+                screen: 'sleep',
+                hint: { targetId: 'pw-power-btn', radius: 18, padding: 6 }
+            },
+            sleep: {
+                step: 'Шаг 2 из 2',
+                title: 'Заблокируйте экран',
+                description: 'Нажмите кнопку питания еще раз, чтобы снова усыпить экран.',
+                note: 'Это обычное поведение Android при коротком нажатии кнопки питания.',
+                screen: 'awake',
+                hint: { targetId: 'pw-power-btn', radius: 18, padding: 6 }
+            },
+            completed: {
+                step: 'Готово',
+                title: 'Отлично!',
+                description: 'Вы научились будить экран и блокировать его кнопкой питания.',
+                note: 'Нажмите «Начать инструкцию заново», чтобы пройти тренировку повторно.',
+                screen: 'sleep',
+                hint: null
+            }
+        };
+
+        const pwOrder = ['wake', 'sleep'];
+
+        const pwElements = {
+            screenSleep: document.getElementById('pw-state-sleep'),
+            screenAwake: document.getElementById('pw-state-awake'),
+            powerButton: document.getElementById('pw-power-btn'),
+            hint: document.getElementById('pw-click-hint'),
+            progressTrack: document.getElementById('pw-progress-track'),
+            step: document.getElementById('pw-step'),
+            title: document.getElementById('pw-title'),
+            description: document.getElementById('pw-description'),
+            note: document.getElementById('pw-note'),
+            nav: document.getElementById('pw-nav'),
+            prev: document.getElementById('pw-prev'),
+            next: document.getElementById('pw-next'),
+            restart: document.getElementById('pw-restart')
+        };
+
+        let pwCurrentStep = 'wake';
+        let pwActiveHint = null;
+
+        function pwGetStepIndex(stepKey) {
+            return pwOrder.indexOf(stepKey);
+        }
+
+        function pwEnsureProgressSegments() {
+            const count = pwOrder.length;
+            pwElements.progressTrack.style.setProperty('--segments-count', String(count));
+
+            if (pwElements.progressTrack.childElementCount === count) {
+                return;
+            }
+
+            pwElements.progressTrack.innerHTML = '';
+            for (let i = 0; i < count; i += 1) {
+                const segment = document.createElement('span');
+                segment.className = 'pw-progress-segment';
+                pwElements.progressTrack.appendChild(segment);
+            }
+        }
+
+        function pwUpdateProgress(stepKey) {
+            pwEnsureProgressSegments();
+            const segments = Array.from(pwElements.progressTrack.children);
+            const isCompleted = stepKey === 'completed';
+            const index = pwGetStepIndex(stepKey);
+            const currentIndex = isCompleted ? pwOrder.length - 1 : index;
+
+            segments.forEach((segment, segmentIndex) => {
+                segment.classList.remove('is-complete', 'is-current');
+                if (isCompleted || segmentIndex < currentIndex) {
+                    segment.classList.add('is-complete');
+                } else if (segmentIndex === currentIndex) {
+                    segment.classList.add('is-current');
+                }
+            });
+        }
+
+        function pwSetScreen(screenKey) {
+            pwElements.screenSleep.classList.remove('pw-active');
+            pwElements.screenAwake.classList.remove('pw-active');
+
+            if (screenKey === 'awake') {
+                pwElements.screenAwake.classList.add('pw-active');
+                return;
+            }
+            pwElements.screenSleep.classList.add('pw-active');
+        }
+
+        function pwPositionHint() {
+            if (!pwActiveHint || !pwActiveHint.targetId) {
+                pwElements.hint.style.display = 'none';
+                return;
+            }
+
+            const target = document.getElementById(pwActiveHint.targetId);
+            if (!target) {
+                pwElements.hint.style.display = 'none';
+                return;
+            }
+
+            const rect = target.getBoundingClientRect();
+            if (!rect.width || !rect.height) {
+                pwElements.hint.style.display = 'none';
+                return;
+            }
+
+            const padding = Number(pwActiveHint.padding || 0);
+            const radius = Number(pwActiveHint.radius || 14);
+
+            pwElements.hint.style.display = 'block';
+            pwElements.hint.style.left = `${rect.left - padding}px`;
+            pwElements.hint.style.top = `${rect.top - padding}px`;
+            pwElements.hint.style.width = `${rect.width + padding * 2}px`;
+            pwElements.hint.style.height = `${rect.height + padding * 2}px`;
+            pwElements.hint.style.borderRadius = `${radius}px`;
+        }
+
+        function pwApplyHint(hint) {
+            if (!hint || !hint.targetId) {
+                pwActiveHint = null;
+                pwElements.hint.style.display = 'none';
+                return;
+            }
+
+            pwActiveHint = {
+                targetId: String(hint.targetId),
+                radius: Number(hint.radius || 14),
+                padding: Number(hint.padding || 0)
+            };
+
+            requestAnimationFrame(pwPositionHint);
+            setTimeout(pwPositionHint, 0);
+        }
+
+        function pwUpdateInfo(stepKey) {
+            const cfg = pwSteps[stepKey];
+            pwElements.step.textContent = cfg.step;
+            pwElements.title.textContent = cfg.title;
+            pwElements.description.textContent = cfg.description;
+            pwElements.note.textContent = cfg.note;
+
+            if (stepKey === 'completed') {
+                pwElements.nav.style.display = 'none';
+                pwElements.restart.style.display = 'inline-flex';
+            } else {
+                pwElements.nav.style.display = 'grid';
+                pwElements.restart.style.display = 'none';
+                const stepIndex = pwGetStepIndex(stepKey);
+                pwElements.prev.disabled = stepIndex <= 0;
+                pwElements.next.disabled = false;
+            }
+
+            pwUpdateProgress(stepKey);
+        }
+
+        function pwApplyStep(stepKey) {
+            const cfg = pwSteps[stepKey];
+            pwSetScreen(cfg.screen);
+            pwApplyHint(cfg.hint);
+            pwUpdateInfo(stepKey);
+        }
+
+        function pwGoToStep(stepKey) {
+            if (!pwSteps[stepKey]) {
+                return;
+            }
+            pwCurrentStep = stepKey;
+            pwApplyStep(stepKey);
+        }
+
+        function pwHandlePowerClick() {
+            if (pwCurrentStep === 'wake') {
+                pwSetScreen('awake');
+                pwApplyHint(null);
+                setTimeout(() => pwGoToStep('sleep'), 180);
+                return;
+            }
+
+            if (pwCurrentStep === 'sleep') {
+                pwSetScreen('sleep');
+                pwApplyHint(null);
+                setTimeout(() => pwGoToStep('completed'), 180);
+            }
+        }
+
+        function pwGoBack() {
+            if (pwCurrentStep === 'completed') {
+                pwGoToStep('sleep');
+                return;
+            }
+
+            const index = pwGetStepIndex(pwCurrentStep);
+            if (index > 0) {
+                pwGoToStep(pwOrder[index - 1]);
+            }
+        }
+
+        function pwGoForward() {
+            if (pwCurrentStep === 'completed') {
+                return;
+            }
+
+            const index = pwGetStepIndex(pwCurrentStep);
+            if (index >= 0 && index < pwOrder.length - 1) {
+                pwGoToStep(pwOrder[index + 1]);
+                return;
+            }
+
+            if (pwCurrentStep === 'sleep') {
+                pwGoToStep('completed');
+            }
+        }
+
+        function pwRestart() {
+            pwGoToStep('wake');
+        }
+
+        pwElements.powerButton.addEventListener('click', pwHandlePowerClick);
+        pwElements.prev.addEventListener('click', pwGoBack);
+        pwElements.next.addEventListener('click', pwGoForward);
+        pwElements.restart.addEventListener('click', pwRestart);
+
+        window.addEventListener('resize', pwPositionHint);
+        document.addEventListener('scroll', pwPositionHint, true);
+
+        pwGoToStep('wake');
+    </script>
+</div>

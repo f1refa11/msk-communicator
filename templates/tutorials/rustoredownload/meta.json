@@ -3,6 +3,7 @@
   "description": "Установка ЕМИАС",
   "level": "advanced",
   "course": "smartphone-basics",
+  "order": 40,
   "viewer_navigation": "style-switch",
   "style_options": [
     {

@@ -1,9 +1,9 @@
 {
-  "title": "Отправка сообщений в MAX",
-  "description": "Отправка сообщений собеседнику в чате мессенджера MAX.",
+  "title": "Создание нового чата",
+  "description": "Создание нового чата с одним человеком в приложении",
   "level": "basic",
   "course": "max-messenger",
-  "order": 10,
+  "order": 30,
   "viewer_navigation": "style-switch",
   "style_options": [
     {

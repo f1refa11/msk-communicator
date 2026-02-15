@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>MAX Messenger - Group Chat Tutorial</title>
+    <style>
+        :root {
+            --bg-color: #17212b;
+            --header-color: #202a38;
+            --text-primary: #eef4ff;
+            --text-secondary: #7f91a4;
+            --accent-blue: #1f87ff;
+            --message-in: #1b2735;
+            --message-out: #2b5278;
+            --keyboard-bg: #1c1c1e;
+            --key-bg: #4a4a4c;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #e7edf5;
+        }
+
+        .max-group-root {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 24px;
+            box-sizing: border-box;
+            min-height: 100vh;
+        }
+
+        .max-group-root * {
+            box-sizing: border-box;
+        }
+
+        .tutorial-layout {
+            width: min(1080px, 100%);
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .phone-frame {
+            width: 390px;
+            height: 680px; /* Немного выше, чтобы вместить клавиатуру и списки */
+            background-color: var(--bg-color);
+            border: 10px solid #1d232b;
+            border-radius: 30px;
+            box-shadow: 0 18px 36px rgba(19, 34, 53, 0.28);
+            overflow: hidden;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+            background: linear-gradient(180deg, #141d2a 0%, #121a26 100%);
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* --- Headers --- */
+        .header {
+            background: var(--header-color);
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-height: 56px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-title-col {
+            flex: 1;
+        }
+
+        .header-title {
+            color: var(--text-primary);
+            font-size: 19px;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .header-subtitle {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .header-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: transparent;
+            color: #a4b1c2;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        .header-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        /* --- Lists & Items --- */
+        .content-scroll {
+            flex: 1;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .list-header-block {
+            padding: 16px 16px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-header-title {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .item:active, .item.selected {
+            background: #1a2634;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #4d64f4;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .avatar.yellow { background: #f1c40f; color: #1f242c; }
+        .avatar.blue { background: #2b97ff; }
+        .avatar.purple { background: #9c27b0; }
+        .avatar.green { background: #2d7d46; }
+
+        .item-content {
+            flex: 1;
+            min-width: 0;
+            border-bottom: 1px solid rgba(0,0,0,0.2);
+            padding-bottom: 8px;
+            padding-top: 8px;
+        }
+        
+        .item:last-child .item-content {
+            border-bottom: none;
+        }
+
+        .item-title {
+            color: var(--text-primary);
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .item-subtitle {
+            color: #8ea0b4;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .checkbox-circle {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #6c7883;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .item.checked .checkbox-circle {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+        }
+
+        .checkbox-circle svg {
+            width: 14px;
+            height: 14px;
+            fill: white;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.2s;
+        }
+
+        .item.checked .checkbox-circle svg {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* --- Search Bar --- */
+        .search-container {
+            padding: 8px 12px;
+            background: var(--header-color);
+        }
+
+        .search-input-wrap {
+            background: #131d29;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            height: 40px;
+        }
+
+        .search-input {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 16px;
+            flex: 1;
+            margin-left: 8px;
+            outline: none;
+        }
+
+        /* --- Floating Button (FAB) --- */
+        .fab {
+            position: absolute;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+            z-index: 50;
+        }
+        
+        .fab.hidden {
+            transform: scale(0);
+            pointer-events: none;
+        }
+
+        .fab svg {
+            width: 28px;
+            height: 28px;
+            fill: currentColor;
+        }
+
+        .fab-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #f1c40f;
+            color: #000;
+            font-size: 12px;
+            font-weight: bold;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* --- Menus --- */
+        .popup-menu {
+            position: absolute;
+            top: 60px;
+            right: 16px;
+            background: #202a38;
+            border-radius: 12px;
+            padding: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: none;
+            flex-direction: column;
+            width: 200px;
+            z-index: 100;
+        }
+        
+        .popup-menu.visible {
+            display: flex;
+            animation: fadeIn 0.15s ease-out;
+        }
+
+        .menu-item {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-primary);
+            font-size: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .menu-item:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* --- Input for New Group --- */
+        .group-create-form {
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .avatar-upload {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #2b97ff;
+            align-self: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-bottom: 12px;
+        }
+
+        .input-group {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--accent-blue);
+            color: var(--text-primary);
+            font-size: 18px;
+            padding: 8px 0;
+            outline: none;
+            width: 100%;
+        }
+
+        .big-btn {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        /* --- Chat Messages --- */
+        .messages-area {
+            flex: 1;
+            padding: 16px;
+            background-color: #0f1823;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 0);
+            background-size: 20px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .msg-bubble {
+            background: var(--message-out);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 12px;
+            border-bottom-right-radius: 2px;
+            align-self: flex-end;
+            max-width: 80%;
+            margin-top: 8px;
+            font-size: 15px;
+        }
+        
+        .sys-msg {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin: 10px 0;
+            background: rgba(0,0,0,0.2);
+            padding: 4px 12px;
+            border-radius: 12px;
+            align-self: center;
+        }
+
+        /* --- Hint System --- */
+        .global-click-hint {
+            position: fixed;
+            z-index: 10000;
+            display: none;
+            pointer-events: none;
+            border: 3px solid #2b97ff;
+            border-radius: 14px;
+            box-shadow: 0 0 0 2px rgba(43, 151, 255, 0.35), 0 0 18px rgba(43, 151, 255, 0.65);
+            animation: hintPulse 1.2s ease-in-out infinite;
+        }
+
+        @keyframes hintPulse {
+            0% { transform: scale(1); opacity: 1; }
+            60% { transform: scale(1.05); opacity: 0.65; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Info Block --- */
+        .info-block {
+            width: min(360px, 100%);
+            background: #fff;
+            border: 1px solid #d7deeb;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(16, 39, 66, 0.1);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .info-title { margin: 0; font-size: 24px; color: #111c2c; }
+        .info-desc { margin: 0; font-size: 16px; color: #2a3646; line-height: 1.5; }
+        .info-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: auto;}
+        .btn-nav { border: none; border-radius: 12px; padding: 11px; font-weight: 700; cursor: pointer; }
+        .btn-nav.prev { background: #eef2f9; color: #27384d; }
+        .btn-nav.next { background: #0070d2; color: white; }
+        .btn-nav:disabled { opacity: 0.5; }
+        
+        /* Keyboard for typing simulation */
+        .keyboard {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            background: var(--keyboard-bg);
+            padding: 6px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .kb-row { display: flex; gap: 4px; justify-content: center; }
+        .key { flex: 1; height: 36px; background: var(--key-bg); color: white; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .key.space { flex: 4; }
+        
+        .hidden { display: none !important; }
+
+    </style>
+</head>
+<body>
+
+<div class="max-group-root">
+    <div class="tutorial-layout">
+        
+        <div class="phone-frame">
+            
+            <section id="screen-chat-initial" class="screen active">
+                <div class="header">
+                    <button id="btn-back-chat" class="header-btn" onclick="handleAction('exit-chat')">
+                        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.58-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                    </button>
+                    <div class="avatar yellow" style="width: 36px; height: 36px; font-size: 14px;">НВ</div>
+                    <div class="header-title-col">
+                        <div class="header-title" style="font-size: 16px;">Никита Воронов</div>
+                        <div class="header-subtitle">Только что</div>
+                    </div>
+                </div>
+                <div class="messages-area">
+                    <div class="sys-msg">Сегодня</div>
+                    <div class="msg-bubble" style="background: var(--message-in); align-self: flex-start; border-bottom-left-radius: 2px; border-bottom-right-radius: 12px;">Привет!</div>
+                </div>
+                <div style="background: var(--header-color); height: 50px; border-top: 1px solid rgba(255,255,255,0.1);"></div>
+            </section>
+
+            <section id="screen-main-list" class="screen">
+                <div class="list-header-block">
+                    <h1 class="list-header-title">Чаты</h1>
+                    <button id="btn-plus-menu" class="header-btn" style="background: var(--accent-blue); color: white; border-radius: 12px;" onclick="handleAction('open-new-menu')">
+                        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg>
+                    </button>
+                </div>
+                
+                <div id="create-menu" class="popup-menu">
+                    <div id="menu-item-create-group" class="menu-item" onclick="handleAction('select-create-group')">
+                        <svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:#8ea0b4;"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5C15 14.17 10.33 13 8 13zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.98 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                        Создать чат
+                    </div>
+                    <div class="menu-item">
+                         <svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:#8ea0b4;"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.61 21 3 13.39 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.24.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                        Создать звонок
+                    </div>
+                </div>
+
+                <div class="content-scroll">
+                    <div class="item">
+                        <div class="avatar yellow">НВ</div>
+                        <div class="item-content">
+                            <div class="item-title">Никита Воронов</div>
+                            <div class="item-subtitle">Привет!</div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="avatar blue">MAX</div>
+                        <div class="item-content">
+                            <div class="item-title">MAX</div>
+                            <div class="item-subtitle">Новый вход в MAX...</div>
+                        </div>
+                    </div>
+                     <div class="item">
+                        <div class="avatar green">1K</div>
+                        <div class="item-content">
+                            <div class="item-title">Одноклассники</div>
+                            <div class="item-subtitle">Фотография</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="screen-select-participants" class="screen">
+                <div class="header">
+                    <button class="header-btn" onclick="handleAction('back-to-list')">
+                         <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.58-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                    </button>
+                    <div class="header-title-col">
+                        <div class="header-title">Выберите участников</div>
+                    </div>
+                </div>
+                
+                <div class="search-container">
+                    <div class="search-input-wrap">
+                        <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:#7f91a4"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5a6.5 6.5 0 1 0-6.5 6.5c1.61 0 3.09-.59 4.23-1.57l.27.28h.79l4.99 5 1.5-1.5-4.99-5zM9.5 14A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+                        <input id="participant-search" type="text" class="search-input" placeholder="Поиск по имени" readonly onclick="handleAction('click-search')">
+                    </div>
+                </div>
+
+                <div id="participants-list" class="content-scroll">
+                    <div id="list-default">
+                         <div style="padding: 12px 16px; color: #7f91a4; font-size: 13px; font-weight: bold;">НЕДАВНИЕ</div>
+                         <div class="item" id="row-stepan" onclick="handleAction('select-stepan')">
+                            <div class="avatar yellow">НВ</div>
+                            <div class="item-content">
+                                <div class="item-title">Никита Воронов</div>
+                                <div class="item-subtitle">1 мин назад</div>
+                            </div>
+                            <div class="checkbox-circle"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                        </div>
+                        <div class="item" id="row-artem" onclick="handleAction('select-artem')">
+                             <div class="avatar yellow">РЕ</div>
+                            <div class="item-content">
+                                <div class="item-title">Романов Егор</div>
+                                <div class="item-subtitle">был(-а) недавно</div>
+                            </div>
+                            <div class="checkbox-circle"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                        </div>
+                        <div class="item">
+                            <div class="avatar purple">АВ</div>
+                            <div class="item-content">
+                                <div class="item-title">Агапов Виктор</div>
+                                <div class="item-subtitle">был(-а) недавно</div>
+                            </div>
+                            <div class="checkbox-circle"></div>
+                        </div>
+                    </div>
+                    
+                    <div id="list-result-stepan" class="hidden">
+                         <div class="item" id="result-row-stepan" onclick="handleAction('select-stepan')">
+                            <div class="avatar yellow">НВ</div>
+                            <div class="item-content">
+                                <div class="item-title">Никита Воронов</div>
+                                <div class="item-subtitle">1 мин назад</div>
+                            </div>
+                            <div class="checkbox-circle"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                        </div>
+                    </div>
+
+                    <div id="list-result-artem" class="hidden">
+                         <div class="item" id="result-row-artem" onclick="handleAction('select-artem')">
+                            <div class="avatar yellow">РЕ</div>
+                            <div class="item-content">
+                                <div class="item-title">Романов Егор</div>
+                                <div class="item-subtitle">был(-а) недавно</div>
+                            </div>
+                             <div class="checkbox-circle"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="btn-continue" class="fab hidden" onclick="handleAction('click-continue')">
+                    <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                    <div id="count-badge" class="fab-badge">0</div>
+                </button>
+                
+                <div id="keyboard-participants" class="keyboard">
+                     <div class="kb-row"><div class="key">й</div><div class="key">ц</div><div class="key">у</div><div class="key">к</div><div class="key">е</div><div class="key">н</div><div class="key">г</div><div class="key">ш</div></div>
+                     <div class="kb-row"><div class="key">ф</div><div class="key">ы</div><div class="key">в</div><div class="key">а</div><div class="key">п</div><div class="key">р</div><div class="key">о</div><div class="key">л</div><div class="key">д</div></div>
+                     <div class="kb-row"><div class="key action">123</div><div class="key space"></div><div class="key action">Go</div></div>
+                </div>
+            </section>
+            
+            <section id="screen-new-chat-info" class="screen">
+                <div class="header">
+                    <button class="header-btn" onclick="handleAction('back-to-parts')">
+                         <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.58-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                    </button>
+                    <div class="header-title-col">
+                        <div class="header-title">Новый чат</div>
+                    </div>
+                </div>
+
+                <div class="group-create-form">
+                    <div class="avatar-upload">
+                        <svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:white;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    </div>
+                    
+                    <input id="group-name-input" type="text" class="input-group" placeholder="Название чата" readonly onclick="handleAction('click-name-input')">
+                    
+                    <button id="btn-create-final" class="big-btn" onclick="handleAction('create-action')">Создать чат</button>
+                </div>
+                
+                 <div id="keyboard-name" class="keyboard" style="margin-top:auto;">
+                     <div class="kb-row"><div class="key">й</div><div class="key">ц</div><div class="key">у</div><div class="key">к</div><div class="key">е</div><div class="key">н</div><div class="key">г</div><div class="key">ш</div></div>
+                     <div class="kb-row"><div class="key">ф</div><div class="key">ы</div><div class="key">в</div><div class="key">а</div><div class="key">п</div><div class="key">р</div><div class="key">о</div><div class="key">л</div><div class="key">д</div></div>
+                     <div class="kb-row"><div class="key action">123</div><div class="key space"></div><div class="key action">Go</div></div>
+                </div>
+            </section>
+
+             <section id="screen-final" class="screen">
+                 <div class="header">
+                    <button class="header-btn">
+                        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.58-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                    </button>
+                    <div class="avatar blue" style="width: 36px; height: 36px; font-size: 14px;">Д</div>
+                    <div class="header-title-col">
+                        <div class="header-title" style="font-size: 16px;">Друзья</div>
+                        <div class="header-subtitle">3 участника</div>
+                    </div>
+                </div>
+                <div class="messages-area">
+                    <div class="sys-msg">Вы создали чат</div>
+                     <div class="msg-bubble" style="background: var(--message-out);">Всем привет!</div>
+                </div>
+                <div style="background: var(--header-color); height: 50px; border-top: 1px solid rgba(255,255,255,0.1);"></div>
+            </section>
+
+        </div>
+
+        <aside class="info-block">
+            <h2 id="info-title" class="info-title">Заголовок</h2>
+            <p id="info-desc" class="info-desc">Описание шага.</p>
+             <div class="info-nav">
+                <button id="btn-prev" class="btn-nav prev" onclick="navigate(-1)">Назад</button>
+                <button id="btn-next" class="btn-nav next" onclick="navigate(1)">Вперёд</button>
+            </div>
+            <button id="btn-restart" class="btn-nav next" style="background: #2d7d46; display: none;" onclick="restartTutorial()">Начать заново</button>
+        </aside>
+    </div>
+
+    <div id="global-click-hint" class="global-click-hint"></div>
+</div>
+
+<script>
+    const steps = [
+        {
+            id: 'exit-chat',
+            title: 'Выйдите из чата',
+            desc: 'Начнем с чистого листа. Нажмите стрелку «Назад», чтобы выйти в список чатов.',
+            screen: 'screen-chat-initial',
+            hint: { id: 'btn-back-chat', radius: 18, padding: 4 }
+        },
+        {
+            id: 'open-new-menu',
+            title: 'Создайте новый чат',
+            desc: 'Нажмите на синюю кнопку с плюсом в правом верхнем углу списка чатов.',
+            screen: 'screen-main-list',
+            hint: { id: 'btn-plus-menu', radius: 12, padding: 6 }
+        },
+        {
+            id: 'select-create-group',
+            title: 'Выберите действие',
+            desc: 'В появившемся меню выберите пункт «Создать чат».',
+            screen: 'screen-main-list',
+            menuVisible: true,
+            hint: { id: 'menu-item-create-group', radius: 8, padding: 0 }
+        },
+        {
+            id: 'search-stepan',
+            title: 'Поиск первого участника',
+            desc: 'Нажмите на поле поиска, чтобы найти Никиту.',
+            screen: 'screen-select-participants',
+            participantsState: 'default',
+            hint: { id: 'participant-search', radius: 12, padding: 0 }
+        },
+        {
+            id: 'type-stepan',
+            title: 'Введите имя',
+            desc: 'Нажмите любую клавишу, чтобы ввести «Никита».',
+            screen: 'screen-select-participants',
+            participantsState: 'search-typing',
+            hint: { id: 'keyboard-participants', radius: 0, padding: 0 }
+        },
+        {
+            id: 'select-stepan',
+            title: 'Выберите Никиту',
+            desc: 'Нажмите на найденный контакт «Никита Воронов».',
+            screen: 'screen-select-participants',
+            participantsState: 'result-stepan',
+            hint: { id: 'result-row-stepan', radius: 0, padding: 0 }
+        },
+        {
+            id: 'search-artem',
+            title: 'Поиск второго участника',
+            desc: 'Теперь найдем Егора. Снова нажмите на поле поиска (оно автоматически очистится).',
+            screen: 'screen-select-participants',
+            participantsState: 'stepan-selected',
+            hint: { id: 'participant-search', radius: 12, padding: 0 }
+        },
+        {
+            id: 'type-artem',
+            title: 'Введите имя',
+            desc: 'Нажмите любую клавишу, чтобы ввести «Егор».',
+            screen: 'screen-select-participants',
+            participantsState: 'search-typing-artem',
+            hint: { id: 'keyboard-participants', radius: 0, padding: 0 }
+        },
+        {
+            id: 'select-artem',
+            title: 'Выберите Егора',
+            desc: 'Нажмите на контакт «Романов Егор».',
+            screen: 'screen-select-participants',
+            participantsState: 'result-artem',
+            hint: { id: 'result-row-artem', radius: 0, padding: 0 }
+        },
+        {
+            id: 'click-continue',
+            title: 'Продолжить',
+            desc: 'Выбрано 2 участника. Нажмите синюю кнопку со стрелкой внизу справа.',
+            screen: 'screen-select-participants',
+            participantsState: 'both-selected',
+            hint: { id: 'btn-continue', radius: 28, padding: 4 }
+        },
+        {
+            id: 'enter-group-name',
+            title: 'Назовите группу',
+            desc: 'Нажмите на поле «Название чата», чтобы ввести название.',
+            screen: 'screen-new-chat-info',
+            hint: { id: 'group-name-input', radius: 0, padding: 8 }
+        },
+        {
+            id: 'type-group-name',
+            title: 'Введите название',
+            desc: 'Нажмите любую клавишу, чтобы ввести «Друзья».',
+            screen: 'screen-new-chat-info',
+            nameState: 'typing',
+            hint: { id: 'keyboard-name', radius: 0, padding: 0 }
+        },
+        {
+            id: 'create-action',
+            title: 'Создайте чат',
+            desc: 'Нажмите кнопку «Создать чат».',
+            screen: 'screen-new-chat-info',
+            nameState: 'filled',
+            hint: { id: 'btn-create-final', radius: 8, padding: 4 }
+        },
+        {
+            id: 'completed',
+            title: 'Готово!',
+            desc: 'Вы успешно создали групповой чат «Друзья».',
+            screen: 'screen-final',
+            hint: null
+        }
+    ];
+
+    let currentStepIndex = 0;
+    let typingTimer = null;
+    const els = {
+        screens: document.querySelectorAll('.screen'),
+        hint: document.getElementById('global-click-hint'),
+        infoTitle: document.getElementById('info-title'),
+        infoDesc: document.getElementById('info-desc'),
+        btnPrev: document.getElementById('btn-prev'),
+        btnNext: document.getElementById('btn-next'),
+        btnRestart: document.getElementById('btn-restart'),
+        infoNav: document.querySelector('.info-nav'),
+        
+        // Dynamic Elements
+        createMenu: document.getElementById('create-menu'),
+        searchInput: document.getElementById('participant-search'),
+        listDefault: document.getElementById('list-default'),
+        listResultStepan: document.getElementById('list-result-stepan'),
+        listResultArtem: document.getElementById('list-result-artem'),
+        rowStepan: document.getElementById('row-stepan'),
+        rowArtem: document.getElementById('row-artem'),
+        resultRowStepan: document.getElementById('result-row-stepan'),
+        resultRowArtem: document.getElementById('result-row-artem'),
+        btnContinue: document.getElementById('btn-continue'),
+        countBadge: document.getElementById('count-badge'),
+        keyboardParts: document.getElementById('keyboard-participants'),
+        keyboardName: document.getElementById('keyboard-name'),
+        nameInput: document.getElementById('group-name-input')
+    };
+
+    function getCurrentStep() {
+        return steps[currentStepIndex];
+    }
+
+    function setScreen(screenId) {
+        els.screens.forEach(s => s.classList.remove('active'));
+        const active = document.getElementById(screenId);
+        if (active) active.classList.add('active');
+    }
+
+    function positionHint(hintConfig) {
+        if (!hintConfig) {
+            els.hint.style.display = 'none';
+            return;
+        }
+        const target = document.getElementById(hintConfig.id);
+        if (!target || target.offsetParent === null) {
+             els.hint.style.display = 'none';
+             return;
+        }
+
+        const rect = target.getBoundingClientRect();
+        const padding = hintConfig.padding || 0;
+        const radius = hintConfig.radius || 14;
+
+        els.hint.style.display = 'block';
+        els.hint.style.width = `${rect.width + padding * 2}px`;
+        els.hint.style.height = `${rect.height + padding * 2}px`;
+        els.hint.style.top = `${rect.top - padding}px`;
+        els.hint.style.left = `${rect.left - padding}px`;
+        els.hint.style.borderRadius = `${radius}px`;
+    }
+
+    function updateUI() {
+        const step = getCurrentStep();
+        setScreen(step.screen);
+        
+        // --- Specific State Handling ---
+        
+        // 1. Menu visibility
+        els.createMenu.classList.toggle('visible', !!step.menuVisible);
+
+        // 2. Participants Screen State
+        if (step.screen === 'screen-select-participants') {
+            const state = step.participantsState || 'default';
+            
+            // Search Input Value
+            if (state === 'default' || state === 'stepan-selected') {
+                els.searchInput.value = '';
+            } else if (state === 'result-stepan') {
+                els.searchInput.value = 'Никита';
+            } else if (state === 'result-artem') {
+                 els.searchInput.value = 'Егор';
+            }
+
+            // Keyboard Visibility
+            const isTyping = state.includes('typing');
+            els.keyboardParts.style.display = isTyping ? 'flex' : 'none';
+
+            // Lists Visibility
+            els.listDefault.classList.toggle('hidden', state.includes('result') || isTyping);
+            els.listResultStepan.classList.toggle('hidden', state !== 'result-stepan');
+            els.listResultArtem.classList.toggle('hidden', state !== 'result-artem');
+            
+            // Checkbox States (Visual)
+            // Reset visual checks first
+            [els.rowStepan, els.resultRowStepan, els.rowArtem, els.resultRowArtem].forEach(el => el.classList.remove('checked'));
+            
+            if (state === 'stepan-selected' || state === 'search-typing-artem' || state === 'result-artem') {
+                els.rowStepan.classList.add('checked');
+                 // Note: Result row stepan isn't visible in these states usually
+            }
+            if (state === 'both-selected') {
+                 els.rowStepan.classList.add('checked');
+                 els.rowArtem.classList.add('checked');
+            }
+
+            // Continue Button
+            if (state === 'stepan-selected') {
+                els.btnContinue.classList.remove('hidden');
+                els.countBadge.textContent = '1';
+            } else if (state === 'both-selected') {
+                els.btnContinue.classList.remove('hidden');
+                els.countBadge.textContent = '2';
+            } else {
+                els.btnContinue.classList.add('hidden');
+            }
+        }
+
+        // 3. New Chat Info State
+        if (step.screen === 'screen-new-chat-info') {
+             const state = step.nameState || 'empty';
+             els.keyboardName.style.display = (state === 'typing') ? 'flex' : 'none';
+             if (state === 'filled') els.nameInput.value = 'Друзья';
+             else if (state === 'empty') els.nameInput.value = '';
+        }
+
+        // --- Info Panel ---
+        els.infoTitle.textContent = step.title;
+        els.infoDesc.textContent = step.desc;
+
+        if (step.id === 'completed') {
+            els.infoNav.style.display = 'none';
+            els.btnRestart.style.display = 'block';
+        } else {
+            els.infoNav.style.display = 'grid';
+            els.btnRestart.style.display = 'none';
+            els.btnPrev.disabled = (currentStepIndex === 0);
+            els.btnNext.disabled = false;
+        }
+
+        // --- Hint Update ---
+        setTimeout(() => positionHint(step.hint), 50); // Small delay for layout
+    }
+
+    function navigate(dir) {
+        const next = currentStepIndex + dir;
+        if (next >= 0 && next < steps.length) {
+            currentStepIndex = next;
+            updateUI();
+        }
+    }
+
+    function handleAction(actionId) {
+        const step = getCurrentStep();
+        if (step.id !== actionId) return;
+
+        // Auto-typing simulation for typing steps
+        if (actionId === 'type-stepan' || actionId === 'type-artem' || actionId === 'type-group-name') {
+             simulateTyping(actionId);
+        } else {
+            navigate(1);
+        }
+    }
+
+    function simulateTyping(actionId) {
+        let text = '';
+        let inputEl = null;
+        
+        if (actionId === 'type-stepan') {
+            text = 'Никита';
+            inputEl = els.searchInput;
+        } else if (actionId === 'type-artem') {
+             text = 'Егор';
+             inputEl = els.searchInput;
+        } else {
+            text = 'Друзья';
+            inputEl = els.nameInput;
+        }
+
+        let i = 0;
+        inputEl.value = '';
+        
+        // Disable hint during typing
+        els.hint.style.display = 'none';
+
+        function typeChar() {
+            if (i < text.length) {
+                inputEl.value += text.charAt(i);
+                i++;
+                setTimeout(typeChar, 100);
+            } else {
+                setTimeout(() => navigate(1), 300);
+            }
+        }
+        typeChar();
+    }
+
+    function restartTutorial() {
+        currentStepIndex = 0;
+        updateUI();
+    }
+
+    // --- Init ---
+    window.addEventListener('resize', () => positionHint(getCurrentStep().hint));
+    
+    // Keyboard listener for "any key" typing simulation
+    document.addEventListener('keydown', (e) => {
+        const step = getCurrentStep();
+        if (step.id.startsWith('type-')) {
+            handleAction(step.id);
+        }
+    });
+
+    // Also click on keyboard divs
+    document.querySelectorAll('.keyboard').forEach(kb => {
+        kb.addEventListener('click', () => {
+             const step = getCurrentStep();
+            if (step.id.startsWith('type-')) {
+                handleAction(step.id);
+            }
+        })
+    });
+
+    updateUI();
+
+</script>
+
+</body>
+</html>

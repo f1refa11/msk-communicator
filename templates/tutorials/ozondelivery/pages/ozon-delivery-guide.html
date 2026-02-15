@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OZON: Оформление доставки</title>
+    <link rel="stylesheet" href="/tutorials-assets/ozon-complete/pages/style.css">
+    <style>
+        .ozon-course-body {
+            background: #f6f7fb;
+        }
+
+        .course-container {
+            max-width: 1120px;
+        }
+
+        .ozon-interface {
+            max-width: min(90vw, 460px);
+            margin: 3vh auto;
+            background: #fff;
+            border: 0.45vw solid #000;
+            border-radius: 2.2vw;
+            overflow: hidden;
+            box-shadow: 0 1.4vh 2.8vh rgba(0, 0, 0, 0.28);
+        }
+
+        .ozon-header {
+            background: #005bff;
+            color: #fff;
+            padding: 2vh 3vw;
+            display: flex;
+            align-items: center;
+            gap: 2vw;
+            border-bottom: 0.3vw solid #000;
+        }
+
+        .icon-btn {
+            font-size: clamp(1.2rem, 2.5vw, 1.9rem);
+            cursor: default;
+            padding: 1vh 1.5vw;
+        }
+
+        .checkout-screen {
+            padding: 2.4vh 3vw;
+            max-height: 58vh;
+            overflow-y: auto;
+        }
+
+        .cart-item {
+            background: #fff;
+            border-radius: 1.4vw;
+            padding: 2vh;
+            margin-bottom: 2vh;
+            display: flex;
+            gap: 2vw;
+            border: 0.25vw solid #000;
+            box-shadow: 0 0.3vh 1vh rgba(0, 0, 0, 0.1);
+        }
+
+        .cart-img {
+            width: 19vw;
+            max-width: 92px;
+            height: 19vw;
+            max-height: 92px;
+            background: #f5f5f5;
+            border-radius: 1vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+            border: 0.2vw solid #e0e0e0;
+        }
+
+        .cart-info {
+            flex: 1;
+        }
+
+        .cart-name {
+            font-size: clamp(1rem, 1.9vw, 1.4rem);
+            font-weight: 600;
+            margin-bottom: 1.2vh;
+            color: #000;
+        }
+
+        .cart-price {
+            font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+            font-weight: bold;
+            color: #000;
+        }
+
+        .summary {
+            background: #fff;
+            padding: 2.2vh;
+            border: 0.25vw solid #000;
+            border-radius: 1.2vw;
+            margin-bottom: 2vh;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.2vh;
+            font-size: clamp(1rem, 1.85vw, 1.35rem);
+            font-weight: 500;
+            color: #000;
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 1.5vh;
+            border-top: 0.25vw solid #000;
+            font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+            font-weight: bold;
+            color: #000;
+        }
+
+        .checkout-btn,
+        .action-btn,
+        .final-order-btn {
+            width: 100%;
+            padding: 2.1vh;
+            background: #005bff;
+            color: #fff;
+            border: 0.25vw solid #000;
+            border-radius: 1.2vw;
+            font-size: clamp(1.05rem, 2.05vw, 1.6rem);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .checkout-btn:hover,
+        .action-btn:hover,
+        .final-order-btn:hover {
+            background: #0052e0;
+            transform: scale(1.015);
+        }
+
+        .delivery-options,
+        .payment-options,
+        .address-options {
+            display: grid;
+            gap: 1.4vh;
+        }
+
+        .option {
+            background: #fff;
+            border: 0.3vw solid #000;
+            border-radius: 1.2vw;
+            padding: 2vh 2vw;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 1.8vw;
+            transition: all 0.2s;
+        }
+
+        .option:hover {
+            border-color: #005bff;
+            box-shadow: 0 0.5vh 1.5vh rgba(0, 91, 255, 0.12);
+        }
+
+        .option.selected {
+            border-color: #ffd700;
+            background: #fff8e1;
+            box-shadow: 0 0.7vh 1.6vh rgba(255, 215, 0, 0.26);
+        }
+
+        .option-radio {
+            width: 3.5vh;
+            height: 3.5vh;
+            border: 0.25vw solid #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(0.95rem, 1.8vw, 1.25rem);
+            font-weight: 700;
+            flex-shrink: 0;
+            background: #fff;
+        }
+
+        .option.selected .option-radio {
+            border-color: #ffd700;
+            background: #ffd700;
+            color: #000;
+        }
+
+        .option-content {
+            flex: 1;
+        }
+
+        .option-title {
+            font-size: clamp(1.05rem, 1.95vw, 1.45rem);
+            font-weight: bold;
+            margin: 0 0 0.4vh;
+            color: #000;
+        }
+
+        .option-subtitle {
+            font-size: clamp(0.88rem, 1.65vw, 1.18rem);
+            color: #333;
+            margin: 0;
+        }
+
+        .section-title {
+            font-size: clamp(1.1rem, 2vw, 1.45rem);
+            font-weight: bold;
+            margin: 0 0 1.4vh;
+        }
+
+        .selection-note {
+            margin-top: 1.4vh;
+            padding: 1.6vh 1.8vw;
+            background: #f5f7ff;
+            border-radius: 1vw;
+            border: 0.2vw solid #dbe6ff;
+            font-size: clamp(0.88rem, 1.62vw, 1.15rem);
+            color: #1d3f7a;
+        }
+
+        .task-hint {
+            background: #ffd700;
+            border: 0.3vw solid #000;
+            border-radius: 1vw;
+            padding: 2.2vh 3vw;
+            margin: 2vh 0;
+            font-size: clamp(1rem, 1.8vw, 1.4rem);
+            color: #000;
+            font-weight: bold;
+            box-shadow: 0 0.4vh 1.2vh rgba(0, 0, 0, 0.22);
+        }
+
+        .task-hint strong {
+            display: block;
+            margin-bottom: 1vh;
+            font-size: clamp(1.1rem, 2vw, 1.45rem);
+            text-transform: uppercase;
+        }
+
+        .module-done-box {
+            background: #e8f5e9;
+            border: 0.28vw solid #2e7d32;
+            border-radius: 1.2vw;
+            padding: 2.4vh 2.8vw;
+            margin: 2.2vh 0;
+            font-size: clamp(1rem, 1.8vw, 1.35rem);
+            color: #1b5e20;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="ozon-course-body">
+    <div class="course-container">
+        <div class="course-header">
+            <h1 class="course-title">📦 Оформление доставки</h1>
+            <p class="course-subtitle">Выбор доставки, адреса, оплаты и подтверждение заказа</p>
+        </div>
+
+        <div class="course-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            <p class="progress-text">Шаг <span id="currentStep">1</span> из <span id="totalSteps">6</span></p>
+        </div>
+
+        <div class="course-content">
+            <div class="step-card" id="step0" style="display:block;">
+                <div class="step-number">Шаг 1</div>
+                <h2 class="step-title">Перейдите к оформлению</h2>
+                <p class="instruction-text">В корзине нажмите кнопку «Перейти к оформлению».</p>
+                <div class="task-hint"><strong>Задание:</strong> Нажмите кнопку «Перейти к оформлению».</div>
+
+                <div class="ozon-interface">
+                    <div class="ozon-header">
+                        <span class="icon-btn">←</span>
+                        <div style="flex:1;font-size:clamp(1.1rem,2.2vw,1.55rem);font-weight:bold;">Корзина</div>
+                    </div>
+
+                    <div class="checkout-screen">
+                        <div class="cart-item">
+                            <div class="cart-img">🧦</div>
+                            <div class="cart-info">
+                                <div class="cart-name">Носки тёплые шерстяные</div>
+                                <div class="cart-price">299₽</div>
+                            </div>
+                        </div>
+
+                        <div class="summary">
+                            <div class="summary-row"><span>Товары (1)</span><span>299₽</span></div>
+                            <div class="summary-row"><span>Доставка</span><span style="color:#4caf50;font-weight:bold;">Бесплатно</span></div>
+                            <div class="summary-total"><span>Итого</span><span>299₽</span></div>
+                        </div>
+
+                        <button class="checkout-btn" id="checkoutBtn">Перейти к оформлению</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-card" id="step1" style="display:none;">
+                <div class="step-number">Шаг 2</div>
+                <h2 class="step-title">Выберите способ доставки</h2>
+                <p class="instruction-text">Можно выбрать доставку курьером или в пункт выдачи.</p>
+                <div class="task-hint"><strong>Задание:</strong> Выберите один из способов доставки.</div>
+
+                <div class="ozon-interface">
+                    <div class="ozon-header">
+                        <span class="icon-btn">←</span>
+                        <div style="flex:1;font-size:clamp(1.1rem,2.2vw,1.55rem);font-weight:bold;">Оформление</div>
+                    </div>
+
+                    <div class="checkout-screen">
+                        <h4 class="section-title">📍 Способ доставки</h4>
+                        <div class="delivery-options">
+                            <div class="option delivery-option" id="courierOption" data-delivery="courier">
+                                <div class="option-radio">○</div>
+                                <div class="option-content">
+                                    <p class="option-title">🏠 Доставка курьером</p>
+                                    <p class="option-subtitle">Завтра, бесплатно</p>
+                                </div>
+                            </div>
+                            <div class="option delivery-option" id="pickupOption" data-delivery="pickup">
+                                <div class="option-radio">○</div>
+                                <div class="option-content">
+                                    <p class="option-title">📦 Пункт выдачи</p>
+                                    <p class="option-subtitle">Сегодня, бесплатно</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="selection-note">Выбранный способ можно поменять перед подтверждением заказа.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-card" id="step2" style="display:none;">
+                <div class="step-number">Шаг 3</div>
+                <h2 class="step-title">Выберите адрес доставки</h2>
+                <p class="instruction-text">Укажите, куда доставить заказ.</p>
+                <div class="task-hint"><strong>Задание:</strong> Выберите один из адресов.</div>
+
+                <div class="ozon-interface">
+                    <div class="ozon-header">
+                        <span class="icon-btn">←</span>
+                        <div style="flex:1;font-size:clamp(1.1rem,2.2vw,1.55rem);font-weight:bold;">Адрес доставки</div>
+                    </div>
+
+                    <div class="checkout-screen">
+                        <h4 class="section-title">📌 Адрес</h4>
+                        <div class="address-options">
+                            <div class="option address-option" id="addressHome" data-address="ул. Ленина, д. 10, кв. 15">
+                                <div class="option-radio">○</div>
+                                <div class="option-content">
+                                    <p class="option-title">Дом</p>
+                                    <p class="option-subtitle">ул. Ленина, д. 10, кв. 15</p>
+                                </div>
+                            </div>
+                            <div class="option address-option" id="addressPickup" data-address="ПВЗ OZON, пр-т Мира, 12">
+                                <div class="option-radio">○</div>
+                                <div class="option-content">
+                                    <p class="option-title">Пункт выдачи OZON</p>
+                                    <p class="option-subtitle">пр-т Мира, 12</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-card" id="step3" style="display:none;">
+                <div class="step-number">Шаг 4</div>
+                <h2 class="step-title">Выберите способ оплаты</h2>
+                <p class="instruction-text">Оплатить можно картой, через СБП или при получении.</p>
+                <div class="task-hint"><strong>Задание:</strong> Выберите один из трех способов оплаты.</div>
+
+                <div class="ozon-interface">
+                    <div class="ozon-header">
+                        <span class="icon-btn">←</span>
+                        <div style="flex:1;font-size:clamp(1.1rem,2.2vw,1.55rem);font-weight:bold;">Способ оплаты</div>
+                    </div>
+
+                    <div class="checkout-screen">
+                        <h4 class="section-title">💳 Оплата</h4>
+                        <div class="payment-options">
+                            <div class="option payment-option" id="paymentCard" data-payment="Картой онлайн">
+                                <div class="option-radio">○</div>
+                                <div class="option-content">
+                                    <p class="option-title">💳 Картой онлайн</p>
+                                    <p class="option-subtitle">Безопасная оплата</p>
+                                </div>
+                            </div>
+                            <div class="option payment-option" id="paymentSBP" data-payment="СБП">
+                                <div class="option-radio">○</div>
+                                <div class="option-content">
+                                    <p class="option-title">📱 СБП</p>
+                                    <p class="option-subtitle">Система быстрых платежей</p>
+                                </div>
+                            </div>
+                            <div class="option payment-option" id="paymentCash" data-payment="При получении">
+                                <div class="option-radio">○</div>
+                                <div class="option-content">
+                                    <p class="option-title">💵 При получении</p>
+                                    <p class="option-subtitle">Наличными или картой курьеру/в ПВЗ</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-card" id="step4" style="display:none;">
+                <div class="step-number">Шаг 5</div>
+                <h2 class="step-title">Подтвердите заказ</h2>
+                <p class="instruction-text">Проверьте данные и нажмите «Оформить заказ».</p>
+                <div class="task-hint"><strong>Задание:</strong> Нажмите кнопку «Оформить заказ».</div>
+
+                <div class="ozon-interface">
+                    <div class="ozon-header">
+                        <span class="icon-btn">←</span>
+                        <div style="flex:1;font-size:clamp(1.1rem,2.2vw,1.55rem);font-weight:bold;">Проверка заказа</div>
+                    </div>
+
+                    <div class="checkout-screen">
+                        <div class="summary">
+                            <div style="font-size:clamp(1.1rem,2.1vw,1.45rem);font-weight:bold;margin-bottom:1.3vh;">Ваш заказ</div>
+                            <div class="summary-row"><span>Товар</span><span>Носки × 1</span></div>
+                            <div class="summary-row"><span>Доставка</span><span id="summaryDelivery">Доставка курьером</span></div>
+                            <div class="summary-row"><span>Адрес</span><span id="summaryAddress">ул. Ленина, д. 10, кв. 15</span></div>
+                            <div class="summary-row"><span>Оплата</span><span id="summaryPayment">При получении</span></div>
+                            <div class="summary-total"><span>Итого</span><span>299₽</span></div>
+                        </div>
+
+                        <button class="final-order-btn" id="finalOrderBtn">Оформить заказ</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-card" id="step5" style="display:none;">
+                <div class="step-number">Готово</div>
+                <h2 class="step-title">Доставка оформлена</h2>
+                <p class="instruction-text">Заказ создан. Вы выбрали способ доставки, адрес и способ оплаты.</p>
+
+                <div class="ozon-interface">
+                    <div class="checkout-screen" style="text-align:center;">
+                        <div style="font-size:4rem;margin-bottom:1.2vh;">✅</div>
+                        <div style="font-size:clamp(1.4rem,2.6vw,2rem);font-weight:bold;margin-bottom:1vh;">Заказ оформлен!</div>
+                        <div style="font-size:clamp(1rem,1.9vw,1.35rem);color:#666;margin-bottom:2vh;">Номер заказа: #12345678</div>
+                        <div class="summary" style="text-align:left;">
+                            <div class="summary-row"><span>Доставка</span><span id="doneDelivery">Доставка курьером</span></div>
+                            <div class="summary-row"><span>Адрес</span><span id="doneAddress">ул. Ленина, д. 10, кв. 15</span></div>
+                            <div class="summary-row"><span>Оплата</span><span id="donePayment">При получении</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="module-done-box">✅ Вы завершили оформление доставки. Заказ готов к отправке.</div>
+            </div>
+        </div>
+
+        <div class="course-navigation">
+            <button class="nav-button" id="prevBtn" onclick="changeStep(-1)">← Назад</button>
+            <button class="nav-button primary" id="nextBtn" onclick="changeStep(1)">Далее →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        const totalSteps = 5;
+        let taskCompleted = false;
+
+        let selectedDelivery = 'Доставка курьером';
+        let selectedAddress = 'ул. Ленина, д. 10, кв. 15';
+        let selectedPayment = 'При получении';
+
+        function updateSummary() {
+            const summaryDelivery = document.getElementById('summaryDelivery');
+            const summaryAddress = document.getElementById('summaryAddress');
+            const summaryPayment = document.getElementById('summaryPayment');
+            const doneDelivery = document.getElementById('doneDelivery');
+            const doneAddress = document.getElementById('doneAddress');
+            const donePayment = document.getElementById('donePayment');
+
+            if (summaryDelivery) summaryDelivery.textContent = selectedDelivery;
+            if (summaryAddress) summaryAddress.textContent = selectedAddress;
+            if (summaryPayment) summaryPayment.textContent = selectedPayment;
+            if (doneDelivery) doneDelivery.textContent = selectedDelivery;
+            if (doneAddress) doneAddress.textContent = selectedAddress;
+            if (donePayment) donePayment.textContent = selectedPayment;
+        }
+
+        function updateNextButton() {
+            document.getElementById('nextBtn').disabled = !taskCompleted;
+        }
+
+        function showStep(stepIndex) {
+            document.querySelectorAll('.step-card').forEach((step) => {
+                step.style.display = 'none';
+            });
+
+            const step = document.getElementById(`step${stepIndex}`);
+            if (step) {
+                step.style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            document.getElementById('prevBtn').disabled = stepIndex === 0;
+            document.getElementById('nextBtn').textContent = stepIndex === totalSteps ? '✓ Завершить' : 'Далее →';
+            document.getElementById('currentStep').textContent = String(stepIndex + 1);
+            document.getElementById('totalSteps').textContent = String(totalSteps + 1);
+
+            const progress = (stepIndex / totalSteps) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+
+            taskCompleted = stepIndex === totalSteps;
+            if (stepIndex === 4) {
+                updateSummary();
+            }
+            if (stepIndex === 5) {
+                updateSummary();
+            }
+            updateNextButton();
+        }
+
+        function changeStep(direction) {
+            currentStep += direction;
+            if (currentStep < 0) currentStep = 0;
+            if (currentStep > totalSteps) {
+                alert('Отлично! Вы завершили оформление доставки в OZON.');
+                currentStep = totalSteps;
+            }
+            showStep(currentStep);
+        }
+
+        function selectOption(selector, selectedElement) {
+            document.querySelectorAll(selector).forEach((option) => {
+                option.classList.remove('selected');
+                const radio = option.querySelector('.option-radio');
+                if (radio) radio.textContent = '○';
+            });
+            selectedElement.classList.add('selected');
+            const radio = selectedElement.querySelector('.option-radio');
+            if (radio) radio.textContent = '●';
+        }
+
+        document.addEventListener('click', (event) => {
+            if (event.target.id === 'checkoutBtn' && currentStep === 0) {
+                taskCompleted = true;
+                updateNextButton();
+            }
+
+            const deliveryOption = event.target.closest('.delivery-option');
+            if (deliveryOption && currentStep === 1) {
+                selectOption('.delivery-option', deliveryOption);
+                selectedDelivery = deliveryOption.dataset.delivery === 'pickup' ? 'Пункт выдачи' : 'Доставка курьером';
+                if (deliveryOption.dataset.delivery === 'pickup') {
+                    selectedAddress = 'ПВЗ OZON, пр-т Мира, 12';
+                } else {
+                    selectedAddress = 'ул. Ленина, д. 10, кв. 15';
+                }
+                taskCompleted = true;
+                updateNextButton();
+            }
+
+            const addressOption = event.target.closest('.address-option');
+            if (addressOption && currentStep === 2) {
+                selectOption('.address-option', addressOption);
+                selectedAddress = addressOption.dataset.address || selectedAddress;
+                taskCompleted = true;
+                updateNextButton();
+            }
+
+            const paymentOption = event.target.closest('.payment-option');
+            if (paymentOption && currentStep === 3) {
+                selectOption('.payment-option', paymentOption);
+                selectedPayment = paymentOption.dataset.payment || selectedPayment;
+                taskCompleted = true;
+                updateNextButton();
+            }
+
+            if (event.target.id === 'finalOrderBtn' && currentStep === 4) {
+                const button = event.target;
+                button.textContent = '⏳ Оформляем...';
+                button.disabled = true;
+                setTimeout(() => {
+                    taskCompleted = true;
+                    updateNextButton();
+                    currentStep = 5;
+                    showStep(currentStep);
+                    button.textContent = 'Оформить заказ';
+                    button.disabled = false;
+                }, 900);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            showStep(0);
+        });
+    </script>
+</body>
+</html>

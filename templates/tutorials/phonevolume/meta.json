@@ -1,0 +1,18 @@
+{
+  "title": "Увеличение и уменьшение громкости",
+  "description": "Базовая тренировка: как пользоваться боковыми кнопками громкости на смартфоне.",
+  "level": "basic",
+  "course": "smartphone-basics",
+  "order": 20,
+  "viewer_navigation": "style-switch",
+  "style_options": [
+    {
+      "label": "Видео-урок",
+      "page": 1
+    },
+    {
+      "label": "Симулятор",
+      "page": 2
+    }
+  ]
+}

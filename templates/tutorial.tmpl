@@ -3,84 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Интерактивные модули</title>
+    <title>Курсы интерактивных модулей</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body class="app-page">
     {% include "topbar.tmpl" %}
 
-    <main class="page-shell tutorials-page">
+    <main class="page-shell tutorials-catalog-page">
         <header class="page-header">
             <div>
-                <div class="section-kicker">курсы</div>
-                <h1 class="page-title">Интерактивные модули</h1>
-                <p class="page-note">Модули сгруппированы по курсам. Выберите нужный курс и откройте интерактивный модуль.</p>
-            </div>
-            <div class="section-actions">
-                {% for course in courses %}
-                    <a class="btn btn-ghost btn-lg" href="#{{ course.slug }}">{{ course.title }}</a>
-                {% endfor %}
+{#                <div class="section-kicker">курсы</div>#}
+                <h1 class="page-title">Курсы интерактивных модулей</h1>
+                <p class="page-note">Выберите курс и сложность. Для каждого уровня открывается отдельная страница с линейным прохождением модулей.</p>
             </div>
         </header>
 
-        {% for course in courses %}
-        <section class="tutorial-section" id="{{ course.slug }}">
-            <div class="section-header">
-                <div>
-                    <h2 class="section-title">{{ course.title }}</h2>
-                    <p class="section-text">{{ course.description }}</p>
+        <section class="course-catalog-grid">
+            {% for course in courses %}
+            <article class="course-catalog-card">
+                <div class="course-catalog-head">
+                    <div>
+                        <h2 class="course-catalog-title">{{ course.title }}</h2>
+                        <p class="course-catalog-text">{{ course.description }}</p>
+                    </div>
+                    <span class="course-catalog-count">{{ course.module_count_label }}</span>
                 </div>
-            </div>
 
-            <div class="difficulty-block" id="{{ course.slug }}-basic">
-                <h3 class="difficulty-title">Базовый</h3>
-                {% if course.basic_modules %}
-                    <div class="tutorial-grid">
-                        {% for tut in course.basic_modules %}
-                        <article class="tutorial-card">
-                            <div class="tutorial-top">
-                                <span class="tutorial-level level-basic">Базовый</span>
-                            </div>
-                            <h3>{{ tut.title }}</h3>
-                            <p class="tutorial-desc">{{ tut.description }}</p>
-                            <div class="tutorial-actions">
-                                <a class="btn btn-primary btn-lg" href="/tutorials/{{ tut.slug }}/1">Открыть модуль</a>
-                            </div>
-                        </article>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <p class="empty-state">В этом курсе пока нет базовых интерактивных модулей.</p>
-                {% endif %}
-            </div>
+                <div class="course-catalog-difficulty-grid">
+                    <section class="course-difficulty-card is-basic">
+                        <div class="course-difficulty-pill">Базовый</div>
+                        <p class="course-difficulty-text">{{ course.basic_description }}</p>
+                        <p class="course-difficulty-meta">{{ course.basic_count_label }}</p>
+                        <a class="btn btn-primary btn-lg course-difficulty-btn" href="{{ course.basic_url }}">Перейти</a>
+                    </section>
 
-            <div class="difficulty-block" id="{{ course.slug }}-advanced">
-                <h3 class="difficulty-title">Расширенный</h3>
-                {% if course.advanced_modules %}
-                    <div class="tutorial-grid">
-                        {% for tut in course.advanced_modules %}
-                        <article class="tutorial-card">
-                            <div class="tutorial-top">
-                                <span class="tutorial-level level-advanced">Расширенный</span>
-                            </div>
-                            <h3>{{ tut.title }}</h3>
-                            <p class="tutorial-desc">{{ tut.description }}</p>
-                            <div class="tutorial-actions">
-                                <a class="btn btn-primary btn-lg" href="/tutorials/{{ tut.slug }}/1">Открыть модуль</a>
-                            </div>
-                        </article>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <p class="empty-state">В этом курсе пока нет расширенных интерактивных модулей.</p>
-                {% endif %}
-            </div>
+                    <section class="course-difficulty-card is-advanced">
+                        <div class="course-difficulty-pill">Расширенный</div>
+                        <p class="course-difficulty-text">{{ course.advanced_description }}</p>
+                        <p class="course-difficulty-meta">{{ course.advanced_count_label }}</p>
+                        <a class="btn btn-primary btn-lg course-difficulty-btn" href="{{ course.advanced_url }}">Перейти</a>
+                    </section>
+                </div>
+            </article>
+            {% endfor %}
         </section>
-        {% endfor %}
 
         {% if not has_any %}
             <div class="card empty-card">
-                <p>Интерактивные модули пока не добавлены. Создайте папку в <code>templates/tutorials/&lt;название&gt;</code> и положите туда файлы шагов <code>1.tmpl</code> или <code>1.html</code>, <code>2.tmpl</code> и <code>meta.json</code> с полями <code>title</code>, <code>description</code>, <code>course</code> и <code>level</code>.</p>
+                <p>Интерактивные модули пока не добавлены. Создайте папку в <code>templates/tutorials/&lt;название&gt;</code> и добавьте файлы шагов <code>1.tmpl</code> или <code>1.html</code>, <code>2.tmpl</code> и <code>meta.json</code> с полями <code>title</code>, <code>description</code>, <code>course</code>, <code>level</code>.</p>
             </div>
         {% endif %}
     </main>

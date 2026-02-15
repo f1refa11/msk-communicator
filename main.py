@@ -1,6 +1,6 @@
 import microdot.jinja
 import os
-from microdot import Microdot, send_file, redirect
+from microdot import Microdot, Response, send_file, redirect
 from microdot.session import Session, with_session
 from jinja2 import Environment, PackageLoader, select_autoescape
 import base64
@@ -10,6 +10,7 @@ import json
 import sqlite3
 import mimetypes
 import jwt
+from urllib.parse import unquote, urlencode
 from datetime import datetime, timezone
 
 db = sqlite3.connect("database.db", autocommit=True)
@@ -23,6 +24,7 @@ page_index = env.get_template("index.tmpl")
 page_login = env.get_template("login.tmpl")
 page_register = env.get_template("register.tmpl")
 page_tutorial = env.get_template("tutorial.tmpl")
+page_tutorial_course = env.get_template("tutorial_course.tmpl")
 page_account = env.get_template("account.tmpl")
 page_forgot = env.get_template("forgot.tmpl")
 page_tutorial_viewer = env.get_template("tutorial_viewer.tmpl")
@@ -30,6 +32,13 @@ page_support = env.get_template("support.tmpl")
 TUTORIALS_DIR = os.path.join("templates", "tutorials")
 TUTORIAL_PAGE_EXTENSIONS = (".tmpl", ".html", ".htm")
 BUGREPORTS_FILE = os.path.join(os.path.dirname(__file__), "bugreports.json")
+PROGRESS_COOKIE_NAME = "guest_tutorial_progress"
+PROGRESS_COOKIE_MAX_AGE = 60 * 60 * 24 * 365
+DIFFICULTY_LEVELS = ("basic", "advanced")
+DIFFICULTY_LABELS = {
+    "basic": "Базовый",
+    "advanced": "Расширенный",
+}
 TUTORIAL_SLUG_RENAMES = {
     "rustoredowload": "rustoredownload",
 }
@@ -37,23 +46,31 @@ DEFAULT_COURSE_SLUG = "smartphone-basics"
 COURSE_DEFINITIONS = [
     {
         "slug": "smartphone-basics",
-        "title": "Основы смартфона",
-        "description": "Базовые интерактивные модули: подключение к Wi-Fi и установка приложений.",
+        "title": "Основы Смартфона",
+        "description": "Первые шаги со смартфоном: базовые настройки, кнопки и установка приложений.",
+        "basic_description": "Простые и понятные модули для ежедневного использования смартфона.",
+        "advanced_description": "Больше практики и дополнительных сценариев для уверенного использования.",
     },
     {
         "slug": "max-messenger",
         "title": "Работа с мессенджером MAX",
-        "description": "Курс запланирован. Интерактивные модули скоро появятся.",
+        "description": "Общение в MAX: личные и групповые чаты, сообщения, фото, эмодзи и стикеры.",
+        "basic_description": "Базовые модули: как написать сообщение, отправить фото и создать чат.",
+        "advanced_description": "Расширенные сценарии общения, включая групповые функции и мультимедиа.",
     },
     {
         "slug": "online-shopping",
         "title": "Онлайн-покупки",
-        "description": "Курс запланирован. Интерактивные модули скоро появятся.",
+        "description": "Пошаговые тренировки покупок в интернете: поиск товара, корзина и доставка.",
+        "basic_description": "Учимся находить нужный товар и добавлять его в корзину.",
+        "advanced_description": "Полный путь до завершения заказа: доставка, адрес, оплата, подтверждение.",
     },
     {
         "slug": "gosuslugi",
         "title": "Госуслуги",
-        "description": "Курс запланирован. Интерактивные модули скоро появятся.",
+        "description": "Курс по работе с государственными онлайн-сервисами и электронными заявлениями.",
+        "basic_description": "Основные действия в сервисе: вход, поиск услуги, просмотр информации.",
+        "advanced_description": "Сложные сценарии: оформление заявлений и проверка статусов заявок.",
     },
 ]
 
@@ -197,8 +214,14 @@ def load_tutorials(include_hidden=False):
                 meta = {}
 
         level = str(meta.get("level", "basic")).lower()
-        if level not in ("basic", "advanced"):
+        if level not in DIFFICULTY_LEVELS:
             level = "basic"
+
+        order = meta.get("order")
+        try:
+            order = int(str(order).strip())
+        except (TypeError, ValueError):
+            order = 1000
 
         visible_in_interface = meta.get("visible_in_interface", True)
         if isinstance(visible_in_interface, str):
@@ -230,6 +253,7 @@ def load_tutorials(include_hidden=False):
                 "course": course,
                 "viewer_navigation": viewer_navigation,
                 "style_options": style_options,
+                "order": order,
             }
         )
 
@@ -243,6 +267,221 @@ def _tutorial_sort_key(filename: str):
         return (0, int(stem))
     except ValueError:
         return (1, stem.lower())
+
+
+def _tutorial_module_sort_key(tutorial):
+    """Stable sorting for tutorial cards inside courses."""
+    return (
+        int(tutorial.get("order", 1000)),
+        str(tutorial.get("title", "")).casefold(),
+        str(tutorial.get("slug", "")),
+    )
+
+
+def _dedupe_tutorials(tutorials):
+    """Remove duplicate tutorial slugs while preserving order."""
+    seen = set()
+    unique = []
+    for tutorial in tutorials:
+        slug = tutorial.get("slug")
+        if not slug or slug in seen:
+            continue
+        seen.add(slug)
+        unique.append(tutorial)
+    return unique
+
+
+def normalize_difficulty(level: str):
+    """Normalize difficulty level to basic/advanced."""
+    normalized = str(level or "").strip().lower()
+    if normalized not in DIFFICULTY_LEVELS:
+        return "basic"
+    return normalized
+
+
+def build_course_catalog(include_hidden=False):
+    """Build course list with grouped tutorials and counts."""
+    tutorials = load_tutorials(include_hidden=include_hidden)
+    courses = []
+    course_map = {}
+
+    for definition in COURSE_DEFINITIONS:
+        course_data = {
+            "slug": definition["slug"],
+            "title": definition["title"],
+            "description": definition["description"],
+            "basic_description": definition.get("basic_description", ""),
+            "advanced_description": definition.get("advanced_description", ""),
+            "basic_modules": [],
+            "advanced_only_modules": [],
+            "advanced_modules": [],
+            "module_count": 0,
+            "basic_count": 0,
+            "advanced_count": 0,
+        }
+        courses.append(course_data)
+        course_map[course_data["slug"]] = course_data
+
+    for tutorial in tutorials:
+        course_slug = str(tutorial.get("course") or DEFAULT_COURSE_SLUG).strip()
+        course_data = course_map.get(course_slug)
+        if not course_data:
+            continue
+
+        if tutorial.get("level") == "advanced":
+            course_data["advanced_only_modules"].append(tutorial)
+        else:
+            course_data["basic_modules"].append(tutorial)
+
+    for course_data in courses:
+        course_data["basic_modules"].sort(key=_tutorial_module_sort_key)
+        course_data["advanced_only_modules"].sort(key=_tutorial_module_sort_key)
+
+        combined = _dedupe_tutorials(
+            course_data["basic_modules"] + course_data["advanced_only_modules"]
+        )
+        course_data["advanced_modules"] = combined
+        course_data["module_count"] = len(combined)
+        course_data["basic_count"] = len(course_data["basic_modules"])
+        course_data["advanced_count"] = len(course_data["advanced_modules"])
+
+    return courses
+
+
+def get_course_track_modules(course_data, difficulty):
+    """Return linear module list for selected difficulty."""
+    if normalize_difficulty(difficulty) == "advanced":
+        return list(course_data.get("advanced_modules") or [])
+    return list(course_data.get("basic_modules") or [])
+
+
+def get_user_completed_tutorial_slugs(user_id: int):
+    """Load completed tutorial slugs from DB for logged-in user."""
+    if not user_id:
+        return set()
+    cur.execute(
+        "SELECT tutorial_slug FROM tutorial_progress WHERE user_id = ?",
+        (user_id,),
+    )
+    return {
+        normalize_tutorial_slug(row[0])
+        for row in cur.fetchall()
+        if row and row[0]
+    }
+
+
+def _normalize_progress_cookie_items(values):
+    """Convert raw cookie payload into a normalized slug set."""
+    if not isinstance(values, list):
+        return set()
+    normalized = set()
+    for raw_value in values[:300]:
+        slug = normalize_tutorial_slug(str(raw_value))
+        if slug:
+            normalized.add(slug)
+    return normalized
+
+
+def get_guest_completed_tutorial_slugs(request):
+    """Load completed tutorial slugs from guest cookie."""
+    raw_value = (request.cookies or {}).get(PROGRESS_COOKIE_NAME)
+    if not raw_value:
+        return set()
+    try:
+        parsed = json.loads(raw_value)
+    except (TypeError, ValueError):
+        return set()
+    return _normalize_progress_cookie_items(parsed)
+
+
+def encode_guest_completed_tutorial_slugs(completed_slugs):
+    """Serialize guest tutorial progress for cookie storage."""
+    return json.dumps(sorted(completed_slugs), ensure_ascii=False, separators=(",", ":"))
+
+
+def get_completed_tutorial_slugs(request, user):
+    """Return completed tutorial slugs from DB or cookies."""
+    if user:
+        return get_user_completed_tutorial_slugs(user[0])
+    return get_guest_completed_tutorial_slugs(request)
+
+
+def annotate_track_modules(modules, completed_slugs):
+    """Mark each module as completed/current/locked for linear flow."""
+    completed_set = set(completed_slugs)
+    first_pending_idx = None
+    for idx, module in enumerate(modules):
+        if module.get("slug") not in completed_set:
+            first_pending_idx = idx
+            break
+
+    locked_gate_title = (
+        modules[first_pending_idx]["title"]
+        if first_pending_idx is not None and first_pending_idx < len(modules)
+        else ""
+    )
+
+    annotated = []
+    for idx, module in enumerate(modules):
+        slug = module.get("slug")
+        is_completed = slug in completed_set
+        is_current = (
+            first_pending_idx is not None
+            and idx == first_pending_idx
+            and not is_completed
+        )
+        is_unlocked = is_completed or is_current or first_pending_idx is None
+
+        status = "locked"
+        if is_completed:
+            status = "completed"
+        elif is_current:
+            status = "current"
+
+        locked_reason = ""
+        if status == "locked" and locked_gate_title:
+            locked_reason = f"Сначала завершите «{locked_gate_title}»."
+
+        annotated.append(
+            {
+                **module,
+                "sequence_number": idx + 1,
+                "status": status,
+                "completed": is_completed,
+                "unlocked": is_unlocked,
+                "locked_reason": locked_reason,
+            }
+        )
+
+    return annotated
+
+
+def build_viewer_query(course_slug="", difficulty=""):
+    """Build query-string for preserving course context in viewer."""
+    params = {}
+    if course_slug:
+        params["course"] = course_slug
+    if difficulty:
+        normalized_difficulty = normalize_difficulty(difficulty)
+        if normalized_difficulty in DIFFICULTY_LEVELS:
+            params["difficulty"] = normalized_difficulty
+    if not params:
+        return ""
+    return "?" + urlencode(params)
+
+
+def format_module_count(count: int):
+    """Format module count in Russian (модуль/модуля/модулей)."""
+    value = int(count or 0)
+    n10 = value % 10
+    n100 = value % 100
+    if n10 == 1 and n100 != 11:
+        suffix = "модуль"
+    elif 2 <= n10 <= 4 and not (12 <= n100 <= 14):
+        suffix = "модуля"
+    else:
+        suffix = "модулей"
+    return f"{value} {suffix}"
 
 
 def mark_tutorial_completed(user_id: int, tutorial_slug: str):
@@ -469,20 +708,26 @@ async def index(request, session):
 # static
 @app.route("/static/<path:path>")
 async def static(request, path):
-    if ".." in path:
+    decoded_path = unquote(path)
+    if ".." in decoded_path or decoded_path.startswith("/") or decoded_path.startswith("\\"):
         return "Not found", 404
-    return send_file("static/" + path)
+    return send_file("static/" + decoded_path)
 
 
 @app.route("/tutorials-assets/<tutorial_name>/<path:path>")
 async def tutorial_assets(request, tutorial_name, path):
     """Serve per-tutorial static assets (css, images) located next to templates."""
-    if ".." in path or path.startswith("/"):
+    decoded_path = unquote(path)
+    if (
+        ".." in decoded_path
+        or decoded_path.startswith("/")
+        or decoded_path.startswith("\\")
+    ):
         return "Not found", 404
     resolved_tutorial_name = resolve_tutorial_directory(tutorial_name)
     if not resolved_tutorial_name:
         return "Not found", 404
-    asset_path = os.path.join(TUTORIALS_DIR, resolved_tutorial_name, path)
+    asset_path = os.path.join(TUTORIALS_DIR, resolved_tutorial_name, decoded_path)
     if not os.path.isfile(asset_path):
         return "Not found", 404
     # Basic Range support for media files (videos) so seeking works
@@ -521,38 +766,89 @@ async def tutorial_assets(request, tutorial_name, path):
 @with_session
 async def tutorials_list(request, session):
     user = get_current_user(session)
-
-    tutorials = load_tutorials()
-    courses = [
-        {
-            "slug": course["slug"],
-            "title": course["title"],
-            "description": course["description"],
-            "basic_modules": [],
-            "advanced_modules": [],
-        }
-        for course in COURSE_DEFINITIONS
-    ]
-    course_map = {course["slug"]: course for course in courses}
-
-    for tutorial in tutorials:
-        course_slug = tutorial.get("course") or DEFAULT_COURSE_SLUG
-        course = course_map.get(course_slug)
-        if course is None:
-            continue
-
-        if tutorial.get("level") == "advanced":
-            course["advanced_modules"].append(tutorial)
-        else:
-            course["basic_modules"].append(tutorial)
+    courses = build_course_catalog()
+    for course in courses:
+        course["module_count_label"] = format_module_count(course["module_count"])
+        course["basic_count_label"] = format_module_count(course["basic_count"])
+        course["advanced_count_label"] = format_module_count(course["advanced_count"])
+        course["basic_url"] = f"/tutorials/course/{course['slug']}/basic"
+        course["advanced_url"] = f"/tutorials/course/{course['slug']}/advanced"
 
     return (
         page_tutorial.render(
             courses=courses,
-            has_any=any(
-                course["basic_modules"] or course["advanced_modules"]
-                for course in courses
-            ),
+            has_any=any(course["module_count"] > 0 for course in courses),
+            yes_login=bool(user),
+            user_name=user[2] if user else "",
+        ),
+        200,
+        {"Content-Type": "text/html"},
+    )
+
+
+@app.route("/tutorials/course/<course_slug>")
+@with_session
+async def tutorial_course_default(request, session, course_slug):
+    normalized_course_slug = str(course_slug or "").strip().lower()
+    return redirect(f"/tutorials/course/{normalized_course_slug}/basic")
+
+
+@app.route("/tutorials/course")
+@app.route("/tutorials/course/")
+@with_session
+async def tutorial_course_root(request, session):
+    return redirect("/tutorials")
+
+
+@app.route("/tutorials/course/<course_slug>/<difficulty>")
+@with_session
+async def tutorial_course_page(request, session, course_slug, difficulty):
+    user = get_current_user(session)
+    normalized_course_slug = str(course_slug or "").strip().lower()
+    raw_difficulty = str(difficulty or "").strip().lower()
+    normalized_difficulty = normalize_difficulty(difficulty)
+
+    if raw_difficulty != normalized_difficulty:
+        return redirect(
+            f"/tutorials/course/{normalized_course_slug}/{normalized_difficulty}"
+        )
+
+    courses = build_course_catalog()
+    course_map = {course["slug"]: course for course in courses}
+    course = course_map.get(normalized_course_slug)
+    if not course:
+        return "Курс не найден", 404
+
+    completed_slugs = get_completed_tutorial_slugs(request, user)
+    track_modules = get_course_track_modules(course, normalized_difficulty)
+    modules = annotate_track_modules(track_modules, completed_slugs)
+
+    viewer_query = build_viewer_query(course["slug"], normalized_difficulty)
+    for module in modules:
+        module["start_url"] = f"/tutorials/{module['slug']}/1{viewer_query}"
+
+    completed_count = sum(1 for module in modules if module["completed"])
+    is_advanced = normalized_difficulty == "advanced"
+    difficulty_note = (
+        "Расширенный режим включает все базовые модули и дополнительные задания."
+        if is_advanced
+        else "В базовом режиме доступна основная программа курса."
+    )
+
+    return (
+        page_tutorial_course.render(
+            course=course,
+            modules=modules,
+            difficulty=normalized_difficulty,
+            difficulty_label=DIFFICULTY_LABELS[normalized_difficulty],
+            difficulty_note=difficulty_note,
+            module_count_label=format_module_count(len(modules)),
+            completed_count_label=format_module_count(completed_count),
+            basic_count_label=format_module_count(course["basic_count"]),
+            advanced_count_label=format_module_count(course["advanced_count"]),
+            basic_href=f"/tutorials/course/{course['slug']}/basic",
+            advanced_href=f"/tutorials/course/{course['slug']}/advanced",
+            locked_notice=(request.args.get("locked") == "1"),
             yes_login=bool(user),
             user_name=user[2] if user else "",
         ),
@@ -566,7 +862,17 @@ async def tutorials_list(request, session):
 @with_session
 async def tutorial_entrypoint(request, session, tutorial_name):
     canonical_slug = normalize_tutorial_slug(tutorial_name)
-    return redirect(f"/tutorials/{canonical_slug}/1")
+    query = {}
+    raw_course = str(request.args.get("course") or "").strip().lower()
+    if raw_course:
+        query["course"] = raw_course
+
+    raw_difficulty = request.args.get("difficulty")
+    if raw_difficulty:
+        query["difficulty"] = normalize_difficulty(raw_difficulty)
+
+    query_suffix = ("?" + urlencode(query)) if query else ""
+    return redirect(f"/tutorials/{canonical_slug}/1{query_suffix}")
 
 
 # 3. Добавляем новый маршрут для просмотра страницы туториала
@@ -574,10 +880,20 @@ async def tutorial_entrypoint(request, session, tutorial_name):
 @with_session
 async def tutorial_viewer(request, session, tutorial_name, page_num):
     user = get_current_user(session)
+    completed_slugs = get_completed_tutorial_slugs(request, user)
+
+    raw_requested_course = str(request.args.get("course") or "").strip().lower()
+    raw_requested_difficulty = str(request.args.get("difficulty") or "").strip().lower()
+    requested_difficulty = (
+        normalize_difficulty(raw_requested_difficulty)
+        if raw_requested_difficulty
+        else ""
+    )
 
     canonical_slug = normalize_tutorial_slug(tutorial_name)
     if tutorial_name != canonical_slug:
-        return redirect(f"/tutorials/{canonical_slug}/{page_num}")
+        redirect_query = build_viewer_query(raw_requested_course, requested_difficulty)
+        return redirect(f"/tutorials/{canonical_slug}/{page_num}{redirect_query}")
 
     # Путь к папке конкретного туториала
     resolved_tutorial_name = resolve_tutorial_directory(canonical_slug)
@@ -593,6 +909,28 @@ async def tutorial_viewer(request, session, tutorial_name, page_num):
         (t for t in load_tutorials(include_hidden=True) if t["slug"] == canonical_slug),
         None,
     )
+
+    course_catalog = build_course_catalog()
+    course_map = {course["slug"]: course for course in course_catalog}
+
+    course_slug = str(tutorial_meta.get("course") or "").strip().lower() if tutorial_meta else ""
+    if raw_requested_course and raw_requested_course == course_slug:
+        course_slug = raw_requested_course
+
+    course_data = course_map.get(course_slug)
+    viewer_difficulty = requested_difficulty if requested_difficulty in DIFFICULTY_LEVELS else "basic"
+    if tutorial_meta and tutorial_meta.get("level") == "advanced":
+        viewer_difficulty = "advanced"
+
+    if course_data and tutorial_meta:
+        track_modules = get_course_track_modules(course_data, viewer_difficulty)
+        track_states = annotate_track_modules(track_modules, completed_slugs)
+        state_by_slug = {module["slug"]: module for module in track_states}
+        current_state = state_by_slug.get(canonical_slug)
+        if current_state and not current_state["unlocked"]:
+            return redirect(
+                f"/tutorials/course/{course_slug}/{viewer_difficulty}?locked=1"
+            )
 
     # Ищем страницы туториала: Jinja-шаблоны (.tmpl) и обычные HTML (.html/.htm)
     files = [
@@ -612,8 +950,14 @@ async def tutorial_viewer(request, session, tutorial_name, page_num):
         return "Такой страницы не существует", 404
 
     current_file = files[page_num - 1]
-    if user and page_num == total_pages:
-        mark_tutorial_completed(user[0], canonical_slug)
+    should_update_guest_cookie = False
+    if page_num == total_pages:
+        if user:
+            mark_tutorial_completed(user[0], canonical_slug)
+            completed_slugs.add(canonical_slug)
+        elif canonical_slug not in completed_slugs:
+            completed_slugs.add(canonical_slug)
+            should_update_guest_cookie = True
 
     viewer_navigation = (
         tutorial_meta["viewer_navigation"] if tutorial_meta else "pages"
@@ -638,6 +982,18 @@ async def tutorial_viewer(request, session, tutorial_name, page_num):
     # Например: "tutorials/taxi/1.tmpl" или "tutorials/taxi/1.html"
     template_name = f"tutorials/{resolved_tutorial_name}/{current_file}"
 
+    back_href = "/tutorials"
+    viewer_query = ""
+    if course_data:
+        back_href = f"/tutorials/course/{course_data['slug']}/{viewer_difficulty}"
+        viewer_query = build_viewer_query(course_data["slug"], viewer_difficulty)
+
+    tutorial_title = canonical_slug
+    tutorial_level = "basic"
+    if tutorial_meta:
+        tutorial_title = str(tutorial_meta.get("title") or canonical_slug)
+        tutorial_level = str(tutorial_meta.get("level") or "basic")
+
     try:
         # 1. Рендерим саму страницу туториала (контент)
         content_template = env.get_template(template_name)
@@ -645,24 +1001,33 @@ async def tutorial_viewer(request, session, tutorial_name, page_num):
         rendered_content = content_template.render(user=user)
 
         # 2. Рендерим оболочку-вьювер и вставляем туда контент
-        return (
-            page_tutorial_viewer.render(
-                tutorial_name=canonical_slug,
-                tutorial_title=(
-                    tutorial_meta["title"] if tutorial_meta else canonical_slug
-                ),
-                tutorial_level=(tutorial_meta["level"] if tutorial_meta else "basic"),
-                viewer_navigation=viewer_navigation,
-                style_options=style_options,
-                current_page=page_num,
-                total_pages=total_pages,
-                content=rendered_content,  # Передаем готовый HTML
-                yes_login=bool(user),
-                user_name=user[2] if user else "",
-            ),
-            200,
-            {"Content-Type": "text/html"},
+        rendered_page = page_tutorial_viewer.render(
+            tutorial_name=canonical_slug,
+            tutorial_title=tutorial_title,
+            tutorial_level=tutorial_level,
+            viewer_navigation=viewer_navigation,
+            style_options=style_options,
+            current_page=page_num,
+            total_pages=total_pages,
+            content=rendered_content,
+            back_href=back_href,
+            viewer_query=viewer_query,
+            yes_login=bool(user),
+            user_name=user[2] if user else "",
         )
+
+        response = Response(
+            rendered_page,
+            headers={"Content-Type": "text/html"},
+        )
+        if should_update_guest_cookie:
+            response.set_cookie(
+                PROGRESS_COOKIE_NAME,
+                encode_guest_completed_tutorial_slugs(completed_slugs),
+                path="/",
+                max_age=PROGRESS_COOKIE_MAX_AGE,
+            )
+        return response
 
     except Exception as e:
         return f"Ошибка при загрузке шаблона: {e}", 500
@@ -762,10 +1127,11 @@ async def account_settings(request, session):
 @app.route("/assets/<path:path>")
 async def logoload(request, path):
     # Я установил в темплейте прям длину и высоту в img
-    if ".." in path:
+    decoded_path = unquote(path)
+    if ".." in decoded_path or decoded_path.startswith("/") or decoded_path.startswith("\\"):
         return "Not found", 404
 
-    return send_file("assets/" + path)
+    return send_file("assets/" + decoded_path)
 
 
 # register route

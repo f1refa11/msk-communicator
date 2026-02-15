@@ -1,0 +1,18 @@
+{
+  "title": "Включение и выключение смартфона",
+  "description": "Базовая тренировка: как включить и выключить смартфон кнопкой питания.",
+  "level": "basic",
+  "course": "smartphone-basics",
+  "order": 10,
+  "viewer_navigation": "style-switch",
+  "style_options": [
+    {
+      "label": "Видео-урок",
+      "page": 1
+    },
+    {
+      "label": "Симулятор",
+      "page": 2
+    }
+  ]
+}

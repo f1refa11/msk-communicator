@@ -1,0 +1,1263 @@
+<div class="max-sticker-sim-root">
+    <style>
+        :root {
+            --bg-color: #17212b;
+            --header-color: #202a38;
+            --text-primary: #eef4ff;
+            --text-secondary: #7f91a4;
+            --accent-blue: #1f87ff;
+            --message-in: #1b2735;
+            --message-out: #2b5278;
+            --keyboard-bg: #1c1c1e;
+            --key-bg: #4a4a4c;
+        }
+
+        .max-sticker-sim-root,
+        .max-sticker-sim-root * {
+            box-sizing: border-box;
+        }
+
+        .max-sticker-sim-root {
+            margin: 0;
+            padding: 24px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #e7edf5;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            overflow: auto;
+        }
+
+        .tutorial-layout {
+            width: min(1080px, 100%);
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .phone-frame {
+            width: 390px;
+            height: 640px;
+            background-color: var(--bg-color);
+            border: 10px solid #1d232b;
+            border-radius: 30px;
+            box-shadow: 0 18px 36px rgba(19, 34, 53, 0.28);
+            overflow: hidden;
+            position: relative;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .screen {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(180deg, #141d2a 0%, #121a26 100%);
+        }
+
+        .chat-header {
+            background: var(--header-color);
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .chat-header-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            background: transparent;
+            color: #a4b1c2;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar.group {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ef5350;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .chat-header-name {
+            font-size: 18px;
+            color: var(--text-primary);
+            font-weight: 650;
+            line-height: 1.2;
+        }
+
+        .chat-header-status {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 10px;
+            background-color: #0f1823;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 0);
+            background-size: 20px 20px;
+        }
+
+        .date-divider {
+            align-self: center;
+            background: rgba(0, 0, 0, 0.28);
+            color: #d0d9e4;
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            margin-bottom: 6px;
+        }
+
+        .system-message {
+            align-self: center;
+            background: rgba(0, 0, 0, 0.32);
+            color: #bfd0e7;
+            font-size: 12px;
+            padding: 5px 10px;
+            border-radius: 999px;
+            text-align: center;
+        }
+
+        .message {
+            max-width: 78%;
+            padding: 8px 11px;
+            border-radius: 11px;
+            font-size: 15px;
+            line-height: 1.35;
+            color: #eef4ff;
+            animation: popIn 0.2s ease;
+            position: relative;
+        }
+
+        .message.out {
+            align-self: flex-end;
+            background: var(--message-out);
+            border-bottom-right-radius: 3px;
+        }
+
+        .message.sticker {
+            background: transparent;
+            padding: 0;
+            max-width: 128px;
+        }
+
+        .message.sticker svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .msg-time {
+            margin-left: 8px;
+            font-size: 11px;
+            color: #8fa6bf;
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .input-area {
+            background: var(--header-color);
+            display: flex;
+            align-items: flex-end;
+            gap: 6px;
+            padding: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            flex-shrink: 0;
+        }
+
+        .input-icon {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 10px;
+            color: #9fb0c3;
+            background: transparent;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .input-icon.active {
+            color: #eef4ff;
+        }
+
+        .input-field {
+            flex: 1;
+            min-height: 40px;
+            border-radius: 20px;
+            background: #131d29;
+            color: #eef4ff;
+            padding: 10px 14px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .input-field.active {
+            border-color: var(--accent-blue);
+        }
+
+        .placeholder {
+            color: #7f91a4;
+        }
+
+        .send-btn {
+            width: 42px;
+            height: 42px;
+            border: none;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            color: #fff;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .send-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .media-panel {
+            height: 230px;
+            background: #141d2a;
+            display: none;
+            flex-direction: column;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .media-panel.open {
+            display: flex;
+        }
+
+        .sticker-search-bar {
+            padding: 8px;
+            background: #141d2a;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .sticker-search-display {
+            width: 100%;
+            min-height: 36px;
+            border-radius: 18px;
+            background: #0f1620;
+            border: none;
+            padding: 8px 14px;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .sticker-search-display.placeholder {
+            color: #7f91a4;
+        }
+
+        .sticker-grid {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .sticker-item {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.1s, background-color 0.15s;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        .sticker-item:hover {
+            background: rgba(255, 255, 255, 0.11);
+        }
+
+        .sticker-item:active {
+            transform: scale(0.95);
+        }
+
+        .sticker-item svg {
+            width: 84%;
+            height: 84%;
+            fill: none;
+        }
+
+        .emoji-tabs {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            padding: 7px 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            background: #121924;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .emoji-tab {
+            border: none;
+            background: transparent;
+            color: #7f91a4;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 6px 8px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .emoji-tab.active {
+            color: #eef4ff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .emoji-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: grid;
+            grid-template-columns: repeat(8, minmax(0, 1fr));
+            gap: 4px;
+        }
+
+        .emoji-item {
+            font-size: 24px;
+            text-align: center;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+        }
+
+        .emoji-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .keyboard {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            background: var(--keyboard-bg);
+            padding: 8px 6px 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            flex-shrink: 0;
+        }
+
+        .keyboard.visible {
+            display: flex;
+        }
+
+        .kb-row {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .key {
+            height: 38px;
+            border-radius: 6px;
+            background: var(--key-bg);
+            color: white;
+            font-size: 20px;
+            min-width: 26px;
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .key.pressed {
+            background: #6b6b6d;
+        }
+
+        .key.space {
+            flex: 4;
+        }
+
+        .key.action {
+            background: #38383a;
+            font-size: 14px;
+        }
+
+        .info-block {
+            width: min(360px, 100%);
+            background: #fff;
+            border: 1px solid #d7deeb;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(16, 39, 66, 0.1);
+            padding: 18px;
+            display: grid;
+            gap: 12px;
+            align-self: flex-start;
+        }
+
+        .info-progress {
+            display: grid;
+            gap: 8px;
+        }
+
+        .info-progress-label {
+            font-size: 12px;
+            color: #5f6368;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+        }
+
+        .info-progress-track {
+            display: grid;
+            grid-template-columns: repeat(var(--segments-count, 9), minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .progress-segment {
+            height: 10px;
+            border-radius: 999px;
+            background: #dfe6ef;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .progress-segment.is-complete {
+            background: #1f9d55;
+        }
+
+        .progress-segment.is-current {
+            background: #0070d2;
+            box-shadow: 0 0 0 3px rgba(0, 112, 210, 0.2);
+        }
+
+        .info-step {
+            font-size: 12px;
+            font-weight: 700;
+            color: #677387;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .info-title {
+            margin: 0;
+            font-size: 24px;
+            line-height: 1.25;
+            color: #111c2c;
+        }
+
+        .info-desc {
+            margin: 0;
+            font-size: 16px;
+            color: #2a3646;
+            line-height: 1.5;
+        }
+
+        .info-note {
+            margin: 0;
+            background: #edf5ff;
+            border-radius: 12px;
+            color: #1f5c96;
+            font-size: 14px;
+            line-height: 1.4;
+            padding: 10px 12px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .info-nav {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .btn-nav,
+        .btn-restart {
+            border: none;
+            border-radius: 12px;
+            padding: 11px 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-nav.prev {
+            background: #eef2f9;
+            color: #27384d;
+        }
+
+        .btn-nav.next {
+            background: #0070d2;
+            color: #fff;
+        }
+
+        .btn-nav:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-restart {
+            width: 100%;
+            background: #2d7d46;
+            color: #fff;
+            display: none;
+        }
+
+        .global-click-hint {
+            position: fixed;
+            z-index: 10000;
+            display: none;
+            pointer-events: none;
+            border: 3px solid #2b97ff;
+            border-radius: 14px;
+            box-shadow: 0 0 0 2px rgba(43, 151, 255, 0.35), 0 0 18px rgba(43, 151, 255, 0.65);
+            animation: hintPulse 1.2s ease-in-out infinite;
+        }
+
+        @keyframes hintPulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            60% {
+                transform: scale(1.05);
+                opacity: 0.65;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .max-sticker-sim-root svg {
+            fill: currentColor;
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 760px) {
+            .max-sticker-sim-root {
+                padding: 14px;
+            }
+
+            .phone-frame {
+                transform: scale(0.96);
+                transform-origin: top center;
+            }
+        }
+    </style>
+
+    <div class="tutorial-layout">
+        <div class="phone-frame">
+            <section class="screen">
+                <header class="chat-header">
+                    <button type="button" class="chat-header-btn" aria-label="Назад">
+                        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.58-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                    </button>
+                    <div class="avatar group">Д</div>
+                    <div>
+                        <div class="chat-header-name">Друзья</div>
+                        <div class="chat-header-status">1 из 3 в сети</div>
+                    </div>
+                </header>
+
+                <div id="messages-container" class="messages-area"></div>
+
+                <div class="input-area">
+                    <button id="btn-stickers" type="button" class="input-icon" onclick="handleAction('open-sticker-menu')" aria-label="Стикеры">
+                        <svg viewBox="0 0 24 24"><path d="M20 2H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM8.5 9A1.5 1.5 0 1 1 10 7.5 1.5 1.5 0 0 1 8.5 9zm7 0A1.5 1.5 0 1 1 17 7.5 1.5 1.5 0 0 1 15.5 9zM12 18c-2.76 0-5-1.79-5-4h10c0 2.21-2.24 4-5 4z"/></svg>
+                    </button>
+
+                    <div id="input-field-wrap" class="input-field" onclick="handleAction('focus-text-input')">
+                        <span id="input-value" class="placeholder">Сообщение</span>
+                    </div>
+
+                    <button type="button" class="input-icon" aria-label="Вложения">
+                        <svg viewBox="0 0 24 24"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5S13.5 3.62 13.5 5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5a2.5 2.5 0 1 0 5 0V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5a5.5 5.5 0 0 0 11 0V6h-1.5z"/></svg>
+                    </button>
+
+                    <button id="btn-mic" type="button" class="input-icon" aria-label="Голосовое сообщение">
+                        <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+                    </button>
+
+                    <button id="btn-send" type="button" class="send-btn" onclick="handleAction('send-message')" aria-label="Отправить сообщение">
+                        <svg viewBox="0 0 24 24"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.59 5.58L20 12 12 4z"/></svg>
+                    </button>
+                </div>
+
+                <div id="panel-stickers" class="media-panel">
+                    <div class="sticker-search-bar">
+                        <div id="sticker-search-display" class="sticker-search-display placeholder" onclick="handleAction('focus-search')">Поиск по стикерам</div>
+                    </div>
+                    <div id="sticker-grid" class="sticker-grid"></div>
+                    <div class="emoji-tabs">
+                        <button type="button" class="emoji-tab active">Стикеры</button>
+                        <button id="tab-emoji" type="button" class="emoji-tab" onclick="handleAction('open-emoji-tab')">Эмодзи</button>
+                        <button type="button" class="emoji-tab">GIF</button>
+                    </div>
+                </div>
+
+                <div id="panel-emoji" class="media-panel">
+                    <div id="emoji-list" class="emoji-list"></div>
+                    <div class="emoji-tabs">
+                        <button type="button" class="emoji-tab">Стикеры</button>
+                        <button type="button" class="emoji-tab active">Эмодзи</button>
+                        <button type="button" class="emoji-tab">GIF</button>
+                    </div>
+                </div>
+
+                <div id="keyboard" class="keyboard">
+                    <div class="kb-row">
+                        <div class="key">й</div><div class="key">ц</div><div class="key">у</div><div class="key">к</div><div class="key">е</div><div class="key">н</div><div class="key">г</div><div class="key">ш</div><div class="key">щ</div><div class="key">з</div><div class="key">х</div>
+                    </div>
+                    <div class="kb-row">
+                        <div class="key">ф</div><div class="key">ы</div><div class="key">в</div><div class="key">а</div><div class="key">п</div><div class="key">р</div><div class="key">о</div><div class="key">л</div><div class="key">д</div><div class="key">ж</div><div class="key">э</div>
+                    </div>
+                    <div class="kb-row">
+                        <div class="key action">shift</div><div class="key">я</div><div class="key">ч</div><div class="key">с</div><div class="key">м</div><div class="key">и</div><div class="key">т</div><div class="key">ь</div><div class="key">б</div><div class="key">ю</div><div class="key action">del</div>
+                    </div>
+                    <div class="kb-row">
+                        <div class="key action">123</div><div class="key action">🌐</div><div class="key space"></div><div class="key action">Go</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <aside class="info-block" aria-live="polite">
+            <div class="info-progress">
+                <div class="info-progress-label">Прогресс прохождения</div>
+                <div id="progress-track" class="info-progress-track"></div>
+            </div>
+
+            <div id="info-step" class="info-step">Шаг 1 из 9</div>
+            <h2 id="info-title" class="info-title">Откройте стикеры</h2>
+            <p id="info-desc" class="info-desc">Нажмите на кнопку стикеров слева от поля ввода.</p>
+            <p id="info-note" class="info-note hidden"></p>
+
+            <div id="info-nav" class="info-nav">
+                <button id="btn-prev" type="button" class="btn-nav prev" onclick="navigate(-1)">Назад</button>
+                <button id="btn-next" type="button" class="btn-nav next" onclick="navigate(1)">Вперёд</button>
+            </div>
+
+            <button id="btn-restart" type="button" class="btn-restart" onclick="restartTutorial()">Начать инструкцию заново</button>
+        </aside>
+    </div>
+
+    <div id="global-click-hint" class="global-click-hint" aria-hidden="true"></div>
+
+    <script>
+        const FINAL_TEXT = '👍 Всё отлично! А у тебя?';
+
+        const stepDefinitions = {
+            'open-sticker-menu': {
+                step: 'Шаг 1 из 9',
+                title: 'Откройте стикеры',
+                desc: 'Нажмите на кнопку стикеров слева от поля ввода.',
+                note: '',
+                action: 'open-sticker-menu',
+                hint: { id: 'btn-stickers', radius: 8, padding: 4 }
+            },
+            'focus-search': {
+                step: 'Шаг 2 из 9',
+                title: 'Найдите стикер',
+                desc: 'Нажмите на поле «Поиск по стикерам».',
+                note: '',
+                action: 'focus-search',
+                hint: { id: 'sticker-search-display', radius: 18, padding: 2 }
+            },
+            'type-query': {
+                step: 'Шаг 3 из 9',
+                title: 'Введите запрос',
+                desc: 'Нажмите любую клавишу, чтобы ввести «привет».',
+                note: 'В тренажере текст вводится автоматически после первого нажатия.',
+                action: 'type-query',
+                typingStep: true,
+                hint: { id: 'keyboard', radius: 8, padding: 0 }
+            },
+            'select-sticker': {
+                step: 'Шаг 4 из 9',
+                title: 'Выберите стикер',
+                desc: 'Нажмите на стикер с розовым персонажем на моноколесе.',
+                note: '',
+                action: 'select-sticker',
+                hint: { id: 'sticker-target', radius: 10, padding: 2 }
+            },
+            'open-emoji-tab': {
+                step: 'Шаг 5 из 9',
+                title: 'Откройте вкладку эмодзи',
+                desc: 'Нажмите на вкладку «Эмодзи» внизу панели.',
+                note: '',
+                action: 'open-emoji-tab',
+                hint: { id: 'tab-emoji', radius: 8, padding: 4 }
+            },
+            'pick-emoji': {
+                step: 'Шаг 6 из 9',
+                title: 'Добавьте эмодзи',
+                desc: 'Нажмите эмодзи «👍».',
+                note: '',
+                action: 'pick-emoji',
+                hint: { id: 'emoji-target', radius: 12, padding: 2 }
+            },
+            'focus-text-input': {
+                step: 'Шаг 7 из 9',
+                title: 'Вернитесь к вводу текста',
+                desc: 'Нажмите на поле «Сообщение», чтобы открыть клавиатуру.',
+                note: '',
+                action: 'focus-text-input',
+                hint: { id: 'input-field-wrap', radius: 20, padding: 2 }
+            },
+            'type-message': {
+                step: 'Шаг 8 из 9',
+                title: 'Введите текст сообщения',
+                desc: 'Нажмите любую клавишу, чтобы дописать «Всё отлично! А у тебя?».',
+                note: '',
+                action: 'type-message',
+                typingStep: true,
+                hint: { id: 'keyboard', radius: 8, padding: 0 }
+            },
+            'send-message': {
+                step: 'Шаг 9 из 9',
+                title: 'Отправьте сообщение',
+                desc: 'Нажмите синюю кнопку отправки справа.',
+                note: '',
+                action: 'send-message',
+                hint: { id: 'btn-send', radius: 20, padding: 4 }
+            },
+            completed: {
+                step: 'Готово',
+                title: 'Отлично!',
+                desc: 'Вы научились отправлять стикеры и эмодзи в групповом чате MAX.',
+                note: 'Нажмите «Начать инструкцию заново», чтобы пройти модуль еще раз.',
+                action: null,
+                hint: null
+            }
+        };
+
+        const navigationOrder = [
+            'open-sticker-menu',
+            'focus-search',
+            'type-query',
+            'select-sticker',
+            'open-emoji-tab',
+            'pick-emoji',
+            'focus-text-input',
+            'type-message',
+            'send-message'
+        ];
+
+        const els = {
+            messages: document.getElementById('messages-container'),
+            inputWrap: document.getElementById('input-field-wrap'),
+            inputValue: document.getElementById('input-value'),
+            btnStickers: document.getElementById('btn-stickers'),
+            btnMic: document.getElementById('btn-mic'),
+            btnSend: document.getElementById('btn-send'),
+            panelStickers: document.getElementById('panel-stickers'),
+            panelEmoji: document.getElementById('panel-emoji'),
+            stickerSearchDisplay: document.getElementById('sticker-search-display'),
+            stickerGrid: document.getElementById('sticker-grid'),
+            emojiList: document.getElementById('emoji-list'),
+            keyboard: document.getElementById('keyboard'),
+            hint: document.getElementById('global-click-hint'),
+            infoStep: document.getElementById('info-step'),
+            infoTitle: document.getElementById('info-title'),
+            infoDesc: document.getElementById('info-desc'),
+            infoNote: document.getElementById('info-note'),
+            progressTrack: document.getElementById('progress-track'),
+            infoNav: document.getElementById('info-nav'),
+            btnPrev: document.getElementById('btn-prev'),
+            btnNext: document.getElementById('btn-next'),
+            btnRestart: document.getElementById('btn-restart')
+        };
+
+        let currentStep = 'open-sticker-menu';
+        let activeHint = null;
+        let typingTimer = null;
+        let typingLocked = false;
+
+        function getStepIndex(stepKey) {
+            return navigationOrder.indexOf(stepKey);
+        }
+
+        function getNextStep(stepKey) {
+            if (stepKey === 'send-message') {
+                return 'completed';
+            }
+            const idx = getStepIndex(stepKey);
+            if (idx < 0 || idx >= navigationOrder.length - 1) {
+                return null;
+            }
+            return navigationOrder[idx + 1];
+        }
+
+        function ensureProgressSegments() {
+            const count = navigationOrder.length;
+            els.progressTrack.style.setProperty('--segments-count', String(count));
+            if (els.progressTrack.childElementCount === count) {
+                return;
+            }
+            els.progressTrack.innerHTML = '';
+            for (let i = 0; i < count; i += 1) {
+                const seg = document.createElement('span');
+                seg.className = 'progress-segment';
+                els.progressTrack.appendChild(seg);
+            }
+        }
+
+        function updateProgress(stepKey) {
+            ensureProgressSegments();
+            const segments = Array.from(els.progressTrack.children);
+            const isCompleted = stepKey === 'completed';
+            const idx = getStepIndex(stepKey);
+            const currentIndex = isCompleted ? navigationOrder.length - 1 : idx;
+
+            segments.forEach((seg, i) => {
+                seg.classList.remove('is-complete', 'is-current');
+                if (isCompleted || i < currentIndex) {
+                    seg.classList.add('is-complete');
+                } else if (i === currentIndex) {
+                    seg.classList.add('is-current');
+                }
+            });
+        }
+
+        function getUiState(stepKey) {
+            const state = {
+                panel: 'none',
+                keyboard: false,
+                searchText: 'Поиск по стикерам',
+                searchPlaceholder: true,
+                filteredStickers: false,
+                stickerSent: false,
+                draft: 'Сообщение',
+                draftPlaceholder: true,
+                showSend: false,
+                textSent: false,
+                stickerTab: 'stickers'
+            };
+
+            if (stepKey === 'open-sticker-menu') {
+                state.panel = 'none';
+            }
+
+            if (stepKey === 'focus-search') {
+                state.panel = 'stickers';
+            }
+
+            if (stepKey === 'type-query') {
+                state.panel = 'stickers';
+                state.keyboard = true;
+                state.searchText = '';
+                state.searchPlaceholder = false;
+            }
+
+            if (stepKey === 'select-sticker') {
+                state.panel = 'stickers';
+                state.searchText = 'привет';
+                state.searchPlaceholder = false;
+                state.filteredStickers = true;
+            }
+
+            if (stepKey === 'open-emoji-tab') {
+                state.panel = 'stickers';
+                state.stickerSent = true;
+                state.stickerTab = 'stickers';
+            }
+
+            if (stepKey === 'pick-emoji') {
+                state.panel = 'emoji';
+                state.stickerSent = true;
+                state.draft = '👍';
+                state.draftPlaceholder = false;
+                state.showSend = true;
+                state.stickerTab = 'emoji';
+            }
+
+            if (stepKey === 'focus-text-input') {
+                state.stickerSent = true;
+                state.keyboard = false;
+                state.draft = '👍';
+                state.draftPlaceholder = false;
+                state.showSend = true;
+            }
+
+            if (stepKey === 'type-message') {
+                state.stickerSent = true;
+                state.keyboard = true;
+                state.draft = '👍';
+                state.draftPlaceholder = false;
+                state.showSend = true;
+            }
+
+            if (stepKey === 'send-message') {
+                state.stickerSent = true;
+                state.keyboard = true;
+                state.draft = FINAL_TEXT;
+                state.draftPlaceholder = false;
+                state.showSend = true;
+            }
+
+            if (stepKey === 'completed') {
+                state.stickerSent = true;
+                state.textSent = true;
+            }
+
+            return state;
+        }
+
+        function renderStickerGrid(filtered) {
+            const genericStickers = ['🙂', '😺', '🎉', '🔥', '🧠', '🚀', '☕', '💡', '✨', '🎈', '🍀', '🌟'];
+            els.stickerGrid.innerHTML = '';
+
+            for (let i = 0; i < 12; i += 1) {
+                const item = document.createElement('button');
+                item.type = 'button';
+                item.className = 'sticker-item';
+
+                if (filtered && i === 0) {
+                    item.id = 'sticker-target';
+                    item.setAttribute('aria-label', 'Стикер с розовым персонажем');
+                    item.onclick = () => handleAction('select-sticker');
+                    item.innerHTML = `
+                        <svg viewBox="0 0 120 120" aria-hidden="true">
+                            <path d="M60 18C84 18 98 34 98 58C98 84 82 102 60 102C36 102 22 84 22 58C22 34 36 18 60 18Z" fill="#ff7ab8"/>
+                            <circle cx="47" cy="52" r="7" fill="#fff"/>
+                            <circle cx="73" cy="52" r="7" fill="#fff"/>
+                            <circle cx="47" cy="52" r="3" fill="#1d2230"/>
+                            <circle cx="73" cy="52" r="3" fill="#1d2230"/>
+                            <path d="M46 72Q60 84 74 72" stroke="#fff" stroke-width="6" stroke-linecap="round" fill="none"/>
+                            <circle cx="60" cy="102" r="14" fill="#80deea" stroke="#29323e" stroke-width="5"/>
+                        </svg>
+                    `;
+                } else {
+                    item.innerHTML = `<span style="font-size:30px;line-height:1;">${genericStickers[i]}</span>`;
+                }
+
+                els.stickerGrid.appendChild(item);
+            }
+        }
+
+        function renderEmojiList() {
+            const emojiSet = ['😀', '😂', '😍', '😭', '👍', '👎', '🎉', '🔥', '❤️', '👀', '👋', '✨', '🤝', '🤖', '😎', '🤗'];
+            els.emojiList.innerHTML = '';
+
+            emojiSet.forEach((emojiChar) => {
+                const item = document.createElement('button');
+                item.type = 'button';
+                item.className = 'emoji-item';
+                item.textContent = emojiChar;
+                if (emojiChar === '👍') {
+                    item.id = 'emoji-target';
+                    item.onclick = () => handleAction('pick-emoji');
+                }
+                els.emojiList.appendChild(item);
+            });
+        }
+
+        function renderMessages(state) {
+            let html = `
+                <div class="date-divider">Сегодня</div>
+                <div class="system-message">Вы создали чат</div>
+                <div class="message out">Всем привет!<span class="msg-time">01:21</span></div>
+            `;
+
+            if (state.stickerSent) {
+                html += `
+                    <div class="message sticker out">
+                        <svg viewBox="0 0 120 120" aria-hidden="true">
+                            <path d="M60 18C84 18 98 34 98 58C98 84 82 102 60 102C36 102 22 84 22 58C22 34 36 18 60 18Z" fill="#ff7ab8"/>
+                            <circle cx="47" cy="52" r="7" fill="#fff"/>
+                            <circle cx="73" cy="52" r="7" fill="#fff"/>
+                            <circle cx="47" cy="52" r="3" fill="#1d2230"/>
+                            <circle cx="73" cy="52" r="3" fill="#1d2230"/>
+                            <path d="M46 72Q60 84 74 72" stroke="#fff" stroke-width="6" stroke-linecap="round" fill="none"/>
+                            <circle cx="60" cy="102" r="14" fill="#80deea" stroke="#29323e" stroke-width="5"/>
+                        </svg>
+                        <span class="msg-time" style="color:rgba(255,255,255,0.72);">01:22</span>
+                    </div>
+                `;
+            }
+
+            if (state.textSent) {
+                html += `
+                    <div class="message out">${FINAL_TEXT}<span class="msg-time">01:23 ✓</span></div>
+                `;
+            }
+
+            els.messages.innerHTML = html;
+            els.messages.scrollTop = els.messages.scrollHeight;
+        }
+
+        function renderUI(stepKey) {
+            const state = getUiState(stepKey);
+
+            renderMessages(state);
+
+            els.panelStickers.classList.toggle('open', state.panel === 'stickers');
+            els.panelEmoji.classList.toggle('open', state.panel === 'emoji');
+            els.keyboard.classList.toggle('visible', state.keyboard);
+
+            els.btnStickers.classList.toggle('active', state.panel === 'stickers' || state.panel === 'emoji');
+            els.inputWrap.classList.toggle('active', state.keyboard && state.panel === 'none');
+
+            els.stickerSearchDisplay.textContent = state.searchText;
+            els.stickerSearchDisplay.classList.toggle('placeholder', state.searchPlaceholder);
+
+            els.inputValue.textContent = state.draft;
+            els.inputValue.classList.toggle('placeholder', state.draftPlaceholder);
+
+            renderStickerGrid(state.filteredStickers);
+            renderEmojiList();
+
+            els.btnSend.style.display = state.showSend ? 'inline-flex' : 'none';
+            els.btnMic.style.display = state.showSend ? 'none' : 'inline-flex';
+
+            requestAnimationFrame(positionHint);
+        }
+
+        function updateInfo(stepKey) {
+            const cfg = stepDefinitions[stepKey];
+            els.infoStep.textContent = cfg.step;
+            els.infoTitle.textContent = cfg.title;
+            els.infoDesc.textContent = cfg.desc;
+
+            if (cfg.note) {
+                els.infoNote.classList.remove('hidden');
+                els.infoNote.textContent = cfg.note;
+            } else {
+                els.infoNote.classList.add('hidden');
+                els.infoNote.textContent = '';
+            }
+
+            if (stepKey === 'completed') {
+                els.infoNav.style.display = 'none';
+                els.btnRestart.style.display = 'inline-flex';
+            } else {
+                els.infoNav.style.display = 'grid';
+                els.btnRestart.style.display = 'none';
+                const idx = getStepIndex(stepKey);
+                els.btnPrev.disabled = idx <= 0;
+                els.btnNext.disabled = false;
+            }
+
+            updateProgress(stepKey);
+        }
+
+        function clearTyping() {
+            typingLocked = false;
+            if (typingTimer) {
+                clearTimeout(typingTimer);
+                typingTimer = null;
+            }
+        }
+
+        function goToStep(stepKey) {
+            if (!stepDefinitions[stepKey]) {
+                return;
+            }
+            clearTyping();
+            currentStep = stepKey;
+            renderUI(stepKey);
+            updateInfo(stepKey);
+            applyHint(stepDefinitions[stepKey].hint);
+        }
+
+        function runTypingDemo(stepKey) {
+            if (typingLocked) {
+                return;
+            }
+            typingLocked = true;
+
+            const target = stepKey === 'type-query' ? els.stickerSearchDisplay : els.inputValue;
+            const sourceText = stepKey === 'type-query' ? 'привет' : ' Всё отлично! А у тебя?';
+            const initialText = stepKey === 'type-query' ? '' : '👍';
+
+            target.textContent = initialText;
+            if (initialText) {
+                target.classList.remove('placeholder');
+            }
+
+            let idx = 0;
+            const typeNext = () => {
+                if (currentStep !== stepKey) {
+                    clearTyping();
+                    return;
+                }
+
+                if (idx < sourceText.length) {
+                    target.textContent += sourceText.charAt(idx);
+                    idx += 1;
+                    typingTimer = setTimeout(typeNext, 80);
+                    return;
+                }
+
+                typingLocked = false;
+                typingTimer = null;
+                const nextStep = getNextStep(stepKey);
+                if (nextStep) {
+                    setTimeout(() => {
+                        goToStep(nextStep);
+                    }, 180);
+                }
+            };
+
+            typeNext();
+        }
+
+        function handleAction(action) {
+            const cfg = stepDefinitions[currentStep];
+            if (!cfg || !cfg.action || cfg.action !== action) {
+                return;
+            }
+
+            if (cfg.typingStep) {
+                runTypingDemo(currentStep);
+                return;
+            }
+
+            const nextStep = getNextStep(currentStep);
+            if (nextStep) {
+                goToStep(nextStep);
+            }
+        }
+
+        function navigate(direction) {
+            if (currentStep === 'completed') {
+                if (direction < 0) {
+                    goToStep('send-message');
+                }
+                return;
+            }
+
+            const currentIndex = getStepIndex(currentStep);
+            if (currentIndex < 0) {
+                return;
+            }
+
+            if (direction > 0 && currentIndex === navigationOrder.length - 1) {
+                goToStep('completed');
+                return;
+            }
+
+            const nextIndex = currentIndex + direction;
+            if (nextIndex >= 0 && nextIndex < navigationOrder.length) {
+                goToStep(navigationOrder[nextIndex]);
+            }
+        }
+
+        function restartTutorial() {
+            goToStep('open-sticker-menu');
+        }
+
+        function positionHint() {
+            if (!activeHint || !activeHint.id) {
+                els.hint.style.display = 'none';
+                return;
+            }
+
+            const target = document.getElementById(activeHint.id);
+            if (!target) {
+                els.hint.style.display = 'none';
+                return;
+            }
+
+            const rect = target.getBoundingClientRect();
+            if (!rect.width || !rect.height) {
+                els.hint.style.display = 'none';
+                return;
+            }
+
+            const padding = Number(activeHint.padding || 0);
+            const radius = Number(activeHint.radius || 14);
+
+            els.hint.style.display = 'block';
+            els.hint.style.left = `${rect.left - padding}px`;
+            els.hint.style.top = `${rect.top - padding}px`;
+            els.hint.style.width = `${rect.width + padding * 2}px`;
+            els.hint.style.height = `${rect.height + padding * 2}px`;
+            els.hint.style.borderRadius = `${radius}px`;
+        }
+
+        function applyHint(hint) {
+            if (!hint || !hint.id) {
+                activeHint = null;
+                els.hint.style.display = 'none';
+                return;
+            }
+
+            activeHint = {
+                id: String(hint.id),
+                radius: Number(hint.radius || 14),
+                padding: Number(hint.padding || 0)
+            };
+
+            requestAnimationFrame(positionHint);
+            setTimeout(positionHint, 0);
+        }
+
+        document.querySelectorAll('#keyboard .key').forEach((key) => {
+            key.addEventListener('click', () => {
+                key.classList.add('pressed');
+                setTimeout(() => {
+                    key.classList.remove('pressed');
+                }, 120);
+
+                const cfg = stepDefinitions[currentStep];
+                if (cfg && cfg.typingStep) {
+                    handleAction(cfg.action);
+                }
+            });
+        });
+
+        window.addEventListener('resize', positionHint);
+        document.addEventListener('scroll', positionHint, true);
+
+        restartTutorial();
+    </script>
+</div>

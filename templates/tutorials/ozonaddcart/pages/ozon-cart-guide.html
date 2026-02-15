@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OZON: Добавление в корзину</title>
+    <link rel="stylesheet" href="/tutorials-assets/ozon-complete/pages/style.css">
+    <style>
+        .ozon-course-body {
+            background: #f6f7fb;
+        }
+
+        .course-container {
+            max-width: 1120px;
+        }
+
+        .ozon-interface {
+            max-width: min(90vw, 460px);
+            margin: 3vh auto;
+            background: #fff;
+            border: 0.45vw solid #000;
+            border-radius: 2.2vw;
+            overflow: hidden;
+            box-shadow: 0 1.4vh 2.8vh rgba(0, 0, 0, 0.28);
+        }
+
+        .ozon-header {
+            background: #005bff;
+            color: #fff;
+            padding: 2vh 3vw;
+            display: flex;
+            align-items: center;
+            gap: 2vw;
+            border-bottom: 0.3vw solid #000;
+        }
+
+        .ozon-logo {
+            font-size: clamp(1.3rem, 2.8vw, 2.2rem);
+            font-weight: bold;
+        }
+
+        .search-bar {
+            flex: 1;
+            background: #fff;
+            padding: 1.5vh 2vw;
+            border-radius: 1vw;
+            display: flex;
+            align-items: center;
+            gap: 1.5vw;
+            cursor: pointer;
+            transition: all 0.25s;
+            border: 0.2vw solid #ccc;
+        }
+
+        .search-bar.active {
+            box-shadow: 0 0 0 0.4vw #ffd700;
+            border-color: #ffd700;
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            flex: 1;
+            font-size: clamp(0.9rem, 1.8vw, 1.45rem);
+            font-weight: 500;
+            background: transparent;
+        }
+
+        .icon-btn {
+            font-size: clamp(1.2rem, 2.5vw, 1.9rem);
+            cursor: default;
+            padding: 1vh 1.5vw;
+        }
+
+        .categories {
+            display: flex;
+            gap: 2vw;
+            padding: 2vh 3vw;
+            overflow-x: auto;
+            background: #f5f5f5;
+            border-bottom: 0.2vw solid #e0e0e0;
+        }
+
+        .category {
+            min-width: 20vw;
+            text-align: center;
+            background: #fff;
+            padding: 2vh 1.5vw;
+            border-radius: 1.5vw;
+            border: 0.2vw solid #e0e0e0;
+        }
+
+        .category-icon {
+            font-size: clamp(2.1rem, 4.4vw, 3.2rem);
+            margin-bottom: 0.8vh;
+        }
+
+        .category-name {
+            font-size: clamp(0.82rem, 1.55vw, 1.15rem);
+            font-weight: 600;
+        }
+
+        .products {
+            padding: 2vh 3vw;
+            max-height: 42vh;
+            overflow-y: auto;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2vw;
+        }
+
+        .product {
+            background: #f9f9f9;
+            border-radius: 1.5vw;
+            padding: 2vh;
+            border: 0.2vw solid #e0e0e0;
+            transition: all 0.25s;
+            position: relative;
+        }
+
+        .product.clickable {
+            cursor: pointer;
+        }
+
+        .product.clickable:hover {
+            transform: translateY(-0.35vh);
+            box-shadow: 0 0.8vh 2vh rgba(0, 0, 0, 0.16);
+            border-color: #005bff;
+        }
+
+        .product.selected {
+            box-shadow: 0 0 0 0.45vw #ffd700;
+            background: #fff8e1;
+            border-color: #ffd700;
+        }
+
+        .product-img {
+            background: #fff;
+            height: 19vh;
+            border-radius: 1vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(3rem, 6.4vw, 4.4rem);
+            margin-bottom: 1.2vh;
+            position: relative;
+            border: 0.2vw solid #f0f0f0;
+        }
+
+        .badge {
+            position: absolute;
+            top: 1vh;
+            left: 1vw;
+            background: #ff4757;
+            color: #fff;
+            padding: 0.55vh 1.4vw;
+            border-radius: 0.8vw;
+            font-size: clamp(0.75rem, 1.35vw, 1.02rem);
+            font-weight: bold;
+            border: 0.15vw solid #000;
+        }
+
+        .product-price {
+            font-size: clamp(1.1rem, 2.1vw, 1.7rem);
+            font-weight: bold;
+            margin-bottom: 0.45vh;
+            color: #000;
+        }
+
+        .product-name {
+            font-size: clamp(0.9rem, 1.75vw, 1.25rem);
+            color: #000;
+            line-height: 1.25;
+            margin-bottom: 0.8vh;
+            font-weight: 500;
+        }
+
+        .product-rating {
+            font-size: clamp(0.82rem, 1.52vw, 1.1rem);
+            color: #666;
+            font-weight: 500;
+        }
+
+        .old-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 0.84em;
+            margin-left: 1vw;
+        }
+
+        .search-suggestions {
+            background: #fff;
+            padding: 2vh 3vw;
+        }
+
+        .suggestion {
+            padding: 2vh 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: clamp(1rem, 1.9vw, 1.45rem);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .suggestion:hover,
+        .suggestion.selected {
+            background: #e3f2fd;
+        }
+
+        .product-detail {
+            padding: 3vh 3vw;
+            max-height: 52vh;
+            overflow-y: auto;
+        }
+
+        .detail-img {
+            height: 30vh;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(6rem, 12vw, 9rem);
+            margin-bottom: 2vh;
+            border-radius: 1.5vw;
+        }
+
+        .detail-title {
+            font-size: clamp(1.15rem, 2.25vw, 1.9rem);
+            font-weight: bold;
+            margin-bottom: 1.6vh;
+        }
+
+        .detail-price {
+            display: flex;
+            align-items: center;
+            gap: 1.5vw;
+            margin-bottom: 2.2vh;
+        }
+
+        .price-current {
+            font-size: clamp(1.8rem, 3.4vw, 2.7rem);
+            font-weight: bold;
+        }
+
+        .price-old {
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .discount-badge {
+            background: #ff4757;
+            color: #fff;
+            padding: 0.55vh 1.4vw;
+            border-radius: 1vw;
+            font-size: clamp(0.9rem, 1.65vw, 1.2rem);
+            font-weight: bold;
+        }
+
+        .chars {
+            background: #f5f5f5;
+            padding: 2.2vh;
+            border-radius: 1.3vw;
+            margin-bottom: 2vh;
+        }
+
+        .char-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 1.2vh 0;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: clamp(0.9rem, 1.7vw, 1.2rem);
+        }
+
+        .char-row:last-child {
+            border-bottom: none;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 2.2vh;
+            background: #005bff;
+            color: #fff;
+            border: 0.3vw solid #000;
+            border-radius: 1.4vw;
+            font-size: clamp(1.05rem, 2.05vw, 1.65rem);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 0.35vh 1vh rgba(0, 0, 0, 0.22);
+        }
+
+        .action-btn:hover {
+            background: #0052e0;
+            transform: scale(1.02);
+        }
+
+        .action-btn.success {
+            background: #4caf50;
+        }
+
+        .cart {
+            padding: 2vh 3vw;
+            max-height: 45vh;
+            overflow-y: auto;
+        }
+
+        .cart-item {
+            background: #fff;
+            border-radius: 1.4vw;
+            padding: 2vh;
+            margin-bottom: 2vh;
+            display: flex;
+            gap: 2vw;
+            border: 0.25vw solid #000;
+            box-shadow: 0 0.3vh 1vh rgba(0, 0, 0, 0.1);
+        }
+
+        .cart-img {
+            width: 19vw;
+            max-width: 92px;
+            height: 19vw;
+            max-height: 92px;
+            background: #f5f5f5;
+            border-radius: 1vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+            border: 0.2vw solid #e0e0e0;
+        }
+
+        .cart-info {
+            flex: 1;
+        }
+
+        .cart-name {
+            font-size: clamp(1rem, 1.9vw, 1.4rem);
+            font-weight: 600;
+            margin-bottom: 1.2vh;
+            color: #000;
+        }
+
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 1.5vw;
+            margin: 1.2vh 0;
+        }
+
+        .qty-btn {
+            width: 4.5vh;
+            height: 4.5vh;
+            border: 0.25vw solid #000;
+            background: #fff;
+            border-radius: 0.9vw;
+            font-size: clamp(1.1rem, 2vw, 1.5rem);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .qty-value {
+            font-size: clamp(1rem, 1.9vw, 1.4rem);
+            font-weight: bold;
+            min-width: 3.5vw;
+            text-align: center;
+        }
+
+        .cart-price {
+            font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+            font-weight: bold;
+            color: #000;
+        }
+
+        .summary {
+            background: #fff;
+            padding: 2.2vh;
+            border-top: 0.3vw solid #000;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.2vh;
+            font-size: clamp(1rem, 1.85vw, 1.35rem);
+            font-weight: 500;
+            color: #000;
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 1.5vh;
+            border-top: 0.3vw solid #000;
+            font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+            font-weight: bold;
+            color: #000;
+        }
+
+        .task-hint {
+            background: #ffd700;
+            border: 0.3vw solid #000;
+            border-radius: 1vw;
+            padding: 2.2vh 3vw;
+            margin: 2vh 0;
+            font-size: clamp(1rem, 1.8vw, 1.4rem);
+            color: #000;
+            font-weight: bold;
+            box-shadow: 0 0.4vh 1.2vh rgba(0, 0, 0, 0.22);
+        }
+
+        .task-hint strong {
+            display: block;
+            margin-bottom: 1vh;
+            font-size: clamp(1.1rem, 2vw, 1.45rem);
+            text-transform: uppercase;
+        }
+
+        .module-done-box {
+            background: #e8f5e9;
+            border: 0.28vw solid #2e7d32;
+            border-radius: 1.2vw;
+            padding: 2.4vh 2.8vw;
+            margin: 2.2vh 0;
+            font-size: clamp(1rem, 1.8vw, 1.35rem);
+            color: #1b5e20;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="ozon-course-body">
+    <div class="course-container">
+        <div class="course-header">
+            <h1 class="course-title">🛒 Добавление товаров в корзину</h1>
+            <p class="course-subtitle">Поиск товара в каталоге OZON и добавление в корзину</p>
+        </div>
+
+        <div class="course-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            <p class="progress-text">Шаг <span id="currentStep">1</span> из <span id="totalSteps">6</span></p>
+        </div>
+
+        <div class="course-content">
+            <div class="step-card" id="step0" style="display:block;">
+                <div class="step-number">Подготовка</div>
+                <h2 class="step-title">Что делаем в этом модуле</h2>
+                <p class="instruction-text">В этом сценарии вы научитесь находить нужный товар в каталоге OZON и добавлять его в корзину.</p>
+                <div class="task-hint">
+                    <strong>Задание:</strong>
+                    Перейдите к следующему шагу кнопкой «Далее», затем выполняйте действия внутри экрана телефона.
+                </div>
+                <div class="info-box">
+                    <p>💡 В примере мы ищем и добавляем тёплые носки, но алгоритм тот же для любых товаров.</p>
+                </div>
+            </div>
+
+            <div class="step-card" id="step1" style="display:none;">
+                <div class="step-number">Шаг 1</div>
+                <h2 class="step-title">Откройте поиск</h2>
+                <p class="instruction-text">Нажмите на строку «Искать на Ozon» в шапке приложения.</p>
+                <div class="task-hint"><strong>Задание:</strong> Нажмите на строку поиска.</div>
+
+                <div class="ozon-interface">
+                    <div class="ozon-header">
+                        <div class="ozon-logo">OZON</div>
+                        <div class="search-bar" id="searchClick">
+                            <span>🔍</span>
+                            <span style="color:#999;">Искать на Ozon</span>
+                        </div>
+                        <span class="icon-btn">❤️</span>
+                        <span class="icon-btn">🛒</span>
+                    </div>
+                    <div class="categories">
+                        <div class="category"><div class="category-icon">👕</div><div class="category-name">Одежда</div></div>
+                        <div class="category"><div class="category-icon">📱</div><div class="category-name">Электроника</div></div>
+                        <div class="category"><div class="category-icon">🏠</div><div class="category-name">Дом</div></div>
+                        <div class="category"><div class="category-icon">📚</div><div class="category-name">Книги</div></div>
+                    </div>
+                    <div class="products">
+                        <div class="product-grid">
+                            <div class="product"><div class="product-img">🧦</div><div class="product-price">299₽</div><div class="product-name">Носки тёплые</div><div class="product-rating">★★★★★ 4.8</div></div>
+                            <div class="product"><div class="product-img">📱</div><div class="product-price">8 990₽</div><div class="product-name">Смартфон</div><div class="product-rating">★★★★★ 4.9</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-card" id="step2" style="display:none;">
+                <div class="step-number">Шаг 2</div>
+                <h2 class="step-title">Выберите подсказку поиска</h2>
+                <p class="instruction-text">Запрос «тёплые носки» уже введен. Нажмите на любую подходящую подсказку.</p>
+                <div class="task-hint"><strong>Задание:</strong> Нажмите на подсказку в списке.</div>
+
+                <div class="ozon-interface">
+                    <div class="ozon-header">
+                        <span class="icon-btn" style="font-size:clamp(1.2rem,2.4vw,1.8rem);">←</span>
+                        <div class="search-bar active">
+                            <span>🔍</span>
+                            <input type="text" value="тёплые носки" readonly>
+                        </div>
+                    </div>
+                    <div class="search-suggestions">
+                        <div class="suggestion search-suggestion">тёплые носки мужские</div>
+                        <div class="suggestion search-suggestion">тёплые носки женские</div>
+                        <div class="suggestion search-suggestion">тёплые носки шерстяные</div>
+                        <div class="suggestion search-suggestion">тёплые носки махровые</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-card" id="step3" style="display:none;">
+                <div class="step-number">Шаг 3</div>
+                <h2 class="step-title">Откройте карточку товара</h2>
+                <p class="instruction-text">В результатах выберите первый товар с ценой 299₽.</p>
+                <div class="task-hint"><strong>Задание:</strong> Нажмите на первую карточку носков.</div>
+
+                <div class="ozon-interface">
+                    <div class="ozon-header">
+                        <span class="icon-btn">←</span>
+                        <div style="flex:1;font-size:clamp(1rem,2vw,1.45rem);font-weight:bold;">Тёплые носки</div>
+                    </div>
+                    <div class="products">
+                        <div class="product-grid">
+                            <div class="product clickable product-select" id="product1">
+                                <div class="product-img"><div class="badge">-25%</div>🧦</div>
+                                <div class="product-price">299₽ <span class="old-price">399₽</span></div>
+                                <div class="product-name">Носки тёплые шерстяные</div>
+                                <div class="product-rating">★★★★★ 4.8</div>
+                            </div>
+                            <div class="product">
+                                <div class="product-img">🧦</div>
+                                <div class="product-price">450₽</div>
+                                <div class="product-name">Носки махровые</div>
+                                <div class="product-rating">★★★★★ 4.9</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-card" id="step4" style="display:none;">
+                <div class="step-number">Шаг 4</div>
+                <h2 class="step-title">Добавьте товар в корзину</h2>
+                <p class="instruction-text">Проверьте карточку товара и нажмите кнопку «В корзину».</p>
+                <div class="task-hint"><strong>Задание:</strong> Нажмите «В корзину».</div>
+
+                <div class="ozon-interface">
+                    <div class="ozon-header">
+                        <span class="icon-btn">←</span>
+                        <span class="icon-btn">🔍</span>
+                        <span class="icon-btn">❤️</span>
+                        <span class="icon-btn">📤</span>
+                    </div>
+                    <div class="product-detail">
+                        <div class="detail-img">🧦</div>
+                        <div class="detail-title">Носки тёплые шерстяные мужские</div>
+                        <div style="font-size:clamp(0.9rem,1.7vw,1.2rem);color:#666;margin-bottom:1.4vh;">★★★★★ 4.8 · 523 отзыва</div>
+                        <div class="detail-price">
+                            <span class="price-current">299₽</span>
+                            <span class="price-old">399₽</span>
+                            <span class="discount-badge">-25%</span>
+                        </div>
+                        <div class="chars">
+                            <div class="char-row"><span>Размер:</span><span>41-47</span></div>
+                            <div class="char-row"><span>Состав:</span><span>80% шерсть</span></div>
+                            <div class="char-row"><span>Цвет:</span><span>Серый</span></div>
+                        </div>
+                        <button class="action-btn" id="addToCart">В корзину</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-card" id="step5" style="display:none;">
+                <div class="step-number">Готово</div>
+                <h2 class="step-title">Товар в корзине</h2>
+                <p class="instruction-text">Отлично! Вы нашли товар и добавили его в корзину.</p>
+
+                <div class="ozon-interface">
+                    <div class="ozon-header">
+                        <span class="icon-btn">←</span>
+                        <div style="flex:1;font-size:clamp(1.1rem,2.2vw,1.55rem);font-weight:bold;">Корзина</div>
+                    </div>
+                    <div class="cart">
+                        <div class="cart-item">
+                            <div class="cart-img">🧦</div>
+                            <div class="cart-info">
+                                <div class="cart-name">Носки тёплые шерстяные</div>
+                                <div class="qty-controls">
+                                    <button class="qty-btn">−</button>
+                                    <span class="qty-value">1</span>
+                                    <button class="qty-btn">+</button>
+                                </div>
+                                <div class="cart-price">299₽</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="summary">
+                        <div class="summary-row"><span>Товары (1)</span><span>299₽</span></div>
+                        <div class="summary-row"><span>Доставка</span><span style="color:#4CAF50;font-weight:bold;">Бесплатно</span></div>
+                        <div class="summary-total"><span>Итого</span><span>299₽</span></div>
+                    </div>
+                </div>
+
+                <div class="module-done-box">
+                    ✅ Первый этап завершен. В следующем модуле вы оформите доставку: выберете способ доставки, адрес и оплату.
+                </div>
+            </div>
+        </div>
+
+        <div class="course-navigation">
+            <button class="nav-button" id="prevBtn" onclick="changeStep(-1)">← Назад</button>
+            <button class="nav-button primary" id="nextBtn" onclick="changeStep(1)">Далее →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        const totalSteps = 5;
+        let taskCompleted = true;
+
+        function updateNextButton() {
+            document.getElementById('nextBtn').disabled = !taskCompleted;
+        }
+
+        function showStep(stepIndex) {
+            document.querySelectorAll('.step-card').forEach((step) => {
+                step.style.display = 'none';
+            });
+
+            const step = document.getElementById(`step${stepIndex}`);
+            if (step) {
+                step.style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            document.getElementById('prevBtn').disabled = stepIndex === 0;
+            document.getElementById('nextBtn').textContent = stepIndex === totalSteps ? '✓ Завершить' : 'Далее →';
+            document.getElementById('currentStep').textContent = String(stepIndex + 1);
+            document.getElementById('totalSteps').textContent = String(totalSteps + 1);
+
+            const progress = (stepIndex / totalSteps) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+
+            taskCompleted = stepIndex === 0 || stepIndex === totalSteps;
+            updateNextButton();
+        }
+
+        function changeStep(direction) {
+            currentStep += direction;
+            if (currentStep < 0) currentStep = 0;
+            if (currentStep > totalSteps) {
+                alert('Отлично! Вы научились искать товар и добавлять его в корзину на OZON.');
+                currentStep = totalSteps;
+            }
+            showStep(currentStep);
+        }
+
+        document.addEventListener('click', (event) => {
+            if (event.target.closest('#searchClick') && currentStep === 1) {
+                event.target.closest('#searchClick').classList.add('active');
+                taskCompleted = true;
+                updateNextButton();
+            }
+
+            const suggestion = event.target.closest('.search-suggestion');
+            if (suggestion && currentStep === 2) {
+                document.querySelectorAll('.search-suggestion').forEach((item) => item.classList.remove('selected'));
+                suggestion.classList.add('selected');
+                taskCompleted = true;
+                updateNextButton();
+            }
+
+            const product = event.target.closest('.product-select');
+            if (product && currentStep === 3) {
+                document.querySelectorAll('.product').forEach((item) => item.classList.remove('selected'));
+                product.classList.add('selected');
+                taskCompleted = true;
+                updateNextButton();
+            }
+
+            if (event.target.id === 'addToCart' && currentStep === 4) {
+                const button = event.target;
+                button.textContent = '✓ Добавлено';
+                button.classList.add('success');
+                taskCompleted = true;
+                updateNextButton();
+                setTimeout(() => {
+                    currentStep = 5;
+                    showStep(currentStep);
+                }, 700);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            showStep(0);
+        });
+    </script>
+</body>
+</html>

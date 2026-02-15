@@ -1,0 +1,757 @@
+<div class="pv-sim">
+    <style>
+        .pv-sim,
+        .pv-sim * {
+            box-sizing: border-box;
+        }
+
+        .pv-sim {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #e8eff8;
+            border-radius: 16px;
+            padding: 22px;
+            position: relative;
+        }
+
+        .pv-layout {
+            display: flex;
+            gap: 22px;
+            justify-content: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .pv-phone-stage {
+            width: 348px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .pv-phone-shell {
+            width: 330px;
+            height: 668px;
+            border-radius: 38px;
+            padding: 10px;
+            position: relative;
+            background: linear-gradient(165deg, #26313f 0%, #0f1620 100%);
+            box-shadow: 0 24px 42px rgba(17, 27, 40, 0.34);
+        }
+
+        .pv-phone-frame {
+            width: 100%;
+            height: 100%;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: #050608;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .pv-earpiece {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            width: 72px;
+            height: 7px;
+            transform: translateX(-50%);
+            border-radius: 999px;
+            background: #141a22;
+            z-index: 7;
+        }
+
+        .pv-front-camera {
+            position: absolute;
+            top: 8px;
+            left: 57%;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: radial-gradient(circle at 30% 30%, #374352, #0b1016 72%);
+            z-index: 7;
+        }
+
+        .pv-side-btn {
+            position: absolute;
+            right: -8px;
+            border-radius: 10px;
+            background: #4c5868;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+            border: none;
+        }
+
+        .pv-side-btn.pv-volume-up {
+            top: 132px;
+            width: 13px;
+            height: 104px;
+            cursor: pointer;
+        }
+
+        .pv-side-btn.pv-volume-down {
+            top: 248px;
+            width: 13px;
+            height: 104px;
+            cursor: pointer;
+        }
+
+        .pv-side-btn.pv-power {
+            top: 366px;
+            width: 11px;
+            height: 76px;
+            background: #5a6779;
+            border-radius: 8px;
+        }
+
+        .pv-side-btn.pv-volume-up:active,
+        .pv-side-btn.pv-volume-down:active {
+            transform: translateX(1px);
+        }
+
+        .pv-screen {
+            position: absolute;
+            inset: 0;
+            border-radius: 30px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            color: #fff;
+            background: linear-gradient(180deg, #0d1b34 0%, #1f4c88 38%, #2b74b5 62%, #1a3f70 100%);
+        }
+
+        .pv-statusbar {
+            height: 42px;
+            padding: 12px 16px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0.96;
+        }
+
+        .pv-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px 10px;
+            padding: 0 12px;
+            margin-top: 4px;
+        }
+
+        .pv-app {
+            display: grid;
+            justify-items: center;
+            gap: 6px;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .pv-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 18px;
+            display: grid;
+            place-items: center;
+            font-size: 24px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+            background: rgba(255, 255, 255, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .pv-dock {
+            margin: auto 10px 12px;
+            height: 72px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.26);
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            align-items: center;
+            padding: 0 10px;
+        }
+
+        .pv-dock-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            margin: 0 auto;
+            display: grid;
+            place-items: center;
+            font-size: 22px;
+            background: rgba(255, 255, 255, 0.28);
+        }
+
+        .pv-gesture {
+            width: 116px;
+            height: 5px;
+            border-radius: 999px;
+            margin: 0 auto 8px;
+            background: rgba(255, 255, 255, 0.84);
+        }
+
+        .pv-panel {
+            position: absolute;
+            right: 12px;
+            top: 146px;
+            width: 66px;
+            height: 292px;
+            border-radius: 24px;
+            background: rgba(16, 24, 40, 0.74);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 10px;
+            gap: 10px;
+            transform: translateX(30px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+
+        .pv-panel.pv-visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .pv-panel-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 18px;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .pv-panel-track {
+            width: 14px;
+            flex: 1;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pv-panel-fill {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 42%;
+            background: linear-gradient(180deg, #c8e7ff 0%, #86c8ff 100%);
+            border-radius: 999px;
+            transition: height 0.2s ease;
+        }
+
+        .pv-panel-level {
+            font-size: 12px;
+            font-weight: 700;
+            color: #d9ecff;
+            letter-spacing: 0.02em;
+        }
+
+        .pv-info {
+            width: min(360px, 100%);
+            background: #fff;
+            border: 1px solid #d4deea;
+            border-radius: 18px;
+            box-shadow: 0 8px 24px rgba(16, 39, 66, 0.1);
+            padding: 18px;
+            display: grid;
+            gap: 12px;
+        }
+
+        .pv-progress {
+            display: grid;
+            gap: 8px;
+        }
+
+        .pv-progress-label {
+            font-size: 12px;
+            color: #5f6368;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+        }
+
+        .pv-progress-track {
+            display: grid;
+            grid-template-columns: repeat(var(--segments-count, 2), minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .pv-progress-segment {
+            height: 10px;
+            border-radius: 999px;
+            background: #dfe6ef;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .pv-progress-segment.is-complete {
+            background: #1f9d55;
+        }
+
+        .pv-progress-segment.is-current {
+            background: #0070d2;
+            box-shadow: 0 0 0 3px rgba(0, 112, 210, 0.2);
+        }
+
+        .pv-step {
+            font-size: 12px;
+            font-weight: 700;
+            color: #677387;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .pv-title {
+            margin: 0;
+            font-size: 24px;
+            line-height: 1.25;
+            color: #111c2c;
+        }
+
+        .pv-description {
+            margin: 0;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #2a3646;
+        }
+
+        .pv-note {
+            margin: 0;
+            background: #edf5ff;
+            border-radius: 12px;
+            color: #1f5c96;
+            font-size: 14px;
+            line-height: 1.4;
+            padding: 10px 12px;
+        }
+
+        .pv-nav {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .pv-nav-btn,
+        .pv-restart-btn {
+            border: none;
+            border-radius: 12px;
+            padding: 11px 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .pv-nav-btn {
+            background: #eef2f9;
+            color: #27384d;
+        }
+
+        .pv-nav-btn.pv-primary {
+            background: #0070d2;
+            color: #fff;
+        }
+
+        .pv-nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pv-restart-btn {
+            width: 100%;
+            background: #2d7d46;
+            color: #fff;
+            display: none;
+        }
+
+        .pv-click-hint {
+            position: fixed;
+            z-index: 10000;
+            display: none;
+            pointer-events: none;
+            border: 3px solid #2b97ff;
+            border-radius: 16px;
+            box-shadow: 0 0 0 2px rgba(43, 151, 255, 0.35), 0 0 18px rgba(43, 151, 255, 0.65);
+            animation: pvHintPulse 1.2s ease-in-out infinite;
+        }
+
+        @keyframes pvHintPulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            60% {
+                transform: scale(1.06);
+                opacity: 0.65;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .pv-sim {
+                padding: 14px;
+            }
+
+            .pv-phone-shell {
+                transform: scale(0.94);
+                transform-origin: top center;
+            }
+        }
+    </style>
+
+    <div class="pv-layout">
+        <div class="pv-phone-stage">
+            <div class="pv-phone-shell">
+                <button id="pv-volume-up" type="button" class="pv-side-btn pv-volume-up" aria-label="Кнопка громче"></button>
+                <button id="pv-volume-down" type="button" class="pv-side-btn pv-volume-down" aria-label="Кнопка тише"></button>
+                <span class="pv-side-btn pv-power" aria-hidden="true"></span>
+
+                <div class="pv-phone-frame">
+                    <div class="pv-earpiece" aria-hidden="true"></div>
+                    <div class="pv-front-camera" aria-hidden="true"></div>
+
+                    <div class="pv-screen">
+                        <div class="pv-statusbar">
+                            <span>12:31</span>
+                            <span>4G ▂▄▆█ 81%</span>
+                        </div>
+
+                        <div class="pv-grid">
+                            <div class="pv-app"><div class="pv-icon">📞</div><span>Телефон</span></div>
+                            <div class="pv-app"><div class="pv-icon">💬</div><span>Сообщения</span></div>
+                            <div class="pv-app"><div class="pv-icon">📷</div><span>Камера</span></div>
+                            <div class="pv-app"><div class="pv-icon">🛒</div><span>Store</span></div>
+                            <div class="pv-app"><div class="pv-icon">🗺️</div><span>Карты</span></div>
+                            <div class="pv-app"><div class="pv-icon">🎧</div><span>Музыка</span></div>
+                            <div class="pv-app"><div class="pv-icon">⚙️</div><span>Настройки</span></div>
+                            <div class="pv-app"><div class="pv-icon">🖼️</div><span>Галерея</span></div>
+                            <div class="pv-app"><div class="pv-icon">🧭</div><span>Навигатор</span></div>
+                            <div class="pv-app"><div class="pv-icon">📺</div><span>Видео</span></div>
+                            <div class="pv-app"><div class="pv-icon">📘</div><span>Книги</span></div>
+                            <div class="pv-app"><div class="pv-icon">🧮</div><span>Кальк.</span></div>
+                        </div>
+
+                        <div class="pv-dock">
+                            <div class="pv-dock-icon">📱</div>
+                            <div class="pv-dock-icon">🌐</div>
+                            <div class="pv-dock-icon">✉️</div>
+                            <div class="pv-dock-icon">📁</div>
+                            <div class="pv-dock-icon">🎵</div>
+                        </div>
+
+                        <div class="pv-gesture"></div>
+
+                        <div id="pv-panel" class="pv-panel" aria-live="polite">
+                            <div id="pv-panel-icon" class="pv-panel-icon">🔉</div>
+                            <div class="pv-panel-track">
+                                <div id="pv-panel-fill" class="pv-panel-fill"></div>
+                            </div>
+                            <div id="pv-panel-level" class="pv-panel-level">42%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <aside class="pv-info" aria-live="polite">
+            <div class="pv-progress">
+                <div class="pv-progress-label">Прогресс прохождения</div>
+                <div id="pv-progress-track" class="pv-progress-track"></div>
+            </div>
+
+            <div id="pv-step" class="pv-step">Шаг 1 из 2</div>
+            <h2 id="pv-title" class="pv-title">Увеличьте громкость</h2>
+            <p id="pv-description" class="pv-description">Нажмите верхнюю боковую кнопку громкости справа.</p>
+            <p id="pv-note" class="pv-note">Телефон уже разблокирован и показывает OneUI-подобный экран приложений.</p>
+
+            <div id="pv-nav" class="pv-nav">
+                <button id="pv-prev" type="button" class="pv-nav-btn">Назад</button>
+                <button id="pv-next" type="button" class="pv-nav-btn pv-primary">Вперёд</button>
+            </div>
+
+            <button id="pv-restart" type="button" class="pv-restart-btn">Начать инструкцию заново</button>
+        </aside>
+    </div>
+
+    <div id="pv-click-hint" class="pv-click-hint" aria-hidden="true"></div>
+
+    <script>
+        const pvSteps = {
+            up: {
+                step: 'Шаг 1 из 2',
+                title: 'Увеличьте громкость',
+                description: 'Нажмите верхнюю кнопку громкости справа.',
+                note: 'После нажатия справа появляется OneUI-панель громкости.',
+                hint: { targetId: 'pv-volume-up', radius: 18, padding: 6 },
+                volume: 42
+            },
+            down: {
+                step: 'Шаг 2 из 2',
+                title: 'Уменьшите громкость',
+                description: 'Теперь нажмите нижнюю кнопку громкости справа.',
+                note: 'Уровень громкости должен стать ниже.',
+                hint: { targetId: 'pv-volume-down', radius: 18, padding: 6 },
+                volume: 62
+            },
+            completed: {
+                step: 'Готово',
+                title: 'Отлично!',
+                description: 'Вы потренировались увеличивать и уменьшать громкость боковыми кнопками Android.',
+                note: 'Нажмите «Начать инструкцию заново», чтобы пройти еще раз.',
+                hint: null,
+                volume: 44
+            }
+        };
+
+        const pvOrder = ['up', 'down'];
+
+        const pvElements = {
+            volumeUp: document.getElementById('pv-volume-up'),
+            volumeDown: document.getElementById('pv-volume-down'),
+            panel: document.getElementById('pv-panel'),
+            panelIcon: document.getElementById('pv-panel-icon'),
+            panelFill: document.getElementById('pv-panel-fill'),
+            panelLevel: document.getElementById('pv-panel-level'),
+            hint: document.getElementById('pv-click-hint'),
+            progressTrack: document.getElementById('pv-progress-track'),
+            step: document.getElementById('pv-step'),
+            title: document.getElementById('pv-title'),
+            description: document.getElementById('pv-description'),
+            note: document.getElementById('pv-note'),
+            nav: document.getElementById('pv-nav'),
+            prev: document.getElementById('pv-prev'),
+            next: document.getElementById('pv-next'),
+            restart: document.getElementById('pv-restart')
+        };
+
+        let pvCurrentStep = 'up';
+        let pvCurrentVolume = 42;
+        let pvActiveHint = null;
+        let pvPanelTimer = null;
+
+        function pvGetStepIndex(stepKey) {
+            return pvOrder.indexOf(stepKey);
+        }
+
+        function pvEnsureProgressSegments() {
+            const count = pvOrder.length;
+            pvElements.progressTrack.style.setProperty('--segments-count', String(count));
+
+            if (pvElements.progressTrack.childElementCount === count) {
+                return;
+            }
+
+            pvElements.progressTrack.innerHTML = '';
+            for (let i = 0; i < count; i += 1) {
+                const segment = document.createElement('span');
+                segment.className = 'pv-progress-segment';
+                pvElements.progressTrack.appendChild(segment);
+            }
+        }
+
+        function pvUpdateProgress(stepKey) {
+            pvEnsureProgressSegments();
+            const segments = Array.from(pvElements.progressTrack.children);
+            const isCompleted = stepKey === 'completed';
+            const index = pvGetStepIndex(stepKey);
+            const currentIndex = isCompleted ? pvOrder.length - 1 : index;
+
+            segments.forEach((segment, segmentIndex) => {
+                segment.classList.remove('is-complete', 'is-current');
+                if (isCompleted || segmentIndex < currentIndex) {
+                    segment.classList.add('is-complete');
+                } else if (segmentIndex === currentIndex) {
+                    segment.classList.add('is-current');
+                }
+            });
+        }
+
+        function pvRenderVolume() {
+            pvElements.panelFill.style.height = `${pvCurrentVolume}%`;
+            pvElements.panelLevel.textContent = `${pvCurrentVolume}%`;
+
+            if (pvCurrentVolume <= 8) {
+                pvElements.panelIcon.textContent = '🔇';
+            } else if (pvCurrentVolume <= 45) {
+                pvElements.panelIcon.textContent = '🔉';
+            } else {
+                pvElements.panelIcon.textContent = '🔊';
+            }
+        }
+
+        function pvHidePanelLater() {
+            if (pvPanelTimer) {
+                clearTimeout(pvPanelTimer);
+            }
+            pvPanelTimer = setTimeout(() => {
+                pvElements.panel.classList.remove('pv-visible');
+                pvPanelTimer = null;
+            }, 1300);
+        }
+
+        function pvShowPanel() {
+            pvElements.panel.classList.add('pv-visible');
+            pvHidePanelLater();
+        }
+
+        function pvSetVolume(value) {
+            pvCurrentVolume = Math.max(0, Math.min(100, value));
+            pvRenderVolume();
+        }
+
+        function pvPositionHint() {
+            if (!pvActiveHint || !pvActiveHint.targetId) {
+                pvElements.hint.style.display = 'none';
+                return;
+            }
+
+            const target = document.getElementById(pvActiveHint.targetId);
+            if (!target) {
+                pvElements.hint.style.display = 'none';
+                return;
+            }
+
+            const rect = target.getBoundingClientRect();
+            if (!rect.width || !rect.height) {
+                pvElements.hint.style.display = 'none';
+                return;
+            }
+
+            const padding = Number(pvActiveHint.padding || 0);
+            const radius = Number(pvActiveHint.radius || 14);
+
+            pvElements.hint.style.display = 'block';
+            pvElements.hint.style.left = `${rect.left - padding}px`;
+            pvElements.hint.style.top = `${rect.top - padding}px`;
+            pvElements.hint.style.width = `${rect.width + padding * 2}px`;
+            pvElements.hint.style.height = `${rect.height + padding * 2}px`;
+            pvElements.hint.style.borderRadius = `${radius}px`;
+        }
+
+        function pvApplyHint(hint) {
+            if (!hint || !hint.targetId) {
+                pvActiveHint = null;
+                pvElements.hint.style.display = 'none';
+                return;
+            }
+
+            pvActiveHint = {
+                targetId: String(hint.targetId),
+                radius: Number(hint.radius || 14),
+                padding: Number(hint.padding || 0)
+            };
+
+            requestAnimationFrame(pvPositionHint);
+            setTimeout(pvPositionHint, 0);
+        }
+
+        function pvUpdateInfo(stepKey) {
+            const cfg = pvSteps[stepKey];
+            pvElements.step.textContent = cfg.step;
+            pvElements.title.textContent = cfg.title;
+            pvElements.description.textContent = cfg.description;
+            pvElements.note.textContent = cfg.note;
+
+            if (stepKey === 'completed') {
+                pvElements.nav.style.display = 'none';
+                pvElements.restart.style.display = 'inline-flex';
+            } else {
+                pvElements.nav.style.display = 'grid';
+                pvElements.restart.style.display = 'none';
+                const stepIndex = pvGetStepIndex(stepKey);
+                pvElements.prev.disabled = stepIndex <= 0;
+                pvElements.next.disabled = false;
+            }
+
+            pvUpdateProgress(stepKey);
+        }
+
+        function pvApplyStep(stepKey) {
+            const cfg = pvSteps[stepKey];
+            pvSetVolume(cfg.volume);
+            pvApplyHint(cfg.hint);
+            pvUpdateInfo(stepKey);
+
+            if (stepKey === 'completed') {
+                setTimeout(() => {
+                    pvElements.panel.classList.remove('pv-visible');
+                }, 500);
+            }
+        }
+
+        function pvGoToStep(stepKey) {
+            if (!pvSteps[stepKey]) {
+                return;
+            }
+            pvCurrentStep = stepKey;
+            pvApplyStep(stepKey);
+        }
+
+        function pvHandleVolumePress(direction) {
+            if (direction === 'up') {
+                pvSetVolume(pvCurrentVolume + 18);
+                pvShowPanel();
+                if (pvCurrentStep === 'up') {
+                    setTimeout(() => pvGoToStep('down'), 180);
+                }
+                return;
+            }
+
+            pvSetVolume(pvCurrentVolume - 20);
+            pvShowPanel();
+            if (pvCurrentStep === 'down') {
+                setTimeout(() => pvGoToStep('completed'), 180);
+            }
+        }
+
+        function pvGoBack() {
+            if (pvCurrentStep === 'completed') {
+                pvGoToStep('down');
+                return;
+            }
+
+            const index = pvGetStepIndex(pvCurrentStep);
+            if (index > 0) {
+                pvGoToStep(pvOrder[index - 1]);
+            }
+        }
+
+        function pvGoForward() {
+            if (pvCurrentStep === 'completed') {
+                return;
+            }
+
+            const index = pvGetStepIndex(pvCurrentStep);
+            if (index >= 0 && index < pvOrder.length - 1) {
+                pvGoToStep(pvOrder[index + 1]);
+                return;
+            }
+
+            if (pvCurrentStep === 'down') {
+                pvGoToStep('completed');
+            }
+        }
+
+        function pvRestart() {
+            pvGoToStep('up');
+        }
+
+        pvElements.volumeUp.addEventListener('click', () => pvHandleVolumePress('up'));
+        pvElements.volumeDown.addEventListener('click', () => pvHandleVolumePress('down'));
+        pvElements.prev.addEventListener('click', pvGoBack);
+        pvElements.next.addEventListener('click', pvGoForward);
+        pvElements.restart.addEventListener('click', pvRestart);
+
+        window.addEventListener('resize', pvPositionHint);
+        document.addEventListener('scroll', pvPositionHint, true);
+
+        pvGoToStep('up');
+    </script>
+</div>
