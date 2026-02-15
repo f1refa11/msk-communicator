@@ -432,6 +432,11 @@
             justify-content: center;
         }
 
+        .send-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
         #keyboard {
             display: none;
             flex-direction: column;
@@ -617,9 +622,9 @@
 
             <div class="chat-list">
                 <article id="target-contact" class="chat-item" onclick="openChat()">
-                    <div class="avatar yellow">А</div>
+                    <div class="avatar yellow">Е</div>
                     <div class="chat-main">
-                        <div class="chat-name">Артём Цурганов</div>
+                        <div class="chat-name">Егор Романов</div>
                         <div class="chat-preview">Привет!</div>
                     </div>
                     <div class="chat-meta">
@@ -631,8 +636,8 @@
                 <article class="chat-item">
                     <div class="avatar">1К</div>
                     <div class="chat-main">
-                        <div class="chat-name">10-Д Класс</div>
-                        <div class="chat-preview">Ольга: Фото</div>
+                        <div class="chat-name">Одноклассники</div>
+                        <div class="chat-preview">Светлана: Фото</div>
                     </div>
                     <div class="chat-meta">
                         <div>18:00</div>
@@ -641,9 +646,9 @@
                 </article>
 
                 <article class="chat-item">
-                    <div class="avatar orange">ФШ</div>
+                    <div class="avatar orange">БС</div>
                     <div class="chat-main">
-                        <div class="chat-name">Физика_Кузнецов</div>
+                        <div class="chat-name">Семья Кузнецовых</div>
                         <div class="chat-preview">Вы вышли из чата</div>
                     </div>
                     <div class="chat-meta">6 февр.</div>
@@ -675,9 +680,9 @@
                 <button type="button" class="chat-header-btn" onclick="goToStep('select-chat')" aria-label="Назад к чатам">
                     <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.58-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
                 </button>
-                <div class="avatar yellow" style="width:36px;height:36px;font-size:18px;">А</div>
+                <div class="avatar yellow" style="width:36px;height:36px;font-size:18px;">Е</div>
                 <div>
-                    <div class="chat-header-name">Артём Цурганов</div>
+                    <div class="chat-header-name">Егор Романов</div>
                     <div class="chat-header-status">был(-а) недавно</div>
                 </div>
             </header>
@@ -703,7 +708,7 @@
                 </button>
 
                 <button id="send-btn" type="button" class="send-btn" onclick="sendMessage()" aria-label="Отправить сообщение">
-                    <svg viewBox="0 0 24 24"><path d="M12 4l-6 6h4v10h4V10h4z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.59 5.58L20 12 12 4z"/></svg>
                 </button>
             </div>
 
@@ -730,8 +735,8 @@
             <div id="info-progress-track" class="info-progress-track"></div>
         </div>
         <div id="info-step" class="info-step">Шаг 1 из 4</div>
-        <h2 id="info-title" class="info-title">Откройте чат с Артёмом</h2>
-        <p id="info-description" class="info-description">Найдите контакт «Артём Цурганов» в списке чатов и нажмите на него.</p>
+        <h2 id="info-title" class="info-title">Откройте чат с Егором</h2>
+        <p id="info-description" class="info-description">Найдите контакт «Егор Романов» в списке чатов и нажмите на него.</p>
         <p id="info-note" class="info-note">В этом чате уже есть входящее сообщение: «Привет!».</p>
 
         <div id="info-nav" class="info-nav">
@@ -749,8 +754,8 @@
     const steps = {
         'select-chat': {
             step: 'Шаг 1 из 4',
-            title: 'Откройте чат с Артёмом',
-            description: 'Найдите контакт «Артём Цурганов» и нажмите на него в списке чатов.',
+            title: 'Откройте чат с Егором',
+            description: 'Найдите контакт «Егор Романов» и нажмите на него в списке чатов.',
             note: 'В этом чате уже есть входящее сообщение: «Привет!».',
             screen: 'list',
             hint: { targetId: 'target-contact', radius: 12, padding: 4 }
