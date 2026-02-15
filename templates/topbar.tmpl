@@ -15,7 +15,6 @@
             {% if yes_login %}
                 <span class="topbar-greeting">Здравствуйте, {{ user_name }}</span>
                 <a href="/account/" class="topbar-link">Аккаунт</a>
-                <a href="/logout" class="topbar-link topbar-logout">Выйти</a>
             {% else %}
                 <a href="/register" class="topbar-link">Вход/регистрация</a>
             {% endif %}
@@ -30,7 +29,7 @@
                 <path d="M12 3a7 7 0 0 0-7 7v5a2 2 0 0 0 2 2h1v-6H7a5 5 0 0 1 10 0h-1v6h1a2 2 0 0 0 2-2v-5a7 7 0 0 0-7-7Zm-3 14v2a2 2 0 0 0 2 2h2v-2h-2v-2H9Z"></path>
             </svg>
         </span>
-        <span class="support-widget-label">помощь</span>
+        <span class="support-widget-label">Помощь</span>
     </button>
 
     <section class="support-widget-panel" id="support-widget-panel" data-role="panel" aria-hidden="true">
