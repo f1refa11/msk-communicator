@@ -143,7 +143,7 @@
 	margin-right: auto;
 	margin-bottom: 3vw;
 	width: fit-content;
-	background-color: rgba(F, F, F, 0.5);
+	background-color: rgba(255, 255, 255, 0.5);
 	border: solid 2px black;]
 }
 .taxi-course-paragraph {
@@ -155,7 +155,7 @@
 	margin-bottom: 2vw;
 	width: fit-content;
 	text-align: center;
-	background-color: rgba(F, F, F, 0.5);
+	background-color: rgba(255, 255, 255, 0.5);
 
 	
 }
