@@ -16,6 +16,9 @@
             <section class="card form-card">
                 <h1 class="page-title">Регистрация</h1>
                 <p class="page-note">Создайте аккаунт, чтобы сохранить прогресс в базовых и расширенных курсах.</p>
+                {% if reg_error %}
+                    <p class="status-text status-text-error" role="status" aria-live="polite">{{ reg_error }}</p>
+                {% endif %}
 
                 <form action="/api/account/register" method="post" id="reg_form" class="form-grid">
                     <label class="field">
@@ -25,7 +28,9 @@
 
                     <label class="field">
                         <span class="field-label">Номер телефона</span>
-                        <input type="tel" id="tel" name="tel" class="field-input" placeholder="Введите номер телефона" autocomplete="tel" required>
+                        <input type="tel" id="tel" name="tel" class="field-input" placeholder="+7 (900) 123-45-67" autocomplete="tel" inputmode="tel" maxlength="18" aria-describedby="tel-hint tel-error" required>
+                        <span id="tel-hint" class="field-hint">Используйте номер в формате +7 (900) 123-45-67.</span>
+                        <span id="tel-error" class="field-error" aria-live="polite"></span>
                     </label>
 
                     <label class="field">

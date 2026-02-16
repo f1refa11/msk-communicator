@@ -7,14 +7,20 @@ import base64
 import hashlib
 import bcrypt
 import json
-import sqlite3
 import mimetypes
 import jwt
 from urllib.parse import unquote, urlencode
 from datetime import datetime, timezone
+from db_backend import connect_database, initialize_schema, load_database_settings, redact_dsn
+from progress_metrics import (
+    build_personal_account_progress as calculate_personal_account_progress,
+    format_module_count,
+)
 
-db = sqlite3.connect("database.db", autocommit=True)
+DB_SETTINGS = load_database_settings()
+db = connect_database(DB_SETTINGS)
 cur = db.cursor()
+print(f"Using database backend: {DB_SETTINGS.backend} ({redact_dsn(DB_SETTINGS.dsn)})")
 
 # todo: rate limiting на post запросы
 
@@ -26,6 +32,7 @@ page_register = env.get_template("register.tmpl")
 page_tutorial = env.get_template("tutorial.tmpl")
 page_tutorial_course = env.get_template("tutorial_course.tmpl")
 page_account = env.get_template("account.tmpl")
+page_personal_account = env.get_template("personal_account.tmpl")
 page_forgot = env.get_template("forgot.tmpl")
 page_tutorial_viewer = env.get_template("tutorial_viewer.tmpl")
 page_support = env.get_template("support.tmpl")
@@ -470,18 +477,19 @@ def build_viewer_query(course_slug="", difficulty=""):
     return "?" + urlencode(params)
 
 
-def format_module_count(count: int):
-    """Format module count in Russian (модуль/модуля/модулей)."""
-    value = int(count or 0)
-    n10 = value % 10
-    n100 = value % 100
-    if n10 == 1 and n100 != 11:
-        suffix = "модуль"
-    elif 2 <= n10 <= 4 and not (12 <= n100 <= 14):
-        suffix = "модуля"
-    else:
-        suffix = "модулей"
-    return f"{value} {suffix}"
+def build_personal_account_progress(user_id: int):
+    """Build summary and per-course progress for personal account page."""
+    completed_slugs = get_user_completed_tutorial_slugs(user_id)
+    courses = build_course_catalog()
+    return calculate_personal_account_progress(courses, completed_slugs)
+
+
+def is_valid_phone_number(raw_phone: str):
+    """Validate phone number as 10 digits or RU 11 digits (7/8 prefix)."""
+    digits = "".join(char for char in str(raw_phone or "") if char.isdigit())
+    if len(digits) == 10:
+        return True
+    return len(digits) == 11 and digits[0] in ("7", "8")
 
 
 def mark_tutorial_completed(user_id: int, tutorial_slug: str):
@@ -535,41 +543,12 @@ def get_current_user(session):
 
 
 def init_db():
-    """
-    Checks if the 'users' table exists, and creates it if it doesn't.
-    """
-    # Query the sqlite_master table to check for existence
-    cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")
-    if cur.fetchone() is None:
-        print("Table 'users' not found. Creating it...")
-        # using 'name' as Primary Key ensures no duplicate usernames
-        cur.execute("""
-            CREATE TABLE users (
-                id INTEGER NOT NULL UNIQUE,
-                tel TEXT NOT NULL UNIQUE,
-                name TEXT NOT NULL,
-                pass TEXT NOT NULL,
-                admin INTEGER DEFAULT 0,
-                PRIMARY KEY(id AUTOINCREMENT)
-            )
-        """)
-    else:
-        print("Table 'users' found.")
+    """Create required application tables if missing."""
+    initialize_schema(cur, DB_SETTINGS.backend)
 
 
 # Run the check on startup
 init_db()
-
-cur.execute(
-    """
-    CREATE TABLE IF NOT EXISTS tutorial_progress (
-        user_id INTEGER NOT NULL,
-        tutorial_slug TEXT NOT NULL,
-        completed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY(user_id, tutorial_slug)
-    )
-    """
-)
 
 def _load_bug_reports():
     if not os.path.exists(BUGREPORTS_FILE):
@@ -686,9 +665,17 @@ async def index(request, session):
 @with_session
 async def index(request, session):
     user = get_current_user(session)
+    error_code = request.args.get("error") or ""
+    error_messages = {
+        "blank": "Заполните все поля формы.",
+        "exists": "Аккаунт с таким номером уже существует.",
+        "tel": "Введите корректный номер телефона в формате +7 (900) 123-45-67.",
+    }
     return (
         page_register.render(
-            test="test", yes_login=bool(user), user_name=user[2] if user else ""
+            yes_login=bool(user),
+            user_name=user[2] if user else "",
+            reg_error=error_messages.get(error_code, ""),
         ),
         200,
         {"Content-Type": "text/html"},
@@ -1082,6 +1069,30 @@ async def support_page(request, session):
     )
 
 
+# personal account
+@app.route("/account/cabinet")
+@app.route("/account/cabinet/")
+@with_session
+async def personal_account_page(request, session):
+    user = get_current_user(session)
+    if not user:
+        return redirect("/login")
+
+    summary_stats, course_stats = build_personal_account_progress(user[0])
+
+    return (
+        page_personal_account.render(
+            yes_login=True,
+            user_name=user[2],
+            summary_stats=summary_stats,
+            course_stats=course_stats,
+            has_modules=summary_stats["total_count"] > 0,
+        ),
+        200,
+        {"Content-Type": "text/html"},
+    )
+
+
 # account settings
 @app.route("/account/")
 @with_session
@@ -1125,12 +1136,15 @@ async def handle_reg(request, session):
     # todo: проверить, существует ли уже пользователь
 
     # fetch form info
-    name = request.form.get("name")
-    tel = request.form.get("tel")
+    name = (request.form.get("name") or "").strip()
+    tel = (request.form.get("tel") or "").strip()
     pwd = request.form.get("pwd")
 
     if not name or not tel or not pwd:
         return redirect("/register?error=blank")
+
+    if not is_valid_phone_number(tel):
+        return redirect("/register?error=tel")
 
     cur.execute("SELECT tel FROM users WHERE tel = ?", (tel,))
     existing_user = cur.fetchone()
@@ -1384,4 +1398,5 @@ async def logout(request, session):
     return response
 
 
-app.run()
+if __name__ == "__main__":
+    app.run()

@@ -257,3 +257,116 @@
         }
     });
 })();
+
+(() => {
+    const form = document.getElementById('reg_form');
+    const phoneInput = document.getElementById('tel');
+    if (!form || !phoneInput) {
+        return;
+    }
+
+    const submitButton = form.querySelector('button[type="submit"]');
+    const errorNode = document.getElementById('tel-error');
+
+    function extractDigits(value) {
+        return String(value || '').replace(/\D/g, '');
+    }
+
+    function normalizeDigits(value) {
+        let digits = extractDigits(value);
+        if (!digits) {
+            return '';
+        }
+
+        if (digits.length > 11) {
+            digits = digits.slice(0, 11);
+        }
+
+        if (digits.length === 11 && digits[0] === '8') {
+            digits = `7${digits.slice(1)}`;
+        } else if (digits.length === 10) {
+            digits = `7${digits}`;
+        } else if (digits[0] === '9') {
+            digits = `7${digits}`;
+            if (digits.length > 11) {
+                digits = digits.slice(0, 11);
+            }
+        }
+
+        return digits;
+    }
+
+    function formatPhone(value) {
+        const digits = normalizeDigits(value);
+        if (!digits) {
+            return '';
+        }
+
+        const country = digits.slice(0, 1);
+        const part1 = digits.slice(1, 4);
+        const part2 = digits.slice(4, 7);
+        const part3 = digits.slice(7, 9);
+        const part4 = digits.slice(9, 11);
+
+        let formatted = `+${country}`;
+        if (part1) {
+            formatted += ` (${part1}`;
+        }
+        if (part1.length === 3) {
+            formatted += ')';
+        }
+        if (part2) {
+            formatted += ` ${part2}`;
+        }
+        if (part3) {
+            formatted += `-${part3}`;
+        }
+        if (part4) {
+            formatted += `-${part4}`;
+        }
+        return formatted;
+    }
+
+    function isValidPhone(value) {
+        const digits = extractDigits(value);
+        return digits.length === 11 && digits[0] === '7';
+    }
+
+    function updatePhoneState(showError) {
+        phoneInput.value = formatPhone(phoneInput.value);
+        const hasInput = extractDigits(phoneInput.value).length > 0;
+        const isValid = isValidPhone(phoneInput.value);
+
+        if (submitButton) {
+            submitButton.disabled = !isValid;
+            submitButton.classList.toggle('disabled', !isValid);
+        }
+
+        if (errorNode) {
+            if (showError && hasInput && !isValid) {
+                errorNode.textContent = 'Введите номер в формате +7 (900) 123-45-67.';
+            } else {
+                errorNode.textContent = '';
+            }
+        }
+
+        return isValid;
+    }
+
+    phoneInput.addEventListener('input', () => {
+        updatePhoneState(false);
+    });
+
+    phoneInput.addEventListener('blur', () => {
+        updatePhoneState(true);
+    });
+
+    form.addEventListener('submit', (event) => {
+        if (!updatePhoneState(true)) {
+            event.preventDefault();
+            phoneInput.focus();
+        }
+    });
+
+    updatePhoneState(false);
+})();

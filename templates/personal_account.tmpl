@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Личный кабинет</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="app-page">
+    {% include "topbar.tmpl" %}
+
+    <main class="page-shell personal-account-page">
+        <header class="page-header">
+            <div>
+                <h1 class="page-title">Личный кабинет</h1>
+                <p class="page-note">Здесь показан ваш прогресс по всем курсам и уровням сложности.</p>
+            </div>
+            <span class="personal-summary-chip">{{ summary_stats.completion_percent }}% завершено</span>
+        </header>
+
+        <section class="card personal-overview">
+            <h2 class="personal-section-title">Общая статистика</h2>
+            <div class="personal-overview-grid">
+                <article class="personal-stat">
+                    <span class="personal-stat-label">Пройдено</span>
+                    <strong class="personal-stat-value">{{ summary_stats.completed_label }}</strong>
+                </article>
+                <article class="personal-stat">
+                    <span class="personal-stat-label">Осталось</span>
+                    <strong class="personal-stat-value">{{ summary_stats.remaining_label }}</strong>
+                </article>
+                <article class="personal-stat">
+                    <span class="personal-stat-label">Всего в курсах</span>
+                    <strong class="personal-stat-value">{{ summary_stats.total_label }}</strong>
+                </article>
+            </div>
+        </section>
+
+        {% if has_modules %}
+            <section class="personal-course-grid">
+                {% for course in course_stats %}
+                    <article class="card personal-course-card">
+                        <div class="personal-course-head">
+                            <h2>{{ course.title }}</h2>
+                            <span class="pill">{{ course.completion_percent }}%</span>
+                        </div>
+
+                        <div class="personal-progressbar" role="img" aria-label="Прогресс по курсу {{ course.title }}: {{ course.completion_percent }} процентов">
+                            <span style="width: {{ course.completion_percent }}%;"></span>
+                        </div>
+
+                        <p class="personal-course-meta">Завершено {{ course.completed_label }} из {{ course.total_label }}</p>
+
+                        <div class="personal-course-breakdown">
+                            <div>
+                                <span>Базовый уровень</span>
+                                <strong>{{ course.basic_completed_label }} из {{ course.basic_total_label }}</strong>
+                            </div>
+                            <div>
+                                <span>Дополнительные задания</span>
+                                <strong>{{ course.advanced_completed_label }} из {{ course.advanced_total_label }}</strong>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+            </section>
+        {% else %}
+            <section class="card empty-card">
+                <p class="empty-state">Курсы пока не добавлены, поэтому статистика появится позже.</p>
+            </section>
+        {% endif %}
+
+        <div class="personal-footer">
+            <a class="btn btn-primary btn-lg" href="/account/">Перейти в настройки аккаунта</a>
+        </div>
+    </main>
+</body>
+</html>
