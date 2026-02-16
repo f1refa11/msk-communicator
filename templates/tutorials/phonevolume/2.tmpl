@@ -129,6 +129,26 @@
             opacity: 0.96;
         }
 
+        .pv-status-right {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pv-signal-icon {
+            width: 14px;
+            height: 11px;
+            display: block;
+        }
+
+        .pv-signal-icon rect {
+            fill: rgba(255, 255, 255, 0.38);
+        }
+
+        .pv-signal-icon rect.is-active {
+            fill: #ffffff;
+        }
+
         .pv-grid {
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -421,7 +441,16 @@
                     <div class="pv-screen">
                         <div class="pv-statusbar">
                             <span>12:31</span>
-                            <span>4G ▂▄▆█ 81%</span>
+                            <span class="pv-status-right">
+                                4G
+                                <svg class="pv-signal-icon" viewBox="0 0 14 11" aria-hidden="true" focusable="false">
+                                    <rect x="0" y="8" width="2" height="3" rx="0.6"></rect>
+                                    <rect x="4" y="6" width="2" height="5" rx="0.6"></rect>
+                                    <rect x="8" y="3" width="2" height="8" rx="0.6" class="is-active"></rect>
+                                    <rect x="12" y="0" width="2" height="11" rx="0.6" class="is-active"></rect>
+                                </svg>
+                                81%
+                            </span>
                         </div>
 
                         <div class="pv-grid">

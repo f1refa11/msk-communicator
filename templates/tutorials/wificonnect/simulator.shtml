@@ -329,6 +329,16 @@
             line-height: 1;
             padding: 6px;
         }
+        .pass-toggle-icon {
+            width: 20px;
+            height: 20px;
+            display: block;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.9;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
         .error-msg { color: red; font-size: 12px; min-height: 15px; margin-bottom: 15px; }
         .modal-buttons {
             display: flex;
@@ -660,7 +670,7 @@
                     id="toggle-password-btn"
                     onclick="togglePasswordVisibility()"
                     aria-label="Показать пароль"
-                >👁</button>
+                ><svg class="pass-toggle-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
             </div>
             <div id="pass-error" class="error-msg"></div>
             
@@ -986,11 +996,18 @@
         }, 900);
     }
 
+    function getPasswordToggleIcon(isVisible) {
+        if (isVisible) {
+            return '<svg class="pass-toggle-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"></path><circle cx="12" cy="12" r="3"></circle><path d="M3 3l18 18"></path></svg>';
+        }
+        return '<svg class="pass-toggle-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+    }
+
     function setPasswordVisibility(isVisible) {
         const input = document.getElementById('wifi-password');
         const toggleButton = document.getElementById('toggle-password-btn');
         input.type = isVisible ? 'text' : 'password';
-        toggleButton.innerText = isVisible ? '🙈' : '👁';
+        toggleButton.innerHTML = getPasswordToggleIcon(isVisible);
         toggleButton.setAttribute('aria-label', isVisible ? 'Скрыть пароль' : 'Показать пароль');
     }
 
@@ -1077,3 +1094,4 @@
 </script>
 
 </div>
+
