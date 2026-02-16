@@ -259,17 +259,14 @@
 })();
 
 (() => {
-    const form = document.getElementById('reg_form');
-    const phoneInput = document.getElementById('tel');
-    if (!form || !phoneInput) {
-        return;
+    const NON_DIGIT_RE = /\D/g;
+
+    function isDigit(char) {
+        return /\d/.test(char || '');
     }
 
-    const submitButton = form.querySelector('button[type="submit"]');
-    const errorNode = document.getElementById('tel-error');
-
     function extractDigits(value) {
-        return String(value || '').replace(/\D/g, '');
+        return String(value || '').replace(NON_DIGIT_RE, '');
     }
 
     function normalizeDigits(value) {
@@ -282,10 +279,8 @@
             digits = digits.slice(0, 11);
         }
 
-        if (digits.length === 11 && digits[0] === '8') {
+        if (digits[0] === '8') {
             digits = `7${digits.slice(1)}`;
-        } else if (digits.length === 10) {
-            digits = `7${digits}`;
         } else if (digits[0] === '9') {
             digits = `7${digits}`;
             if (digits.length > 11) {
@@ -332,41 +327,161 @@
         return digits.length === 11 && digits[0] === '7';
     }
 
-    function updatePhoneState(showError) {
-        phoneInput.value = formatPhone(phoneInput.value);
-        const hasInput = extractDigits(phoneInput.value).length > 0;
-        const isValid = isValidPhone(phoneInput.value);
+    function countDigitsBefore(value, caretPosition) {
+        const safeCaret = Math.max(0, Number(caretPosition) || 0);
+        return extractDigits(String(value || '').slice(0, safeCaret)).length;
+    }
 
-        if (submitButton) {
-            submitButton.disabled = !isValid;
-            submitButton.classList.toggle('disabled', !isValid);
+    function findCaretByDigitIndex(formattedValue, digitIndex) {
+        if (digitIndex <= 0) {
+            return 0;
         }
 
-        if (errorNode) {
-            if (showError && hasInput && !isValid) {
-                errorNode.textContent = 'Введите номер в формате +7 (900) 123-45-67.';
-            } else {
-                errorNode.textContent = '';
+        let seenDigits = 0;
+        for (let i = 0; i < formattedValue.length; i += 1) {
+            if (!isDigit(formattedValue[i])) {
+                continue;
+            }
+            seenDigits += 1;
+            if (seenDigits >= digitIndex) {
+                return i + 1;
             }
         }
 
-        return isValid;
+        return formattedValue.length;
     }
 
-    phoneInput.addEventListener('input', () => {
-        updatePhoneState(false);
-    });
-
-    phoneInput.addEventListener('blur', () => {
-        updatePhoneState(true);
-    });
-
-    form.addEventListener('submit', (event) => {
-        if (!updatePhoneState(true)) {
-            event.preventDefault();
-            phoneInput.focus();
+    function findPrevDigitIndex(value, fromIndexExclusive) {
+        for (let i = fromIndexExclusive - 1; i >= 0; i -= 1) {
+            if (isDigit(value[i])) {
+                return i;
+            }
         }
-    });
+        return -1;
+    }
 
-    updatePhoneState(false);
+    function findNextDigitIndex(value, fromIndexInclusive) {
+        for (let i = fromIndexInclusive; i < value.length; i += 1) {
+            if (isDigit(value[i])) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    function initPhoneValidation(formId, inputId, errorId) {
+        const form = document.getElementById(formId);
+        const phoneInput = document.getElementById(inputId);
+        if (!form || !phoneInput) {
+            return;
+        }
+
+        const submitButton = form.querySelector('button[type="submit"]');
+        const errorNode = document.getElementById(errorId);
+
+        function applyFormattedValue(rawValue, digitCaretIndex, showError) {
+            const formattedValue = formatPhone(rawValue);
+            phoneInput.value = formattedValue;
+
+            if (typeof digitCaretIndex === 'number' && document.activeElement === phoneInput) {
+                const maxDigits = extractDigits(formattedValue).length;
+                const safeDigitIndex = Math.max(0, Math.min(digitCaretIndex, maxDigits));
+                const caretPosition = findCaretByDigitIndex(formattedValue, safeDigitIndex);
+                phoneInput.setSelectionRange(caretPosition, caretPosition);
+            }
+
+            const hasInput = extractDigits(phoneInput.value).length > 0;
+            const isValid = isValidPhone(phoneInput.value);
+
+            if (submitButton) {
+                submitButton.disabled = !isValid;
+                submitButton.classList.toggle('disabled', !isValid);
+            }
+
+            if (errorNode) {
+                if (showError && hasInput && !isValid) {
+                    errorNode.textContent = 'Введите номер в формате +7 (900) 123-45-67.';
+                } else {
+                    errorNode.textContent = '';
+                }
+            }
+
+            return isValid;
+        }
+
+        function updatePhoneState(showError) {
+            const selectionStart = phoneInput.selectionStart ?? phoneInput.value.length;
+            const digitCaretIndex = countDigitsBefore(phoneInput.value, selectionStart);
+            return applyFormattedValue(phoneInput.value, digitCaretIndex, showError);
+        }
+
+        phoneInput.addEventListener('keydown', (event) => {
+            if (event.key !== 'Backspace' && event.key !== 'Delete') {
+                return;
+            }
+
+            const selectionStart = phoneInput.selectionStart ?? 0;
+            const selectionEnd = phoneInput.selectionEnd ?? selectionStart;
+            if (selectionStart !== selectionEnd) {
+                return;
+            }
+
+            const currentValue = phoneInput.value;
+            if (!currentValue) {
+                return;
+            }
+
+            if (event.key === 'Backspace' && selectionStart > 0) {
+                const charBefore = currentValue.charAt(selectionStart - 1);
+                if (!isDigit(charBefore)) {
+                    const removeDigitIndex = findPrevDigitIndex(currentValue, selectionStart - 1);
+                    if (removeDigitIndex >= 0) {
+                        event.preventDefault();
+                        const nextRawValue =
+                            currentValue.slice(0, removeDigitIndex) +
+                            currentValue.slice(removeDigitIndex + 1);
+                        const nextDigitIndex = countDigitsBefore(nextRawValue, removeDigitIndex);
+                        applyFormattedValue(nextRawValue, nextDigitIndex, false);
+                    }
+                }
+                return;
+            }
+
+            if (event.key === 'Delete' && selectionStart < currentValue.length) {
+                const charAtCaret = currentValue.charAt(selectionStart);
+                if (!isDigit(charAtCaret)) {
+                    const removeDigitIndex = findNextDigitIndex(currentValue, selectionStart + 1);
+                    if (removeDigitIndex >= 0) {
+                        event.preventDefault();
+                        const nextRawValue =
+                            currentValue.slice(0, removeDigitIndex) +
+                            currentValue.slice(removeDigitIndex + 1);
+                        const nextDigitIndex = countDigitsBefore(currentValue, selectionStart);
+                        applyFormattedValue(nextRawValue, nextDigitIndex, false);
+                    }
+                }
+            }
+        });
+
+        phoneInput.addEventListener('input', () => {
+            updatePhoneState(false);
+        });
+
+        phoneInput.addEventListener('blur', () => {
+            updatePhoneState(true);
+        });
+
+        form.addEventListener('submit', (event) => {
+            if (!updatePhoneState(true)) {
+                event.preventDefault();
+                phoneInput.focus();
+            }
+        });
+
+        applyFormattedValue(phoneInput.value, countDigitsBefore(phoneInput.value, phoneInput.value.length), false);
+    }
+
+    initPhoneValidation('reg_form', 'tel', 'tel-error');
+    initPhoneValidation('login_form', 'login-tel', 'login-tel-error');
+    initPhoneValidation('account-tel-form', 'account-tel', 'account-tel-error');
 })();

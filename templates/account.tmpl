@@ -30,10 +30,15 @@
 
             <section class="card form-card">
                 <h2>Номер телефона</h2>
-                <form action="/api/account/update_tel" method="post" class="form-grid">
+                {% if tel_status_message %}
+                    <p class="status-text {{ 'status-text-error' if tel_status_type == 'error' else '' }}" role="status" aria-live="polite">{{ tel_status_message }}</p>
+                {% endif %}
+                <form action="/api/account/update_tel" method="post" id="account-tel-form" class="form-grid">
                     <label class="field">
                         <span class="field-label">Новый номер</span>
-                        <input type="tel" id="tel" name="tel" class="field-input" value="{{ user[1] }}" autocomplete="tel" required>
+                        <input type="tel" id="account-tel" name="tel" class="field-input" value="{{ user[1] }}" autocomplete="tel" inputmode="tel" maxlength="18" aria-describedby="account-tel-hint account-tel-error" required>
+                        <span id="account-tel-hint" class="field-hint">Используйте номер в формате +7 (900) 123-45-67.</span>
+                        <span id="account-tel-error" class="field-error" aria-live="polite"></span>
                     </label>
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary btn-lg">Сохранить номер</button>

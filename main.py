@@ -484,12 +484,39 @@ def build_personal_account_progress(user_id: int):
     return calculate_personal_account_progress(courses, completed_slugs)
 
 
-def is_valid_phone_number(raw_phone: str):
-    """Validate phone number as 10 digits or RU 11 digits (7/8 prefix)."""
+def normalize_phone_digits(raw_phone: str):
+    """Return normalized Russian phone digits (11 digits with 7-prefix)."""
     digits = "".join(char for char in str(raw_phone or "") if char.isdigit())
+    if len(digits) == 11 and digits[0] in ("7", "8"):
+        return "7" + digits[1:]
     if len(digits) == 10:
-        return True
-    return len(digits) == 11 and digits[0] in ("7", "8")
+        return "7" + digits
+    return ""
+
+
+def is_valid_phone_number(raw_phone: str):
+    """Validate phone number as a Russian mobile-compatible format."""
+    return bool(normalize_phone_digits(raw_phone))
+
+
+def format_phone_number(raw_phone: str):
+    """Format phone to canonical +7 (XXX) XXX-XX-XX representation."""
+    normalized = normalize_phone_digits(raw_phone)
+    if not normalized:
+        return ""
+    return (
+        f"+7 ({normalized[1:4]}) "
+        f"{normalized[4:7]}-{normalized[7:9]}-{normalized[9:11]}"
+    )
+
+
+def phone_numbers_equal(left_phone: str, right_phone: str):
+    """Compare phone numbers by normalized digits (or raw fallback)."""
+    left_normalized = normalize_phone_digits(left_phone)
+    right_normalized = normalize_phone_digits(right_phone)
+    if left_normalized and right_normalized:
+        return left_normalized == right_normalized
+    return str(left_phone or "").strip() == str(right_phone or "").strip()
 
 
 def mark_tutorial_completed(user_id: int, tutorial_slug: str):
@@ -649,11 +676,18 @@ async def index(request, session):
 async def index(request, session):
     user = get_current_user(session)
     status = ""
+    login_error = ""
     if request.args.get("reset") == "success":
         status = "пароль обновлен, войдите снова"
+    error_code = request.args.get("error") or ""
+    if error_code == "tel":
+        login_error = "Введите корректный номер телефона в формате +7 (900) 123-45-67."
     return (
         page_login.render(
-            test=status, yes_login=bool(user), user_name=user[2] if user else ""
+            test=status,
+            login_error=login_error,
+            yes_login=bool(user),
+            user_name=user[2] if user else "",
         ),
         200,
         {"Content-Type": "text/html"},
@@ -1100,11 +1134,25 @@ async def account_settings(request, session):
     user = get_current_user(session)
     if not user:
         return redirect("/login")
+
+    tel_status = request.args.get("tel") or ""
+    tel_status_messages = {
+        "blank": "Введите номер телефона.",
+        "exists": "Такой номер уже используется в другом аккаунте.",
+        "invalid": "Введите корректный номер телефона в формате +7 (900) 123-45-67.",
+        "success": "Номер телефона обновлен.",
+    }
+
+    tel_status_message = tel_status_messages.get(tel_status, "")
+    tel_status_type = "error" if tel_status in ("blank", "exists", "invalid") else "success"
+
     return (
         page_account.render(
             yes_login=True,
             user=user,
             user_name=user[2],
+            tel_status_message=tel_status_message,
+            tel_status_type=tel_status_type,
         ),
         200,
         {"Content-Type": "text/html"},
@@ -1146,11 +1194,12 @@ async def handle_reg(request, session):
     if not is_valid_phone_number(tel):
         return redirect("/register?error=tel")
 
-    cur.execute("SELECT tel FROM users WHERE tel = ?", (tel,))
-    existing_user = cur.fetchone()
+    normalized_tel = format_phone_number(tel)
 
-    if existing_user:
-        return redirect("/register?error=exists")
+    cur.execute("SELECT id, tel FROM users")
+    for existing_user in cur.fetchall():
+        if phone_numbers_equal(existing_user[1], normalized_tel):
+            return redirect("/register?error=exists")
 
     # pwd hashs
     hash_object = hashlib.sha256(pwd.encode("utf-8"))
@@ -1159,7 +1208,8 @@ async def handle_reg(request, session):
     # send db insert
     try:
         cur.execute(
-            "INSERT INTO users(tel, name, pass) VALUES (?, ?, ?)", (tel, name, dpass)
+            "INSERT INTO users(tel, name, pass) VALUES (?, ?, ?)",
+            (normalized_tel, name, dpass),
         )
         print(f"Registered {name}")
         return redirect(f"/?reg=success")
@@ -1186,19 +1236,32 @@ async def handle_reg(request, session):
 @with_session
 async def handle_login(request, session):
     # 1. Fetch form info
-    tel = request.form.get("tel")
-    pwd = request.form.get("pwd")
+    tel = (request.form.get("tel") or "").strip()
+    pwd = request.form.get("pwd") or ""
+
+    if not tel or not pwd:
+        return redirect("/?login=fail")
+
+    if not is_valid_phone_number(tel):
+        return redirect("/login?error=tel")
+
+    normalized_tel = format_phone_number(tel)
 
     # 2. Hash the input password (must match the method used in register)
     hash_object = hashlib.sha256(pwd.encode("utf-8"))
     input_hash = hash_object.hexdigest()
 
-    # 3. Check DB for matching Name AND Password Hash
-    # Using '?' prevents SQL Injection
-    cur.execute("SELECT * FROM users WHERE tel = ? AND pass = ?", (tel, input_hash))
-    user = cur.fetchone()
+    # 3. Check DB for matching phone and password hash
+    cur.execute("SELECT * FROM users WHERE pass = ?", (input_hash,))
+    user = None
+    for row in cur.fetchall():
+        if phone_numbers_equal(row[1], normalized_tel):
+            user = row
+            break
 
     if user:
+        if user[1] != normalized_tel and is_valid_phone_number(user[1]):
+            cur.execute("UPDATE users SET tel = ? WHERE id = ?", (normalized_tel, user[0]))
         response = redirect("/?login=success")
         session["user_id"] = user[0]
         session.save()
@@ -1226,13 +1289,21 @@ async def handle_update_tel(request, session):
     user = get_current_user(session)
     if not user:
         return redirect("/login")
-    new_tel = request.form.get("tel")
+    new_tel = (request.form.get("tel") or "").strip()
     if not new_tel:
         return redirect("/account/?tel=blank")
-    cur.execute("SELECT id FROM users WHERE tel = ? AND id != ?", (new_tel, user[0]))
-    if cur.fetchone():
-        return redirect("/account/?tel=exists")
-    cur.execute("UPDATE users SET tel = ? WHERE id = ?", (new_tel, user[0]))
+
+    if not is_valid_phone_number(new_tel):
+        return redirect("/account/?tel=invalid")
+
+    normalized_tel = format_phone_number(new_tel)
+
+    cur.execute("SELECT id, tel FROM users WHERE id != ?", (user[0],))
+    for existing_user in cur.fetchall():
+        if phone_numbers_equal(existing_user[1], normalized_tel):
+            return redirect("/account/?tel=exists")
+
+    cur.execute("UPDATE users SET tel = ? WHERE id = ?", (normalized_tel, user[0]))
     return redirect("/account/?tel=success")
 
 

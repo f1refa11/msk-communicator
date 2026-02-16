@@ -117,7 +117,7 @@
 .step-info-card {
     background: white;
     border: 2px solid #000;
-    border-radius: 2vw;
+    border-radius: 1.5vw;
     padding: 1vw;
     min-height: 120px;
 }

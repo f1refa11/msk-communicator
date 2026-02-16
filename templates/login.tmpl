@@ -14,10 +14,15 @@
         <section class="card form-card">
             <h1 class="page-title">Вход в аккаунт</h1>
             <p class="page-note">Введите номер телефона и пароль. Шрифт и поля увеличены, чтобы их было легко прочитать.</p>
+            {% if login_error %}
+                <p class="status-text status-text-error" role="status" aria-live="polite">{{ login_error }}</p>
+            {% endif %}
             <form action="/api/account/login" method="post" id="login_form" class="form-grid">
                 <label class="field">
                     <span class="field-label">Номер телефона</span>
-                    <input type="tel" id="tel" name="tel" class="field-input" placeholder="+7 999 985-25-23" autocomplete="tel" required>
+                    <input type="tel" id="login-tel" name="tel" class="field-input" placeholder="+7 (900) 123-45-67" autocomplete="tel" inputmode="tel" maxlength="18" aria-describedby="login-tel-hint login-tel-error" required>
+                    <span id="login-tel-hint" class="field-hint">Используйте номер в формате +7 (900) 123-45-67.</span>
+                    <span id="login-tel-error" class="field-error" aria-live="polite"></span>
                 </label>
                 <label class="field">
                     <span class="field-label">Пароль</span>

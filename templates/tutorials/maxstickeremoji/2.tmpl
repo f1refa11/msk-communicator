@@ -164,7 +164,7 @@
             max-width: 128px;
         }
 
-        .message.sticker svg {
+        .message.sticker img {
             width: 100%;
             height: auto;
             display: block;
@@ -301,12 +301,15 @@
             padding: 8px;
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-auto-rows: 56px;
+            align-content: start;
             gap: 8px;
         }
 
         .sticker-item {
-            aspect-ratio: 1;
+            height: 56px;
             background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.18);
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -315,6 +318,11 @@
             transition: transform 0.1s, background-color 0.15s;
             color: #fff;
             overflow: hidden;
+            padding: 0;
+            font: inherit;
+            line-height: 1;
+            appearance: none;
+            -webkit-appearance: none;
         }
 
         .sticker-item:hover {
@@ -325,10 +333,14 @@
             transform: scale(0.95);
         }
 
-        .sticker-item svg {
-            width: 84%;
-            height: 84%;
-            fill: none;
+        .sticker-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            padding: 4px;
+            user-select: none;
+            -webkit-user-drag: none;
         }
 
         .emoji-tabs {
@@ -695,6 +707,10 @@
 
     <script>
         const FINAL_TEXT = '👍 Всё отлично! А у тебя?';
+        const STICKER_IMAGE_URLS = Array.from(
+            { length: 12 },
+            (_, idx) => `/assets/tutorials/maxstickeremoji/max${idx + 1}.png`
+        );
 
         const stepDefinitions = {
             'open-sticker-menu': {
@@ -725,7 +741,7 @@
             'select-sticker': {
                 step: 'Шаг 4 из 9',
                 title: 'Выберите стикер',
-                desc: 'Нажмите на стикер с розовым персонажем на моноколесе.',
+                desc: 'Нажмите на первый стикер в результатах поиска.',
                 note: '',
                 action: 'select-sticker',
                 hint: { id: 'sticker-target', radius: 10, padding: 2 }
@@ -954,32 +970,21 @@
         }
 
         function renderStickerGrid(filtered) {
-            const genericStickers = ['🙂', '😺', '🎉', '🔥', '🧠', '🚀', '☕', '💡', '✨', '🎈', '🍀', '🌟'];
             els.stickerGrid.innerHTML = '';
 
-            for (let i = 0; i < 12; i += 1) {
+            for (let i = 0; i < STICKER_IMAGE_URLS.length; i += 1) {
                 const item = document.createElement('button');
                 item.type = 'button';
                 item.className = 'sticker-item';
+                item.setAttribute('aria-label', `Стикер max${i + 1}`);
 
                 if (filtered && i === 0) {
                     item.id = 'sticker-target';
-                    item.setAttribute('aria-label', 'Стикер с розовым персонажем');
+                    item.setAttribute('aria-label', 'Стикер max1');
                     item.onclick = () => handleAction('select-sticker');
-                    item.innerHTML = `
-                        <svg viewBox="0 0 120 120" aria-hidden="true">
-                            <path d="M60 18C84 18 98 34 98 58C98 84 82 102 60 102C36 102 22 84 22 58C22 34 36 18 60 18Z" fill="#ff7ab8"/>
-                            <circle cx="47" cy="52" r="7" fill="#fff"/>
-                            <circle cx="73" cy="52" r="7" fill="#fff"/>
-                            <circle cx="47" cy="52" r="3" fill="#1d2230"/>
-                            <circle cx="73" cy="52" r="3" fill="#1d2230"/>
-                            <path d="M46 72Q60 84 74 72" stroke="#fff" stroke-width="6" stroke-linecap="round" fill="none"/>
-                            <circle cx="60" cy="102" r="14" fill="#80deea" stroke="#29323e" stroke-width="5"/>
-                        </svg>
-                    `;
-                } else {
-                    item.innerHTML = `<span style="font-size:30px;line-height:1;">${genericStickers[i]}</span>`;
                 }
+
+                item.innerHTML = `<img src="${STICKER_IMAGE_URLS[i]}" alt="" draggable="false">`;
 
                 els.stickerGrid.appendChild(item);
             }
@@ -1012,15 +1017,7 @@
             if (state.stickerSent) {
                 html += `
                     <div class="message sticker out">
-                        <svg viewBox="0 0 120 120" aria-hidden="true">
-                            <path d="M60 18C84 18 98 34 98 58C98 84 82 102 60 102C36 102 22 84 22 58C22 34 36 18 60 18Z" fill="#ff7ab8"/>
-                            <circle cx="47" cy="52" r="7" fill="#fff"/>
-                            <circle cx="73" cy="52" r="7" fill="#fff"/>
-                            <circle cx="47" cy="52" r="3" fill="#1d2230"/>
-                            <circle cx="73" cy="52" r="3" fill="#1d2230"/>
-                            <path d="M46 72Q60 84 74 72" stroke="#fff" stroke-width="6" stroke-linecap="round" fill="none"/>
-                            <circle cx="60" cy="102" r="14" fill="#80deea" stroke="#29323e" stroke-width="5"/>
-                        </svg>
+                        <img src="/assets/tutorials/maxstickeremoji/max1.png" alt="Отправленный стикер max1" style="width:100%;height:auto;display:block;">
                         <span class="msg-time" style="color:rgba(255,255,255,0.72);">01:22</span>
                     </div>
                 `;
