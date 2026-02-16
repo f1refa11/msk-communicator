@@ -150,6 +150,15 @@
         .success-text{font-size:clamp(1.05rem,2vw,1.7rem);text-align:center;color:#666;margin-bottom:3vh}
         .task-hint{background:#ffd700;border:0.4vw solid #000;border-radius:1vw;padding:1vw;margin:2.5vh 0;font-size:clamp(1.1rem,2.2vw,1.9rem);color:#000;font-weight:bold;box-shadow:0 0.5vh 1.5vh rgba(0,0,0,0.3)}
         .task-hint strong{display:block;margin-bottom:1.5vh;font-size:clamp(1.3rem,2.5vw,2.2rem)}
+
+        .click-hint-object{position:fixed;z-index:9999;display:none;pointer-events:none;border:3px solid #ff9f1a;border-radius:14px;box-shadow:0 0 0 2px rgba(255,159,26,0.35),0 0 18px rgba(255,159,26,0.55);animation:click-hint-pulse 1.2s ease-in-out infinite}
+        .click-hint-object.is-visible{display:block}
+
+        @keyframes click-hint-pulse {
+            0% { transform: scale(1); opacity: 1; }
+            60% { transform: scale(1.03); opacity: 0.72; }
+            100% { transform: scale(1); opacity: 1; }
+        }
     </style>
 <div class="course-container">
         <div class="course-progress">
@@ -428,6 +437,8 @@
         let taskCompleted = false;
         let daySelected = false;
         let timeSelected = false;
+        let clickHintState = null;
+        let clickHintNode = null;
 
         function prepareSplitStepLayout() {
             document.querySelectorAll('.step-card').forEach((stepCard) => {
@@ -474,6 +485,86 @@
             progressTrack.style.setProperty('--segments', String(totalSteps + 1));
         }
 
+        function ensureClickHintNode() {
+            if (clickHintNode && clickHintNode.isConnected) {
+                return clickHintNode;
+            }
+
+            clickHintNode = document.createElement('div');
+            clickHintNode.className = 'click-hint-object';
+            document.body.appendChild(clickHintNode);
+            return clickHintNode;
+        }
+
+        function hideClickHint() {
+            clickHintState = null;
+            if (clickHintNode) {
+                clickHintNode.classList.remove('is-visible');
+            }
+        }
+
+        function positionClickHint() {
+            if (!clickHintState || !clickHintState.selector) {
+                hideClickHint();
+                return;
+            }
+
+            const target = document.querySelector(clickHintState.selector);
+            const hintNode = ensureClickHintNode();
+            if (!target || target.offsetParent === null) {
+                hintNode.classList.remove('is-visible');
+                return;
+            }
+
+            const rect = target.getBoundingClientRect();
+            const padding = clickHintState.padding;
+            hintNode.style.left = `${rect.left - padding}px`;
+            hintNode.style.top = `${rect.top - padding}px`;
+            hintNode.style.width = `${Math.max(rect.width + padding * 2, 16)}px`;
+            hintNode.style.height = `${Math.max(rect.height + padding * 2, 16)}px`;
+            hintNode.style.borderRadius = `${clickHintState.radius}px`;
+            hintNode.classList.add('is-visible');
+        }
+
+        function showClickHint(selector, options = {}) {
+            clickHintState = {
+                selector,
+                padding: options.padding ?? 6,
+                radius: options.radius ?? 14,
+            };
+            requestAnimationFrame(positionClickHint);
+        }
+
+        function updateClickHint() {
+            if (currentStep === 1) {
+                showClickHint('#step1 .doctor-select', { padding: 6, radius: 12 });
+                return;
+            }
+            if (currentStep === 2) {
+                showClickHint('#step2 .clinic-select', { padding: 6, radius: 12 });
+                return;
+            }
+            if (currentStep === 3) {
+                showClickHint('#step3 .doc-select', { padding: 6, radius: 12 });
+                return;
+            }
+            if (currentStep === 4) {
+                if (!daySelected) {
+                    showClickHint('#step4 .day-select:not(.disabled)', { padding: 4, radius: 10 });
+                    return;
+                }
+                if (!timeSelected) {
+                    showClickHint('#step4 .time-select', { padding: 4, radius: 10 });
+                    return;
+                }
+                if (!taskCompleted) {
+                    showClickHint('#confirmBtn', { padding: 6, radius: 12 });
+                    return;
+                }
+            }
+            hideClickHint();
+        }
+
         function placeNavigation(stepIndex) {
             const navigation = document.getElementById('courseNavigation');
             const stepCard = document.getElementById('step' + stepIndex);
@@ -493,12 +584,13 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
             
             document.getElementById('prevBtn').disabled = stepIndex === 0;
-            document.getElementById('nextBtn').textContent = stepIndex === totalSteps ? 'Завершено' : 'Далее';
+            document.getElementById('nextBtn').textContent = stepIndex === totalSteps ? 'Начать туториал заново' : 'Далее';
             document.getElementById('currentStep').textContent = stepIndex + 1;
             document.getElementById('progressBar').style.width = ((stepIndex + 1) / (totalSteps + 1)) * 100 + '%';
-            
-            taskCompleted = (stepIndex === 0);
+
+            taskCompleted = stepIndex === 0 || stepIndex === totalSteps;
             updateNextButton();
+            updateClickHint();
         }
 
         function updateNextButton() {
@@ -506,6 +598,12 @@
         }
 
         function changeStep(direction) {
+            if (direction > 0 && currentStep === totalSteps) {
+                currentStep = 0;
+                showStep(currentStep);
+                return;
+            }
+
             currentStep += direction;
             if (currentStep < 0) currentStep = 0;
             if (currentStep > totalSteps) {
@@ -521,6 +619,7 @@
                     taskCompleted = true;
                     updateNextButton();
                     el.classList.add('selected');
+                    updateClickHint();
                 }
             });
         });
@@ -531,6 +630,7 @@
                     taskCompleted = true;
                     updateNextButton();
                     el.classList.add('selected');
+                    updateClickHint();
                 }
             });
         });
@@ -541,6 +641,7 @@
                     taskCompleted = true;
                     updateNextButton();
                     el.classList.add('selected');
+                    updateClickHint();
                 }
             });
         });
@@ -552,6 +653,7 @@
                     el.classList.add('selected');
                     daySelected = true;
                     checkDateTime();
+                    updateClickHint();
                 }
             });
         });
@@ -563,6 +665,7 @@
                     el.classList.add('selected');
                     timeSelected = true;
                     checkDateTime();
+                    updateClickHint();
                 }
             });
         });
@@ -575,6 +678,7 @@
                     if (currentStep === 4) {
                         taskCompleted = true;
                         updateNextButton();
+                        updateClickHint();
                     }
                 };
             }
@@ -584,9 +688,9 @@
             prepareSplitStepLayout();
             setupProgressSegments();
             showStep(0);
+            window.addEventListener('resize', positionClickHint);
+            window.addEventListener('scroll', positionClickHint, true);
         });
     </script>
   </div>
 </div>
-
-

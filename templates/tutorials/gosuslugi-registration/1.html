@@ -85,7 +85,7 @@
   <div class="gosu-sim">
 <style>
         /* Имитация телефона */
-        .gosu-sim .phone-mockup{border:2px solid #111;border-radius:3.2vw;position:relative;overflow:hidden}
+        .gosu-sim .phone-mockup{border:2px solid #111;border-radius:1.5vw;position:relative;overflow:hidden}
         .gosu-sim .phone-screen{background:#fff;border-radius:2.5vw;overflow:hidden;height:85vh;min-height:700px;display:flex;flex-direction:column}
         
         /* Browser Bar */
@@ -121,12 +121,12 @@
         /* Form Fields */
         .form-field{margin-bottom:3vh}
         .form-label{display:block;font-size:clamp(1rem,1.9vw,1.6rem);color:#666;margin-bottom:1vh;font-weight:500}
-        .form-input{width:100%;padding:2vh 2.5vw;border:0.2vw solid #B0BEC5;border-radius:0.8vw;font-size:clamp(1.05rem,2vw,1.7rem);background:#fff;transition:all 0.3s}
+        .form-input{width:100%;padding:2vh 1vw;border:0.2vw solid #B0BEC5;border-radius:0.8vw;font-size:clamp(1.05rem,2vw,1.7rem);background:#fff;transition:all 0.3s}
         .form-input:focus{outline:none;border-color:#0063B0;box-shadow:0 0 0 0.2vw rgba(0,99,176,0.15)}
         
         /* Captcha */
-        .captcha-box{background:#B3E5FC;border-radius:1vw;padding:3vh;margin-bottom:2vh;text-align:center}
-        .captcha-image{background:#B3E5FC;padding:3vh;border-radius:0.8vw;font-size:clamp(1.8rem,3.5vw,3rem);font-weight:bold;color:#0277BD;letter-spacing:1vw;font-family:monospace;margin-bottom:2vh}
+        .captcha-box{background:#B3E5FC;border-radius:1vw;padding:1vh;margin-bottom:2vh;text-align:center}
+        .captcha-image{background:#B3E5FC;padding:3vh;border-radius:0.8vw;font-size:clamp(1.8rem,3.5vw,3rem);font-weight:bold;color:#0277BD;letter-spacing:0.6vw;font-family:monospace;margin-bottom:2vh}
         .captcha-actions{display:flex;gap:3vw;justify-content:center;font-size:clamp(0.95rem,1.8vw,1.5rem);color:#0063B0;margin-bottom:2vh}
         .captcha-link{cursor:pointer;font-weight:500;display:flex;align-items:center;gap:1vw}
         .captcha-link:hover{text-decoration:underline}
@@ -140,7 +140,10 @@
         
         /* Password Field */
         .password-container{position:relative}
-        .show-password{position:absolute;right:2.5vw;top:50%;transform:translateY(-50%);background:#FFC107;color:#000;border:none;padding:0.8vh 2vw;border-radius:0.5vw;font-size:clamp(0.9rem,1.7vw,1.4rem);font-weight:bold;cursor:pointer}
+        .show-password{position:absolute;right:1vw;top:50%;transform:translateY(-50%);background:transparent;color:#546E7A;border:none;width:2.8vw;min-width:34px;height:2.8vw;min-height:34px;border-radius:0.6vw;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;transition:all 0.2s}
+        .show-password:hover{background:#ECEFF1;color:#1E88E5}
+        .show-password:focus{outline:none;box-shadow:0 0 0 0.2vw rgba(30,136,229,0.2)}
+        .show-password svg{width:1.8vw;min-width:20px;height:1.8vw;min-height:20px;display:block}
         
         /* Success Screen */
         .profile-header{background:#fff;border-bottom:0.2vw solid #e0e0e0;padding:3vh 4vw;display:flex;align-items:center;justify-content:space-between}
@@ -160,6 +163,15 @@
         
         .task-hint{background:#ffd700;border:0.4vw solid #000;border-radius:1vw;padding:1vw;margin:2.5vh 0;font-size:clamp(1.1rem,2.2vw,1.9rem);color:#000;font-weight:bold;box-shadow:0 0.5vh 1.5vh rgba(0,0,0,0.3)}
         .task-hint strong{display:block;margin-bottom:1.5vh;font-size:clamp(1.3rem,2.5vw,2.2rem);letter-spacing:0.1vw}
+
+        .click-hint-object{position:fixed;z-index:9999;display:none;pointer-events:none;border:3px solid #ff9f1a;border-radius:14px;box-shadow:0 0 0 2px rgba(255,159,26,0.35),0 0 18px rgba(255,159,26,0.55);animation:click-hint-pulse 1.2s ease-in-out infinite}
+        .click-hint-object.is-visible{display:block}
+
+        @keyframes click-hint-pulse {
+            0% { transform: scale(1); opacity: 1; }
+            60% { transform: scale(1.03); opacity: 0.72; }
+            100% { transform: scale(1); opacity: 1; }
+        }
     </style>
 <div class="course-container">
         <div class="course-progress">
@@ -252,19 +264,19 @@
                             <div class="page-title">Регистрация</div>
                             <div class="form-field">
                                 <label class="form-label">Фамилия</label>
-                                <input type="text" class="form-input" id="lastName" placeholder="">
+                                <input type="text" class="form-input" id="lastName" placeholder="Например, Иванов">
                             </div>
                             <div class="form-field">
                                 <label class="form-label">Имя</label>
-                                <input type="text" class="form-input" id="firstName" placeholder="">
+                                <input type="text" class="form-input" id="firstName" placeholder="Например, Иван">
                             </div>
                             <div class="form-field">
                                 <label class="form-label">Мобильный телефон</label>
-                                <input type="tel" class="form-input" id="phone" placeholder="">
+                                <input type="tel" class="form-input" id="phone" placeholder="+7 (900) 123-45-67">
                             </div>
                             <div class="form-field">
                                 <label class="form-label">Email</label>
-                                <input type="email" class="form-input" id="email" placeholder="">
+                                <input type="email" class="form-input" id="email" placeholder="name@example.ru">
                             </div>
                             <button class="btn-primary" id="continueBtn1">Продолжить</button>
                         </div>
@@ -310,7 +322,7 @@
                             </div>
                             <div class="form-field">
                                 <label class="code-label">Код</label>
-                                <input type="text" class="form-input" id="captchaCode" placeholder="">
+                                <input type="text" class="form-input" id="captchaCode" placeholder="Введите код с картинки">
                             </div>
                             <button class="btn-primary" id="continueBtn2">Продолжить</button>
                         </div>
@@ -350,7 +362,7 @@
                             <div class="sms-info">Код подтверждения отправлен на номер<br><strong id="smsTargetPhone">+7 (938) 000-00-00</strong></div>
                             <div class="form-field">
                                 <label class="form-label">Код подтверждения</label>
-                                <input type="text" class="form-input" id="smsCode" placeholder="" maxlength="6">
+                                <input type="text" class="form-input" id="smsCode" placeholder="6 цифр из СМС" maxlength="6" autocomplete="one-time-code">
                             </div>
                             <div class="timer">Отправить повторно через<br>00:54</div>
                             <button class="btn-link">Не могу подтвердить вход</button>
@@ -393,13 +405,18 @@
                             <div class="form-field">
                                 <label class="form-label">Введите пароль</label>
                                 <div class="password-container">
-                                    <input type="password" class="form-input" id="password" placeholder="">
-                                    <button class="show-password">Взглянуть 👁</button>
+                                    <input type="password" class="form-input" id="password" placeholder="Не менее 8 символов">
+                                    <button type="button" class="show-password" id="togglePassword" aria-label="Показать пароль" title="Показать пароль">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M12 5C6.5 5 2 12 2 12s4.5 7 10 7 10-7 10-7-4.5-7-10-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" fill="currentColor"/>
+                                            <circle cx="12" cy="12" r="2.2" fill="#fff"/>
+                                        </svg>
+                                    </button>
                                 </div>
                             </div>
                             <div class="form-field">
                                 <label class="form-label">Повторите пароль</label>
-                                <input type="password" class="form-input" id="password2" placeholder="">
+                                <input type="password" class="form-input" id="password2" placeholder="Повторите пароль">
                             </div>
                             <button class="btn-primary" id="continueBtn3">Продолжить</button>
                         </div>
@@ -411,6 +428,7 @@
                     <p>✓ Заглавные и строчные буквы</p>
                     <p>✓ Цифры</p>
                     <p>✓ Специальные символы</p>
+                    <p>👁 Нажмите на значок глаза справа, чтобы показать или скрыть введённый пароль</p>
                 </div>
             </div>
 
@@ -471,6 +489,9 @@
         const totalSteps = 6;
         let taskCompleted = false;
         let registeredPhone = '+7 (938) 000-00-00';
+        let clickHintState = null;
+        let clickHintNode = null;
+        let smsVerificationTimer = null;
 
         function formatRussianMobilePhone(rawPhone) {
             const digits = String(rawPhone || '').replace(/\D/g, '');
@@ -546,6 +567,80 @@
             progressTrack.style.setProperty('--segments', String(totalSteps + 1));
         }
 
+        function ensureClickHintNode() {
+            if (clickHintNode && clickHintNode.isConnected) {
+                return clickHintNode;
+            }
+
+            clickHintNode = document.createElement('div');
+            clickHintNode.className = 'click-hint-object';
+            document.body.appendChild(clickHintNode);
+            return clickHintNode;
+        }
+
+        function hideClickHint() {
+            clickHintState = null;
+            if (clickHintNode) {
+                clickHintNode.classList.remove('is-visible');
+            }
+        }
+
+        function positionClickHint() {
+            if (!clickHintState || !clickHintState.selector) {
+                hideClickHint();
+                return;
+            }
+
+            const target = document.querySelector(clickHintState.selector);
+            const hintNode = ensureClickHintNode();
+            if (!target || target.offsetParent === null) {
+                hintNode.classList.remove('is-visible');
+                return;
+            }
+
+            const rect = target.getBoundingClientRect();
+            const padding = clickHintState.padding;
+            hintNode.style.left = `${rect.left - padding}px`;
+            hintNode.style.top = `${rect.top - padding}px`;
+            hintNode.style.width = `${Math.max(rect.width + padding * 2, 16)}px`;
+            hintNode.style.height = `${Math.max(rect.height + padding * 2, 16)}px`;
+            hintNode.style.borderRadius = `${clickHintState.radius}px`;
+            hintNode.classList.add('is-visible');
+        }
+
+        function showClickHint(selector, options = {}) {
+            clickHintState = {
+                selector,
+                padding: options.padding ?? 6,
+                radius: options.radius ?? 14,
+            };
+            requestAnimationFrame(positionClickHint);
+        }
+
+        function updateClickHint() {
+            if (currentStep === 1) {
+                showClickHint('#otherWayBtn', { padding: 4, radius: 10 });
+                return;
+            }
+            if (currentStep === 2) {
+                showClickHint('#continueBtn1', { padding: 6, radius: 12 });
+                return;
+            }
+            if (currentStep === 3) {
+                showClickHint('#continueBtn2', { padding: 6, radius: 12 });
+                return;
+            }
+            if (currentStep === 4) {
+                showClickHint('#smsCode', { padding: 6, radius: 10 });
+                return;
+            }
+            if (currentStep === 5) {
+                showClickHint('#continueBtn3', { padding: 6, radius: 12 });
+                return;
+            }
+            hideClickHint();
+        }
+
         function placeNavigation(stepIndex) {
             const navigation = document.getElementById('courseNavigation');
             const stepCard = document.getElementById('step' + stepIndex);
@@ -568,14 +663,18 @@
             }
             
             document.getElementById('prevBtn').disabled = stepIndex === 0;
-            document.getElementById('nextBtn').textContent = stepIndex === totalSteps ? 'Завершено' : 'Далее';
+            document.getElementById('nextBtn').textContent = stepIndex === totalSteps ? 'Начать туториал заново' : 'Далее';
             document.getElementById('currentStep').textContent = stepIndex + 1;
             
             const progress = ((stepIndex + 1) / (totalSteps + 1)) * 100;
             document.getElementById('progressBar').style.width = progress + '%';
-            
-            taskCompleted = (stepIndex === 0);
+
+            taskCompleted = stepIndex === 0 || stepIndex === totalSteps;
             updateNextButton();
+            if (stepIndex === 4) {
+                handleSmsCodeProgress();
+            }
+            updateClickHint();
         }
 
         function updateNextButton() {
@@ -583,6 +682,12 @@
         }
 
         function changeStep(direction) {
+            if (direction > 0 && currentStep === totalSteps) {
+                currentStep = 0;
+                showStep(currentStep);
+                return;
+            }
+
             currentStep += direction;
             if (currentStep < 0) currentStep = 0;
             if (currentStep > totalSteps) {
@@ -643,18 +748,46 @@
             }
         });
 
-        // Шаг 4
-        document.addEventListener('input', (e) => {
-            if (e.target.id === 'smsCode' && currentStep === 4) {
-                const code = e.target.value;
-                if (code.length >= 4) {
-                    setTimeout(() => {
-                        taskCompleted = true;
-                        updateNextButton();
-                    }, 1000);
-                }
+        function handleSmsCodeProgress() {
+            const smsInput = document.getElementById('smsCode');
+            if (!smsInput) {
+                return;
             }
-        });
+
+            smsInput.value = smsInput.value.replace(/\D/g, '').slice(0, 6);
+
+            if (currentStep !== 4) {
+                return;
+            }
+
+            const isCodeReady = smsInput.value.length >= 4;
+
+            if (smsVerificationTimer) {
+                clearTimeout(smsVerificationTimer);
+                smsVerificationTimer = null;
+            }
+
+            if (!isCodeReady) {
+                taskCompleted = false;
+                updateNextButton();
+                return;
+            }
+
+            taskCompleted = false;
+            updateNextButton();
+
+            smsVerificationTimer = setTimeout(() => {
+                if (currentStep !== 4) {
+                    return;
+                }
+
+                const latestValue = (document.getElementById('smsCode')?.value || '').replace(/\D/g, '');
+                if (latestValue.length >= 4) {
+                    taskCompleted = true;
+                    updateNextButton();
+                }
+            }, 500);
+        }
 
         // Шаг 5
         document.addEventListener('click', (e) => {
@@ -674,9 +807,29 @@
             prepareSplitStepLayout();
             setupProgressSegments();
             updateSmsTargetPhone(registeredPhone);
+
+            const smsCodeInput = document.getElementById('smsCode');
+            if (smsCodeInput) {
+                ['input', 'keyup', 'change'].forEach((eventName) => {
+                    smsCodeInput.addEventListener(eventName, handleSmsCodeProgress);
+                });
+            }
+
+            const passwordInput = document.getElementById('password');
+            const passwordToggle = document.getElementById('togglePassword');
+            if (passwordInput && passwordToggle) {
+                passwordToggle.addEventListener('click', () => {
+                    const shouldShow = passwordInput.type === 'password';
+                    passwordInput.type = shouldShow ? 'text' : 'password';
+                    passwordToggle.setAttribute('aria-label', shouldShow ? 'Скрыть пароль' : 'Показать пароль');
+                    passwordToggle.setAttribute('title', shouldShow ? 'Скрыть пароль' : 'Показать пароль');
+                });
+            }
+
             showStep(0);
+            window.addEventListener('resize', positionClickHint);
+            window.addEventListener('scroll', positionClickHint, true);
         });
     </script>
   </div>
 </div>
-
