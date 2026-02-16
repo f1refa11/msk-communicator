@@ -29,7 +29,6 @@
 .gosu-sim .btn-link,
 .gosu-sim .download-btn,
 .gosu-sim button {
-    width: 100%;
     max-width: 100%;
     white-space: normal;
     word-break: break-word;
@@ -140,22 +139,21 @@
         
         /* Password Field */
         .password-container{position:relative}
-        .show-password{position:absolute;right:1vw;top:50%;transform:translateY(-50%);background:transparent;color:#546E7A;border:none;width:2.8vw;min-width:34px;height:2.8vw;min-height:34px;border-radius:0.6vw;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;transition:all 0.2s}
+        .show-password{position:absolute;right:1vw;top:50%;transform:translateY(-50%);background:transparent;color:#546E7A;border:none;height:2.8vw;min-height:34px;border-radius:0.6vw;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;transition:all 0.2s}
         .show-password:hover{background:#ECEFF1;color:#1E88E5}
         .show-password:focus{outline:none;box-shadow:0 0 0 0.2vw rgba(30,136,229,0.2)}
         .show-password svg{width:1.8vw;min-width:20px;height:1.8vw;min-height:20px;display:block}
         
         /* Success Screen */
-        .profile-header{background:#fff;border-bottom:0.2vw solid #e0e0e0;padding:3vh 4vw;display:flex;align-items:center;justify-content:space-between}
-        .profile-avatar{width:8vh;height:8vh;background:#9C27B0;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:clamp(1.5rem,3vw,2.5rem);font-weight:bold}
-        .profile-info{flex:1;padding:0 3vw}
+        .profile-header{background:#fff;border-bottom:0.2vw solid #e0e0e0;display:flex;align-items:center;justify-content:space-between}
+        .profile-avatar{height:7vh;aspect-ratio:1/1;background:#9C27B0;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:clamp(1.5rem,3vw,2.5rem);font-weight:bold}
+        .profile-info{flex:1;padding:0 1vw}
         .profile-name{font-size:clamp(1.3rem,2.6vw,2.2rem);font-weight:bold;color:#000;margin-bottom:0.5vh}
         .profile-link{font-size:clamp(1rem,1.9vw,1.6rem);color:#0063B0}
         
-        .notice-box{background:#FFF3E0;border-left:0.6vw solid #FF9800;padding:2.5vh 3vw;margin:3vh 4vw;font-size:clamp(1rem,1.9vw,1.6rem);color:#000;line-height:1.5}
+        .notice-box{background:#FFF3E0;border-left:0.6vw solid #FF9800;padding:2.5vh 3vw;font-size:clamp(1rem,1.9vw,1.6rem);color:#000;line-height:1.5}
         .notice-title{font-weight:bold;margin-bottom:1vh}
         
-        .registration-options{padding:3vh 4vw}
         .option-item{background:#fff;border:0.2vw solid #e0e0e0;border-radius:1vw;padding:2.5vh 3vw;margin-bottom:2vh;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;gap:2vw}
         .option-item:hover{border-color:#0063B0;box-shadow:0 0.5vh 1.5vh rgba(0,99,176,0.15)}
         .option-icon{font-size:clamp(2rem,4vw,3rem)}
@@ -418,7 +416,7 @@
                                 <label class="form-label">Повторите пароль</label>
                                 <input type="password" class="form-input" id="password2" placeholder="Повторите пароль">
                             </div>
-                            <button class="btn-primary" id="continueBtn3">Продолжить</button>
+                            <button type="button" class="btn-primary" id="continueBtn3">Продолжить</button>
                         </div>
                     </div>
                 </div>
@@ -773,8 +771,10 @@
                 return;
             }
 
-            taskCompleted = false;
-            updateNextButton();
+            if (taskCompleted) {
+                updateNextButton();
+                return;
+            }
 
             smsVerificationTimer = setTimeout(() => {
                 if (currentStep !== 4) {
@@ -810,7 +810,7 @@
 
             const smsCodeInput = document.getElementById('smsCode');
             if (smsCodeInput) {
-                ['input', 'keyup', 'change'].forEach((eventName) => {
+                ['input'].forEach((eventName) => {
                     smsCodeInput.addEventListener(eventName, handleSmsCodeProgress);
                 });
             }
