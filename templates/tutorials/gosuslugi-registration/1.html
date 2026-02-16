@@ -1,0 +1,580 @@
+<div class="gosu-sim-root">
+  <style>
+@import url("/tutorials-assets/gosuslugi-registration/static/gosuslugi-course-styles.css");
+
+.gosu-sim-root {
+    margin: 0;
+    padding: 24px;
+    background: #e7edf5;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.gosu-sim {
+    width: min(1100px, 100%);
+    min-height: 0;
+}
+
+.gosu-sim .course-container {
+    max-width: 1100px;
+}
+
+.gosu-sim .course-navigation {
+    flex-wrap: wrap;
+}
+
+.gosu-sim .nav-button,
+.gosu-sim .btn-primary,
+.gosu-sim .btn-secondary,
+.gosu-sim .btn-link,
+.gosu-sim .download-btn,
+.gosu-sim button {
+    max-width: 100%;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.gosu-sim input,
+.gosu-sim select,
+.gosu-sim textarea {
+    max-width: 100%;
+}
+
+.gosu-sim .phone-mockup {
+    width: min(100%, 720px);
+}
+
+.gosu-sim .phone-screen {
+    height: min(85vh, 680px);
+    min-height: 0;
+}
+
+@media (max-width: 720px) {
+    .gosu-sim-root {
+        padding: 16px;
+    }
+
+    .gosu-sim .course-header {
+        padding: 3vh 4vw;
+        border-width: 0.4vw;
+    }
+
+    .gosu-sim .step-card {
+        padding: 2.5vh 4vw;
+    }
+
+    .gosu-sim .phone-screen {
+        height: auto;
+    }
+
+    .gosu-sim .page-content {
+        padding: 3vh 5vw;
+        overflow: visible;
+    }
+
+    .gosu-sim .course-navigation {
+        gap: 12px;
+    }
+
+    .gosu-sim .nav-button {
+        width: 100%;
+    }
+}
+  </style>
+  <div class="gosu-sim">
+<style>
+        /* Имитация телефона */
+        .phone-mockup{max-width:min(98vw,700px);margin:3vh auto;background:#000;border:0.8vw solid #000;border-radius:4vw;padding:2vh 1.5vw;box-shadow:0 2vh 5vh rgba(0,0,0,0.4);position:relative}
+        .phone-mockup::before{content:'';position:absolute;top:1vh;left:50%;transform:translateX(-50%);width:20vw;max-width:120px;height:3vh;background:#000;border-radius:2vw}
+        .phone-screen{background:#fff;border-radius:2.5vw;overflow:hidden;height:85vh;min-height:700px;display:flex;flex-direction:column}
+        
+        /* Browser Bar */
+        .browser-bar{background:#f5f5f5;padding:1.5vh 3vw;border-bottom:0.2vw solid #e0e0e0;display:flex;align-items:center;gap:2vw;font-size:clamp(0.85rem,1.6vw,1.3rem);color:#666}
+        .browser-icon{font-size:clamp(1rem,1.9vw,1.6rem)}
+        .browser-url{flex:1;font-weight:500}
+        
+        /* Main Content */
+        .page-content{flex:1;overflow-y:auto;background:#fff;padding:4vh 5vw}
+        
+        /* Госуслуги Logo */
+        .gosuslugi-logo{text-align:center;margin-bottom:4vh}
+        .logo-text{font-size:clamp(2rem,4vw,3.5rem);font-weight:bold}
+        .logo-gos{color:#0063B0}
+        .logo-uslugi{color:#E31E24}
+        
+        /* Page Title */
+        .page-title{font-size:clamp(1.3rem,2.5vw,2.2rem);font-weight:bold;color:#000;text-align:center;margin-bottom:3vh}
+        
+        /* Description Text */
+        .description-text{font-size:clamp(1rem,1.9vw,1.6rem);color:#666;text-align:center;margin-bottom:4vh;line-height:1.5}
+        
+        /* Buttons */
+        .btn-primary{width:100%;background:#0063B0;color:#fff;border:none;border-radius:0.8vw;padding:2.5vh;font-size:clamp(1.1rem,2.2vw,1.9rem);font-weight:600;cursor:pointer;transition:all 0.3s;margin-bottom:2vh;box-shadow:0 0.3vh 1vh rgba(0,99,176,0.3)}
+        .btn-primary:hover{background:#004d8c;transform:translateY(-0.2vh)}
+        
+        .btn-secondary{width:100%;background:#fff;color:#0063B0;border:0.3vw solid #0063B0;border-radius:0.8vw;padding:2.5vh;font-size:clamp(1.1rem,2.2vw,1.9rem);font-weight:600;cursor:pointer;transition:all 0.3s;margin-bottom:2vh}
+        .btn-secondary:hover{background:#f0f7ff}
+        
+        .btn-link{width:100%;background:none;color:#0063B0;border:none;padding:2vh;font-size:clamp(1.05rem,2vw,1.7rem);font-weight:500;cursor:pointer;text-decoration:none;display:block;text-align:center}
+        .btn-link:hover{text-decoration:underline}
+        
+        /* Form Fields */
+        .form-field{margin-bottom:3vh}
+        .form-label{display:block;font-size:clamp(1rem,1.9vw,1.6rem);color:#666;margin-bottom:1vh;font-weight:500}
+        .form-input{width:100%;padding:2vh 2.5vw;border:0.2vw solid #B0BEC5;border-radius:0.8vw;font-size:clamp(1.05rem,2vw,1.7rem);background:#fff;transition:all 0.3s}
+        .form-input:focus{outline:none;border-color:#0063B0;box-shadow:0 0 0 0.2vw rgba(0,99,176,0.15)}
+        
+        /* Captcha */
+        .captcha-box{background:#B3E5FC;border-radius:1vw;padding:3vh;margin-bottom:2vh;text-align:center}
+        .captcha-image{background:#B3E5FC;padding:3vh;border-radius:0.8vw;font-size:clamp(1.8rem,3.5vw,3rem);font-weight:bold;color:#0277BD;letter-spacing:1vw;font-family:monospace;margin-bottom:2vh}
+        .captcha-actions{display:flex;gap:3vw;justify-content:center;font-size:clamp(0.95rem,1.8vw,1.5rem);color:#0063B0;margin-bottom:2vh}
+        .captcha-link{cursor:pointer;font-weight:500;display:flex;align-items:center;gap:1vw}
+        .captcha-link:hover{text-decoration:underline}
+        
+        /* Code Input */
+        .code-label{font-size:clamp(1.05rem,2vw,1.7rem);color:#000;font-weight:500;margin-bottom:1vh}
+        
+        /* SMS Code Info */
+        .sms-info{background:#E3F2FD;border-radius:1vw;padding:2.5vh;margin-bottom:3vh;font-size:clamp(1rem,1.9vw,1.6rem);color:#000;line-height:1.5}
+        .timer{font-size:clamp(1.1rem,2.2vw,1.9rem);font-weight:bold;color:#000;text-align:center;margin:2vh 0}
+        
+        /* Password Field */
+        .password-container{position:relative}
+        .show-password{position:absolute;right:2.5vw;top:50%;transform:translateY(-50%);background:#FFC107;color:#000;border:none;padding:0.8vh 2vw;border-radius:0.5vw;font-size:clamp(0.9rem,1.7vw,1.4rem);font-weight:bold;cursor:pointer}
+        
+        /* Success Screen */
+        .profile-header{background:#fff;border-bottom:0.2vw solid #e0e0e0;padding:3vh 4vw;display:flex;align-items:center;justify-content:space-between}
+        .profile-avatar{width:8vh;height:8vh;background:#9C27B0;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:clamp(1.5rem,3vw,2.5rem);font-weight:bold}
+        .profile-info{flex:1;padding:0 3vw}
+        .profile-name{font-size:clamp(1.3rem,2.6vw,2.2rem);font-weight:bold;color:#000;margin-bottom:0.5vh}
+        .profile-link{font-size:clamp(1rem,1.9vw,1.6rem);color:#0063B0}
+        
+        .notice-box{background:#FFF3E0;border-left:0.6vw solid #FF9800;padding:2.5vh 3vw;margin:3vh 4vw;font-size:clamp(1rem,1.9vw,1.6rem);color:#000;line-height:1.5}
+        .notice-title{font-weight:bold;margin-bottom:1vh}
+        
+        .registration-options{padding:3vh 4vw}
+        .option-item{background:#fff;border:0.2vw solid #e0e0e0;border-radius:1vw;padding:2.5vh 3vw;margin-bottom:2vh;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;gap:2vw}
+        .option-item:hover{border-color:#0063B0;box-shadow:0 0.5vh 1.5vh rgba(0,99,176,0.15)}
+        .option-icon{font-size:clamp(2rem,4vw,3rem)}
+        .option-text{flex:1;font-size:clamp(1.05rem,2vw,1.7rem);font-weight:500;color:#000}
+        
+        .task-hint{background:#ffd700;border:0.4vw solid #000;border-radius:1vw;padding:2.5vh 3vw;margin:2.5vh 0;font-size:clamp(1.1rem,2.2vw,1.9rem);color:#000;font-weight:bold;box-shadow:0 0.5vh 1.5vh rgba(0,0,0,0.3)}
+        .task-hint strong{display:block;margin-bottom:1.5vh;font-size:clamp(1.3rem,2.5vw,2.2rem);text-transform:uppercase;letter-spacing:0.1vw}
+    </style>
+<div class="course-container">
+        <div class="course-header">
+            <h1 class="course-title">Регистрация на Госуслугах</h1>
+            <p class="course-subtitle">Пошаговая инструкция</p>
+        </div>
+
+        <div class="course-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            <p class="progress-text">Шаг <span id="currentStep">1</span> из 7</p>
+        </div>
+
+        <div class="course-content">
+            <!-- Шаг 0: Подготовка -->
+            <div class="step-card" id="step0" style="display:block;">
+                <div class="step-number">Подготовка</div>
+                <h2 class="step-title">Что нужно для регистрации</h2>
+                <p class="instruction-text"><strong>ВАЖНО!</strong> Приготовьте:</p>
+                <ul class="checklist">
+                    <li class="checklist-item"><strong>Фамилия и Имя</strong> - как в паспорте</li>
+                    <li class="checklist-item"><strong>Мобильный телефон</strong> - для СМС-кода</li>
+                    <li class="checklist-item"><strong>Email</strong> - электронная почта</li>
+                </ul>
+                <div class="info-box">
+                    <p><strong>В этом курсе мы:</strong></p>
+                    <p>1. Зарегистрируемся на Госуслугах</p>
+                    <p>2. Подтвердим телефон</p>
+                    <p>3. Создадим пароль</p>
+                    <p>4. Войдём в личный кабинет</p>
+                </div>
+            </div>
+
+            <!-- Шаг 1: Выбор способа регистрации -->
+            <div class="step-card" id="step1" style="display:none;">
+                <div class="step-number">Шаг 1</div>
+                <h2 class="step-title">Способ регистрации</h2>
+                <p class="instruction-text">Выберите как зарегистрироваться</p>
+                <div class="task-hint">
+                    <strong>ЗАДАНИЕ:</strong> Нажмите "Другой способ регистрации"
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="browser-bar">
+                            <span class="browser-icon">🏠</span>
+                            <span class="browser-icon">🔒</span>
+                            <span class="browser-url">esia.gosuslugi.ru/login/r</span>
+                            <span class="browser-icon">⋮</span>
+                        </div>
+                        <div class="page-content">
+                            <div class="gosuslugi-logo">
+                                <div class="logo-text">
+                                    <span class="logo-gos">гос</span><span class="logo-uslugi">услуги</span>
+                                </div>
+                            </div>
+                            <div class="page-title">Регистрация</div>
+                            <div class="description-text">Зарегистрируйтесь онлайн через банк<br>или посетив центры обслуживания</div>
+                            <button class="btn-primary">Онлайн через интернет-банк</button>
+                            <button class="btn-secondary">Через центр обслуживания</button>
+                            <button class="btn-link" id="otherWayBtn">Другой способ регистрации</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p><strong>Способы регистрации:</strong></p>
+                    <p>🏦 Через банк - быстро, если есть онлайн-банк</p>
+                    <p>🏢 В центре - нужно прийти лично</p>
+                    <p>📝 Другой способ - заполнить форму вручную (мы выбираем этот)</p>
+                </div>
+            </div>
+
+            <!-- Шаг 2: Форма регистрации -->
+            <div class="step-card" id="step2" style="display:none;">
+                <div class="step-number">Шаг 2</div>
+                <h2 class="step-title">Введите данные</h2>
+                <p class="instruction-text">Заполните форму регистрации</p>
+                <div class="task-hint">
+                    <strong>ЗАДАНИЕ:</strong> Введите данные и нажмите "Продолжить"
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="browser-bar">
+                            <span class="browser-icon">←</span>
+                            <span class="browser-icon">🔒</span>
+                            <span class="browser-url">esia.gosuslugi.ru/login/r</span>
+                            <span class="browser-icon">⋮</span>
+                        </div>
+                        <div class="page-content">
+                            <div class="gosuslugi-logo">
+                                <div class="logo-text">
+                                    <span class="logo-gos">гос</span><span class="logo-uslugi">услуги</span>
+                                </div>
+                            </div>
+                            <div class="page-title">Регистрация</div>
+                            <div class="form-field">
+                                <label class="form-label">Фамилия</label>
+                                <input type="text" class="form-input" id="lastName" placeholder="">
+                            </div>
+                            <div class="form-field">
+                                <label class="form-label">Имя</label>
+                                <input type="text" class="form-input" id="firstName" placeholder="">
+                            </div>
+                            <div class="form-field">
+                                <label class="form-label">Мобильный телефон</label>
+                                <input type="tel" class="form-input" id="phone" placeholder="">
+                            </div>
+                            <div class="form-field">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-input" id="email" placeholder="">
+                            </div>
+                            <button class="btn-primary" id="continueBtn1">Продолжить</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p><strong>Важно:</strong></p>
+                    <p>✓ Фамилия и Имя - как в паспорте</p>
+                    <p>✓ Телефон - на него придёт СМС с кодом</p>
+                    <p>✓ Email - для восстановления доступа</p>
+                </div>
+            </div>
+
+            <!-- Шаг 3: Капча -->
+            <div class="step-card" id="step3" style="display:none;">
+                <div class="step-number">Шаг 3</div>
+                <h2 class="step-title">Введите код с картинки</h2>
+                <p class="instruction-text">Это нужно для защиты от роботов</p>
+                <div class="task-hint">
+                    <strong>ЗАДАНИЕ:</strong> Введите любые цифры и нажмите "Продолжить"
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="browser-bar">
+                            <span class="browser-icon">←</span>
+                            <span class="browser-icon">🔒</span>
+                            <span class="browser-url">esia.gosuslugi.ru/login/r</span>
+                            <span class="browser-icon">⋮</span>
+                        </div>
+                        <div class="page-content">
+                            <div class="gosuslugi-logo">
+                                <div class="logo-text">
+                                    <span class="logo-gos">гос</span><span class="logo-uslugi">услуги</span>
+                                </div>
+                            </div>
+                            <div class="page-title">Введите код с картинки</div>
+                            <div class="captcha-box">
+                                <div class="captcha-image">i06W275</div>
+                                <div class="captcha-actions">
+                                    <span class="captcha-link">🔄 Другой код</span>
+                                    <span class="captcha-link">▶ Прослушать</span>
+                                </div>
+                            </div>
+                            <div class="form-field">
+                                <label class="code-label">Код</label>
+                                <input type="text" class="form-input" id="captchaCode" placeholder="">
+                            </div>
+                            <button class="btn-primary" id="continueBtn2">Продолжить</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p><strong>Что это?</strong></p>
+                    <p>Капча (код с картинки) - защита от автоматической регистрации</p>
+                    <p>Просто введите цифры и буквы которые видите</p>
+                    <p>Если не видно - нажмите "Другой код"</p>
+                </div>
+            </div>
+
+            <!-- Шаг 4: СМС код -->
+            <div class="step-card" id="step4" style="display:none;">
+                <div class="step-number">Шаг 4</div>
+                <h2 class="step-title">Код из СМС</h2>
+                <p class="instruction-text">Введите код подтверждения</p>
+                <div class="task-hint">
+                    <strong>ЗАДАНИЕ:</strong> Введите любые цифры и подождите
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="browser-bar">
+                            <span class="browser-icon">←</span>
+                            <span class="browser-icon">🔒</span>
+                            <span class="browser-url">esia.gosuslugi.ru/login/r</span>
+                            <span class="browser-icon">⋮</span>
+                        </div>
+                        <div class="page-content">
+                            <div class="gosuslugi-logo">
+                                <div class="logo-text">
+                                    <span class="logo-gos">гос</span><span class="logo-uslugi">услуги</span>
+                                </div>
+                            </div>
+                            <div class="page-title">Регистрация</div>
+                            <div class="sms-info">Код подтверждения отправлен на номер<br><strong>+7 938</strong></div>
+                            <div class="form-field">
+                                <label class="form-label">Код подтверждения</label>
+                                <input type="text" class="form-input" id="smsCode" placeholder="" maxlength="6">
+                            </div>
+                            <div class="timer">Отправить повторно через<br>00:54</div>
+                            <button class="btn-link">Не могу подтвердить вход</button>
+                            <button class="btn-link">Подтвердить по почте</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p><strong>СМС с кодом:</strong></p>
+                    <p>На ваш телефон придёт СМС с 6-значным кодом</p>
+                    <p>Введите его в поле</p>
+                    <p>Код действует 10 минут</p>
+                </div>
+            </div>
+
+            <!-- Шаг 5: Создание пароля -->
+            <div class="step-card" id="step5" style="display:none;">
+                <div class="step-number">Шаг 5</div>
+                <h2 class="step-title">Придумайте пароль</h2>
+                <p class="instruction-text">Защитите ваш аккаунт</p>
+                <div class="task-hint">
+                    <strong>ЗАДАНИЕ:</strong> Введите пароль два раза и нажмите "Продолжить"
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="browser-bar">
+                            <span class="browser-icon">←</span>
+                            <span class="browser-icon">🔒</span>
+                            <span class="browser-url">esia.gosuslugi.ru/login/r</span>
+                            <span class="browser-icon">⋮</span>
+                        </div>
+                        <div class="page-content">
+                            <div class="gosuslugi-logo">
+                                <div class="logo-text">
+                                    <span class="logo-gos">гос</span><span class="logo-uslugi">услуги</span>
+                                </div>
+                            </div>
+                            <div class="page-title">Смена пароля</div>
+                            <div class="description-text">Придумайте или сгенерируйте пароль</div>
+                            <div class="form-field">
+                                <label class="form-label">Введите пароль</label>
+                                <div class="password-container">
+                                    <input type="password" class="form-input" id="password" placeholder="">
+                                    <button class="show-password">Взглянуть 👁</button>
+                                </div>
+                            </div>
+                            <div class="form-field">
+                                <label class="form-label">Повторите пароль</label>
+                                <input type="password" class="form-input" id="password2" placeholder="">
+                            </div>
+                            <button class="btn-primary" id="continueBtn3">Продолжить</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p><strong>Требования к паролю:</strong></p>
+                    <p>✓ Минимум 8 символов</p>
+                    <p>✓ Заглавные и строчные буквы</p>
+                    <p>✓ Цифры</p>
+                    <p>✓ Специальные символы</p>
+                </div>
+            </div>
+
+            <!-- Шаг 6: Успешная регистрация -->
+            <div class="step-card" id="step6" style="display:none;">
+                <div class="step-number">Готово!</div>
+                <h2 class="step-title">Вы зарегистрированы!</h2>
+                <p class="instruction-text">Добро пожаловать на Госуслуги</p>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="browser-bar">
+                            <span class="browser-icon">🏠</span>
+                            <span class="browser-icon">🔒</span>
+                            <span class="browser-url">lk.gosuslugi.ru/settings/</span>
+                            <span class="browser-icon">⋮</span>
+                        </div>
+                        <div class="page-content">
+                            <div class="profile-header">
+                                <div class="profile-avatar">СА</div>
+                                <div class="profile-info">
+                                    <div class="profile-name">Сидоров Артем</div>
+                                    <div class="profile-link">Изменить</div>
+                                </div>
+                                <span style="font-size:clamp(1.5rem,3vw,2.5rem)">☰</span>
+                            </div>
+                            <div class="notice-box">
+                                <div class="notice-title">У вас упрощённая учётная запись.</div>
+                                <div>Доступ к Госуслугам ограничен</div>
+                            </div>
+                            <div class="registration-options">
+                                <div style="font-size:clamp(1.1rem,2.2vw,1.9rem);font-weight:bold;margin-bottom:2vh">Завершите регистрацию одним из способов</div>
+                                <div class="option-item">
+                                    <span class="option-icon">✅</span>
+                                    <div class="option-text">Онлайн через банк<br><span style="color:#4CAF50;font-weight:bold">СберБанк</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p><strong>Поздравляем!</strong></p>
+                    <p>✓ Вы зарегистрировались на Госуслугах</p>
+                    <p>✓ Создали упрощённую учётную запись</p>
+                    <p>✓ Для полного доступа нужно подтвердить личность через банк или лично</p>
+                    <p>✓ Но уже сейчас можете пользоваться многими услугами!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="course-navigation">
+            <button class="nav-button" id="prevBtn" onclick="changeStep(-1)">Назад</button>
+            <button class="nav-button primary" id="nextBtn" onclick="changeStep(1)">Далее</button>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        const totalSteps = 6;
+        let taskCompleted = false;
+
+        function showStep(stepIndex) {
+            document.querySelectorAll('.step-card').forEach(step => step.style.display = 'none');
+            const step = document.getElementById('step' + stepIndex);
+            if (step) {
+                step.style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            
+            document.getElementById('prevBtn').disabled = stepIndex === 0;
+            document.getElementById('nextBtn').textContent = stepIndex === totalSteps ? 'Завершено' : 'Далее';
+            document.getElementById('currentStep').textContent = stepIndex + 1;
+            
+            const progress = (stepIndex / totalSteps) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            taskCompleted = (stepIndex === 0);
+            updateNextButton();
+        }
+
+        function updateNextButton() {
+            document.getElementById('nextBtn').disabled = !taskCompleted;
+        }
+
+        function changeStep(direction) {
+            currentStep += direction;
+            if (currentStep < 0) currentStep = 0;
+            if (currentStep > totalSteps) {
+                alert('Поздравляем! Теперь вы знаете, как зарегистрироваться на Госуслугах!');
+                currentStep = totalSteps;
+            }
+            showStep(currentStep);
+        }
+
+        // Шаг 1
+        document.addEventListener('click', (e) => {
+            if (e.target.id === 'otherWayBtn' && currentStep === 1) {
+                taskCompleted = true;
+                updateNextButton();
+            }
+        });
+
+        // Шаг 2
+        document.addEventListener('click', (e) => {
+            if (e.target.id === 'continueBtn1' && currentStep === 2) {
+                const fields = ['lastName', 'firstName', 'phone', 'email'];
+                const filled = fields.every(id => document.getElementById(id)?.value.length > 0);
+                if (filled) {
+                    taskCompleted = true;
+                    updateNextButton();
+                } else {
+                    alert('Заполните все поля!');
+                }
+            }
+        });
+
+        // Шаг 3
+        document.addEventListener('click', (e) => {
+            if (e.target.id === 'continueBtn2' && currentStep === 3) {
+                const code = document.getElementById('captchaCode')?.value;
+                if (code && code.length > 0) {
+                    taskCompleted = true;
+                    updateNextButton();
+                } else {
+                    alert('Введите код с картинки!');
+                }
+            }
+        });
+
+        // Шаг 4
+        document.addEventListener('input', (e) => {
+            if (e.target.id === 'smsCode' && currentStep === 4) {
+                const code = e.target.value;
+                if (code.length >= 4) {
+                    setTimeout(() => {
+                        taskCompleted = true;
+                        updateNextButton();
+                    }, 1000);
+                }
+            }
+        });
+
+        // Шаг 5
+        document.addEventListener('click', (e) => {
+            if (e.target.id === 'continueBtn3' && currentStep === 5) {
+                const pwd1 = document.getElementById('password')?.value;
+                const pwd2 = document.getElementById('password2')?.value;
+                if (pwd1 && pwd2 && pwd1.length >= 5) {
+                    taskCompleted = true;
+                    updateNextButton();
+                } else {
+                    alert('Введите пароль (минимум 5 символов)!');
+                }
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            showStep(0);
+        });
+    </script>
+  </div>
+</div>

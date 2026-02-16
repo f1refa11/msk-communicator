@@ -1,0 +1,534 @@
+<div class="gosu-sim-root">
+  <style>
+@import url("/tutorials-assets/gosuslugi-doctor/static/gosuslugi-course-styles.css");
+
+.gosu-sim-root {
+    margin: 0;
+    padding: 24px;
+    background: #e7edf5;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.gosu-sim {
+    width: min(1100px, 100%);
+    min-height: 0;
+}
+
+.gosu-sim .course-container {
+    max-width: 1100px;
+}
+
+.gosu-sim .course-navigation {
+    flex-wrap: wrap;
+}
+
+.gosu-sim .nav-button,
+.gosu-sim .btn-primary,
+.gosu-sim .btn-secondary,
+.gosu-sim .btn-link,
+.gosu-sim .download-btn,
+.gosu-sim button {
+    max-width: 100%;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.gosu-sim input,
+.gosu-sim select,
+.gosu-sim textarea {
+    max-width: 100%;
+}
+
+.gosu-sim .phone-mockup {
+    width: min(100%, 720px);
+}
+
+.gosu-sim .phone-screen {
+    height: min(85vh, 680px);
+    min-height: 0;
+}
+
+@media (max-width: 720px) {
+    .gosu-sim-root {
+        padding: 16px;
+    }
+
+    .gosu-sim .course-header {
+        padding: 3vh 4vw;
+        border-width: 0.4vw;
+    }
+
+    .gosu-sim .step-card {
+        padding: 2.5vh 4vw;
+    }
+
+    .gosu-sim .phone-screen {
+        height: auto;
+    }
+
+    .gosu-sim .page-content {
+        padding: 3vh 5vw;
+        overflow: visible;
+    }
+
+    .gosu-sim .course-navigation {
+        gap: 12px;
+    }
+
+    .gosu-sim .nav-button {
+        width: 100%;
+    }
+}
+  </style>
+  <div class="gosu-sim">
+<style>
+        .phone-mockup{max-width:min(98vw,700px);margin:3vh auto;background:#000;border:0.8vw solid #000;border-radius:4vw;padding:2vh 1.5vw;box-shadow:0 2vh 5vh rgba(0,0,0,0.4);position:relative}
+        .phone-mockup::before{content:'';position:absolute;top:1vh;left:50%;transform:translateX(-50%);width:20vw;max-width:120px;height:3vh;background:#000;border-radius:2vw}
+        .phone-screen{background:#fff;border-radius:2.5vw;overflow:hidden;height:85vh;min-height:700px;display:flex;flex-direction:column}
+        .browser-bar{background:#f5f5f5;padding:1.5vh 3vw;border-bottom:0.2vw solid #e0e0e0;display:flex;align-items:center;gap:2vw;font-size:clamp(0.85rem,1.6vw,1.3rem);color:#666}
+        .browser-icon{font-size:clamp(1rem,1.9vw,1.6rem)}
+        .browser-url{flex:1;font-weight:500}
+        .page-content{flex:1;overflow-y:auto;background:#fff;padding:3vh 4vw}
+        .gosuslugi-logo{text-align:center;margin-bottom:3vh}
+        .logo-text{font-size:clamp(1.8rem,3.5vw,3rem);font-weight:bold}
+        .logo-gos{color:#0063B0}
+        .logo-uslugi{color:#E31E24}
+        .page-title{font-size:clamp(1.3rem,2.5vw,2.2rem);font-weight:bold;color:#000;margin-bottom:2vh}
+        .section-title{font-size:clamp(1.2rem,2.4vw,2rem);font-weight:bold;color:#000;margin:3vh 0 2vh;padding-bottom:1vh;border-bottom:0.2vw solid #e0e0e0}
+        .search-box{background:#f5f5f5;border:0.2vw solid #ccc;border-radius:1vw;padding:2vh 3vw;margin-bottom:3vh;display:flex;align-items:center;gap:2vw;cursor:pointer;transition:all 0.3s}
+        .search-box:hover{border-color:#0063B0;background:#e8f4fd}
+        .search-icon{font-size:clamp(1.2rem,2.4vw,2rem);color:#666}
+        .search-text{flex:1;color:#999;font-size:clamp(1rem,1.9vw,1.6rem)}
+        .service-cards{display:flex;flex-direction:column;gap:2vh}
+        .service-card{background:#fff;border:0.2vw solid #e0e0e0;border-radius:1.2vw;padding:2.5vh 3vw;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;gap:3vw}
+        .service-card:hover{border-color:#0063B0;box-shadow:0 0.5vh 1.5vh rgba(0,99,176,0.15)}
+        .service-card.selected{border-color:#0063B0;border-width:0.3vw;background:#e8f4fd}
+        .service-icon{font-size:clamp(2rem,4vw,3.5rem);flex-shrink:0}
+        .service-info{flex:1}
+        .service-name{font-size:clamp(1.1rem,2.2vw,1.9rem);font-weight:bold;color:#000;margin-bottom:0.5vh}
+        .service-desc{font-size:clamp(0.95rem,1.8vw,1.5rem);color:#666;line-height:1.4}
+        .info-card{background:#e8f4fd;border-left:0.6vw solid #0063B0;padding:2.5vh 3vw;margin:2vh 0;border-radius:0.5vw}
+        .info-title{font-size:clamp(1.05rem,2vw,1.7rem);font-weight:bold;color:#000;margin-bottom:1vh}
+        .info-text{font-size:clamp(0.95rem,1.8vw,1.5rem);color:#333;line-height:1.5}
+        .filter-section{margin-bottom:3vh}
+        .filter-label{font-size:clamp(1rem,1.9vw,1.6rem);color:#666;margin-bottom:1vh}
+        .filter-select{width:100%;padding:2vh 2.5vw;border:0.2vw solid #ccc;border-radius:1vw;font-size:clamp(1.05rem,2vw,1.7rem);background:#fff;cursor:pointer}
+        .doctor-list{display:flex;flex-direction:column;gap:2vh}
+        .doctor-card{background:#fff;border:0.2vw solid #e0e0e0;border-radius:1.2vw;padding:2.5vh 3vw;cursor:pointer;transition:all 0.3s}
+        .doctor-card:hover{border-color:#0063B0;box-shadow:0 0.5vh 1.5vh rgba(0,99,176,0.15)}
+        .doctor-card.selected{border-color:#0063B0;border-width:0.3vw;background:#e8f4fd}
+        .doctor-name{font-size:clamp(1.15rem,2.3vw,1.9rem);font-weight:bold;color:#000;margin-bottom:0.5vh}
+        .doctor-specialty{font-size:clamp(1rem,1.9vw,1.6rem);color:#0063B0;margin-bottom:0.5vh}
+        .doctor-info{font-size:clamp(0.95rem,1.8vw,1.5rem);color:#666}
+        .calendar-container{margin-bottom:3vh}
+        .calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2vh}
+        .calendar-month{font-size:clamp(1.2rem,2.4vw,2rem);font-weight:bold;color:#000}
+        .calendar-nav{display:flex;gap:2vw}
+        .calendar-btn{background:#fff;border:0.2vw solid #ccc;border-radius:0.8vw;width:5vh;height:5vh;display:flex;align-items:center;justify-content:center;font-size:clamp(1.2rem,2.4vw,2rem);cursor:pointer;transition:all 0.3s}
+        .calendar-btn:hover{border-color:#0063B0;background:#e8f4fd}
+        .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1.5vw;margin-bottom:2vh}
+        .calendar-day{aspect-ratio:1;background:#f5f5f5;border:0.2vw solid #e0e0e0;border-radius:1vw;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all 0.3s}
+        .calendar-day:hover{background:#e8f4fd;border-color:#0063B0}
+        .calendar-day.selected{background:#0063B0;color:#fff;border-color:#0063B0}
+        .calendar-day.disabled{opacity:0.3;cursor:not-allowed}
+        .day-num{font-size:clamp(1.05rem,2vw,1.7rem);font-weight:bold}
+        .day-name{font-size:clamp(0.75rem,1.4vw,1.1rem);opacity:0.7}
+        .time-slots{display:grid;grid-template-columns:repeat(3,1fr);gap:2vw}
+        .time-slot{background:#fff;border:0.2vw solid #e0e0e0;border-radius:1vw;padding:2vh;text-align:center;font-size:clamp(1.05rem,2vw,1.7rem);font-weight:600;cursor:pointer;transition:all 0.3s}
+        .time-slot:hover{background:#e8f4fd;border-color:#0063B0}
+        .time-slot.selected{background:#0063B0;color:#fff;border-color:#0063B0}
+        .btn-primary{width:100%;background:#0063B0;color:#fff;border:none;border-radius:0.8vw;padding:2.5vh;font-size:clamp(1.1rem,2.2vw,1.9rem);font-weight:600;cursor:pointer;transition:all 0.3s;margin-top:2vh;box-shadow:0 0.3vh 1vh rgba(0,99,176,0.3)}
+        .btn-primary:hover{background:#004d8c}
+        .btn-primary:disabled{opacity:0.5;cursor:not-allowed}
+        .summary-card{background:#e8f4fd;border:0.3vw solid #0063B0;border-radius:1.2vw;padding:3vh;margin-bottom:2vh}
+        .summary-row{display:flex;justify-content:space-between;margin-bottom:1.5vh;font-size:clamp(1rem,1.9vw,1.6rem)}
+        .summary-label{color:#666}
+        .summary-value{font-weight:bold;color:#000}
+        .success-icon{font-size:clamp(5rem,10vw,8rem);text-align:center;margin:3vh 0}
+        .success-title{font-size:clamp(1.6rem,3.2vw,2.8rem);font-weight:bold;text-align:center;color:#000;margin-bottom:2vh}
+        .success-text{font-size:clamp(1.05rem,2vw,1.7rem);text-align:center;color:#666;margin-bottom:3vh}
+        .task-hint{background:#ffd700;border:0.4vw solid #000;border-radius:1vw;padding:2.5vh 3vw;margin:2.5vh 0;font-size:clamp(1.1rem,2.2vw,1.9rem);color:#000;font-weight:bold;box-shadow:0 0.5vh 1.5vh rgba(0,0,0,0.3)}
+        .task-hint strong{display:block;margin-bottom:1.5vh;font-size:clamp(1.3rem,2.5vw,2.2rem);text-transform:uppercase}
+    </style>
+<div class="course-container">
+        <div class="course-header">
+            <h1 class="course-title">Запись к врачу на Госуслугах</h1>
+            <p class="course-subtitle">Пошаговая инструкция</p>
+        </div>
+
+        <div class="course-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            <p class="progress-text">Шаг <span id="currentStep">1</span> из 6</p>
+        </div>
+
+        <div class="course-content">
+            <!-- Шаг 0 -->
+            <div class="step-card" id="step0" style="display:block;">
+                <div class="step-number">Подготовка</div>
+                <h2 class="step-title">Что нужно для записи к врачу</h2>
+                <ul class="checklist">
+                    <li class="checklist-item"><strong>Аккаунт на Госуслугах</strong> - вы должны быть зарегистрированы</li>
+                    <li class="checklist-item"><strong>Полис ОМС</strong> - номер полиса обязательного медицинского страхования</li>
+                    <li class="checklist-item"><strong>СНИЛС</strong> - для идентификации</li>
+                </ul>
+                <div class="info-box">
+                    <p><strong>В этом курсе мы:</strong></p>
+                    <p>1. Найдём услугу "Запись к врачу"</p>
+                    <p>2. Выберем поликлинику</p>
+                    <p>3. Выберем врача-специалиста</p>
+                    <p>4. Запишемся на удобное время</p>
+                </div>
+            </div>
+
+            <!-- Шаг 1 -->
+            <div class="step-card" id="step1" style="display:none;">
+                <div class="step-number">Шаг 1</div>
+                <h2 class="step-title">Ищем услугу</h2>
+                <div class="task-hint">
+                    <strong>ЗАДАНИЕ:</strong> Нажмите на "Запись на приём к врачу"
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="browser-bar">
+                            <span class="browser-icon">🏠</span>
+                            <span class="browser-icon">🔒</span>
+                            <span class="browser-url">gosuslugi.ru</span>
+                        </div>
+                        <div class="page-content">
+                            <div class="gosuslugi-logo">
+                                <div class="logo-text">
+                                    <span class="logo-gos">гос</span><span class="logo-uslugi">услуги</span>
+                                </div>
+                            </div>
+                            <div class="search-box">
+                                <span class="search-icon">🔍</span>
+                                <span class="search-text">Поиск услуг</span>
+                            </div>
+                            <div class="section-title">Популярные услуги</div>
+                            <div class="service-cards">
+                                <div class="service-card doctor-select">
+                                    <span class="service-icon">🏥</span>
+                                    <div class="service-info">
+                                        <div class="service-name">Запись на приём к врачу</div>
+                                        <div class="service-desc">Выберите врача и удобное время</div>
+                                    </div>
+                                </div>
+                                <div class="service-card">
+                                    <span class="service-icon">🚗</span>
+                                    <div class="service-info">
+                                        <div class="service-name">Штрафы ГИБДД</div>
+                                        <div class="service-desc">Проверка и оплата</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Шаг 2 -->
+            <div class="step-card" id="step2" style="display:none;">
+                <div class="step-number">Шаг 2</div>
+                <h2 class="step-title">Выбор поликлиники</h2>
+                <div class="task-hint">
+                    <strong>ЗАДАНИЕ:</strong> Выберите поликлинику
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="browser-bar">
+                            <span class="browser-icon">←</span>
+                            <span class="browser-url">Запись к врачу</span>
+                        </div>
+                        <div class="page-content">
+                            <div class="page-title">Выберите медицинскую организацию</div>
+                            <div class="info-card">
+                                <div class="info-title">Ваш полис ОМС</div>
+                                <div class="info-text">1234 5678 9012 3456</div>
+                            </div>
+                            <div class="filter-section">
+                                <div class="filter-label">Город</div>
+                                <select class="filter-select">
+                                    <option>Москва</option>
+                                </select>
+                            </div>
+                            <div class="service-cards">
+                                <div class="service-card clinic-select">
+                                    <span class="service-icon">🏥</span>
+                                    <div class="service-info">
+                                        <div class="service-name">Поликлиника №5</div>
+                                        <div class="service-desc">ул. Ленина, 15<br>Взрослая поликлиника</div>
+                                    </div>
+                                </div>
+                                <div class="service-card">
+                                    <span class="service-icon">🏥</span>
+                                    <div class="service-info">
+                                        <div class="service-name">Поликлиника №12</div>
+                                        <div class="service-desc">пр. Мира, 8<br>Взрослая поликлиника</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Шаг 3 -->
+            <div class="step-card" id="step3" style="display:none;">
+                <div class="step-number">Шаг 3</div>
+                <h2 class="step-title">Выбор врача</h2>
+                <div class="task-hint">
+                    <strong>ЗАДАНИЕ:</strong> Выберите врача
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="browser-bar">
+                            <span class="browser-icon">←</span>
+                            <span class="browser-url">Выбор врача</span>
+                        </div>
+                        <div class="page-content">
+                            <div class="page-title">Выберите специальность</div>
+                            <div class="filter-section">
+                                <select class="filter-select">
+                                    <option>Терапевт</option>
+                                    <option>Кардиолог</option>
+                                    <option>Хирург</option>
+                                </select>
+                            </div>
+                            <div class="section-title">Доступные врачи</div>
+                            <div class="doctor-list">
+                                <div class="doctor-card doc-select">
+                                    <div class="doctor-name">Петрова Анна Ивановна</div>
+                                    <div class="doctor-specialty">Терапевт</div>
+                                    <div class="doctor-info">Стаж: 15 лет • Кабинет 215</div>
+                                </div>
+                                <div class="doctor-card">
+                                    <div class="doctor-name">Сидоров Иван Петрович</div>
+                                    <div class="doctor-specialty">Терапевт</div>
+                                    <div class="doctor-info">Стаж: 22 года • Кабинет 218</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Шаг 4 -->
+            <div class="step-card" id="step4" style="display:none;">
+                <div class="step-number">Шаг 4</div>
+                <h2 class="step-title">Выбор даты и времени</h2>
+                <div class="task-hint">
+                    <strong>ЗАДАНИЕ:</strong> Выберите день и время
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="browser-bar">
+                            <span class="browser-icon">←</span>
+                            <span class="browser-url">Дата и время</span>
+                        </div>
+                        <div class="page-content">
+                            <div class="info-card">
+                                <div class="info-text"><strong>Поликлиника №5</strong><br>Терапевт Петрова А.И.</div>
+                            </div>
+                            <div class="calendar-container">
+                                <div class="calendar-header">
+                                    <div class="calendar-month">Февраль 2026</div>
+                                    <div class="calendar-nav">
+                                        <div class="calendar-btn">←</div>
+                                        <div class="calendar-btn">→</div>
+                                    </div>
+                                </div>
+                                <div class="calendar-grid">
+                                    <div class="calendar-day disabled"><div class="day-num">15</div></div>
+                                    <div class="calendar-day disabled"><div class="day-num">16</div></div>
+                                    <div class="calendar-day day-select"><div class="day-num">17</div></div>
+                                    <div class="calendar-day day-select"><div class="day-num">18</div></div>
+                                    <div class="calendar-day day-select"><div class="day-num">19</div></div>
+                                    <div class="calendar-day day-select"><div class="day-num">20</div></div>
+                                    <div class="calendar-day disabled"><div class="day-num">21</div></div>
+                                </div>
+                            </div>
+                            <div class="section-title">Доступное время</div>
+                            <div class="time-slots">
+                                <div class="time-slot time-select">09:00</div>
+                                <div class="time-slot time-select">09:30</div>
+                                <div class="time-slot time-select">10:00</div>
+                                <div class="time-slot time-select">10:30</div>
+                                <div class="time-slot time-select">11:00</div>
+                                <div class="time-slot time-select">11:30</div>
+                            </div>
+                            <button class="btn-primary" id="confirmBtn" disabled>Подтвердить запись</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Шаг 5 -->
+            <div class="step-card" id="step5" style="display:none;">
+                <div class="step-number">Готово!</div>
+                <h2 class="step-title">Вы записаны к врачу!</h2>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="browser-bar">
+                            <span class="browser-icon">🏠</span>
+                            <span class="browser-url">gosuslugi.ru</span>
+                        </div>
+                        <div class="page-content">
+                            <div class="success-icon">✅</div>
+                            <div class="success-title">Запись подтверждена!</div>
+                            <div class="success-text">Вы успешно записаны на приём</div>
+                            <div class="summary-card">
+                                <div class="summary-row">
+                                    <span class="summary-label">Поликлиника:</span>
+                                    <span class="summary-value">№5</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span class="summary-label">Врач:</span>
+                                    <span class="summary-value">Петрова А.И.</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span class="summary-label">Специальность:</span>
+                                    <span class="summary-value">Терапевт</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span class="summary-label">Дата:</span>
+                                    <span class="summary-value">17 февраля 2026</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span class="summary-label">Время:</span>
+                                    <span class="summary-value">09:00</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span class="summary-label">Кабинет:</span>
+                                    <span class="summary-value">215</span>
+                                </div>
+                            </div>
+                            <div class="info-card">
+                                <div class="info-title">Не забудьте взять:</div>
+                                <div class="info-text">📋 Паспорт<br>💳 Полис ОМС<br>📝 СНИЛС</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p><strong>Поздравляем!</strong></p>
+                    <p>✓ Вы записались к врачу через Госуслуги</p>
+                    <p>✓ Придёт СМС-напоминание</p>
+                    <p>✓ Можно отменить в личном кабинете</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="course-navigation">
+            <button class="nav-button" id="prevBtn" onclick="changeStep(-1)">Назад</button>
+            <button class="nav-button primary" id="nextBtn" onclick="changeStep(1)">Далее</button>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        const totalSteps = 5;
+        let taskCompleted = false;
+        let daySelected = false;
+        let timeSelected = false;
+
+        function showStep(stepIndex) {
+            document.querySelectorAll('.step-card').forEach(step => step.style.display = 'none');
+            document.getElementById('step' + stepIndex).style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            document.getElementById('prevBtn').disabled = stepIndex === 0;
+            document.getElementById('nextBtn').textContent = stepIndex === totalSteps ? 'Завершено' : 'Далее';
+            document.getElementById('currentStep').textContent = stepIndex + 1;
+            document.getElementById('progressBar').style.width = (stepIndex / totalSteps) * 100 + '%';
+            
+            taskCompleted = (stepIndex === 0);
+            updateNextButton();
+        }
+
+        function updateNextButton() {
+            document.getElementById('nextBtn').disabled = !taskCompleted;
+        }
+
+        function changeStep(direction) {
+            currentStep += direction;
+            if (currentStep < 0) currentStep = 0;
+            if (currentStep > totalSteps) {
+                alert('Поздравляем! Вы научились записываться к врачу через Госуслуги!');
+                currentStep = totalSteps;
+            }
+            showStep(currentStep);
+        }
+
+        document.querySelectorAll('.doctor-select').forEach(el => {
+            el.addEventListener('click', () => {
+                if (currentStep === 1) {
+                    taskCompleted = true;
+                    updateNextButton();
+                    el.classList.add('selected');
+                }
+            });
+        });
+
+        document.querySelectorAll('.clinic-select').forEach(el => {
+            el.addEventListener('click', () => {
+                if (currentStep === 2) {
+                    taskCompleted = true;
+                    updateNextButton();
+                    el.classList.add('selected');
+                }
+            });
+        });
+
+        document.querySelectorAll('.doc-select').forEach(el => {
+            el.addEventListener('click', () => {
+                if (currentStep === 3) {
+                    taskCompleted = true;
+                    updateNextButton();
+                    el.classList.add('selected');
+                }
+            });
+        });
+
+        document.querySelectorAll('.day-select').forEach(el => {
+            el.addEventListener('click', () => {
+                if (currentStep === 4 && !el.classList.contains('disabled')) {
+                    document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
+                    el.classList.add('selected');
+                    daySelected = true;
+                    checkDateTime();
+                }
+            });
+        });
+
+        document.querySelectorAll('.time-select').forEach(el => {
+            el.addEventListener('click', () => {
+                if (currentStep === 4) {
+                    document.querySelectorAll('.time-slot').forEach(t => t.classList.remove('selected'));
+                    el.classList.add('selected');
+                    timeSelected = true;
+                    checkDateTime();
+                }
+            });
+        });
+
+        function checkDateTime() {
+            if (daySelected && timeSelected) {
+                const btn = document.getElementById('confirmBtn');
+                btn.disabled = false;
+                btn.onclick = () => {
+                    if (currentStep === 4) {
+                        taskCompleted = true;
+                        updateNextButton();
+                    }
+                };
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => showStep(0));
+    </script>
+  </div>
+</div>

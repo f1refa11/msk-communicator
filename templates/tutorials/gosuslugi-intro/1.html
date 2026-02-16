@@ -1,0 +1,136 @@
+<div class="gosu-sim-root">
+  <style>
+@import url("/tutorials-assets/gosuslugi-intro/static/gosuslugi-course-styles.css");
+
+.gosu-sim-root {
+    margin: 0;
+    padding: 24px;
+    background: #e7edf5;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.gosu-sim {
+    width: min(1100px, 100%);
+    min-height: 0;
+}
+
+.gosu-sim .course-container {
+    max-width: 1100px;
+}
+
+.gosu-sim .course-navigation {
+    flex-wrap: wrap;
+}
+
+.gosu-sim .nav-button,
+.gosu-sim .btn-primary,
+.gosu-sim .btn-secondary,
+.gosu-sim .btn-link,
+.gosu-sim .download-btn,
+.gosu-sim button {
+    max-width: 100%;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.gosu-sim input,
+.gosu-sim select,
+.gosu-sim textarea {
+    max-width: 100%;
+}
+
+.gosu-sim .phone-mockup {
+    width: min(100%, 720px);
+}
+
+.gosu-sim .phone-screen {
+    height: min(85vh, 680px);
+    min-height: 0;
+}
+
+@media (max-width: 720px) {
+    .gosu-sim-root {
+        padding: 16px;
+    }
+
+    .gosu-sim .course-header {
+        padding: 3vh 4vw;
+        border-width: 0.4vw;
+    }
+
+    .gosu-sim .step-card {
+        padding: 2.5vh 4vw;
+    }
+
+    .gosu-sim .phone-screen {
+        height: auto;
+    }
+
+    .gosu-sim .page-content {
+        padding: 3vh 5vw;
+        overflow: visible;
+    }
+
+    .gosu-sim .course-navigation {
+        gap: 12px;
+    }
+
+    .gosu-sim .nav-button {
+        width: 100%;
+    }
+}
+  </style>
+  <div class="gosu-sim">
+
+<div class="course-container">
+        <div class="course-header">
+            <h1 class="course-title">🏛️ Госуслуги</h1>
+            <p class="course-subtitle">Портал государственных услуг</p>
+        </div>
+
+        <div class="step-card">
+            <h2 class="step-title">О курсе</h2>
+            <p class="instruction-text">
+                <strong>Госуслуги</strong> - это мобильное приложение для получения государственных услуг прямо с телефона.
+            </p>
+            <p class="instruction-text">
+                В этом курсе вы научитесь:
+            </p>
+            <ul class="checklist">
+                <li class="checklist-item">Устанавливать приложение Госуслуги</li>
+                <li class="checklist-item">Регистрироваться в приложении</li>
+                <li class="checklist-item">Входить в личный кабинет</li>
+                <li class="checklist-item">Записываться к врачу</li>
+                <li class="checklist-item">Искать нужные услуги</li>
+            </ul>
+            
+            <div class="info-box">
+                <p><strong>Что можно сделать в приложении Госуслуги:</strong></p>
+                <p>📋 Получить справки и выписки</p>
+                <p>🏥 Записаться к врачу</p>
+                <p>🚗 Оплатить штрафы ГИБДД</p>
+                <p>💰 Оплатить налоги и госпошлины</p>
+                <p>🎓 Подать документы в детский сад/школу</p>
+                <p>📄 Оформить документы</p>
+                <p>🏠 Получить субсидии и льготы</p>
+            </div>
+
+            <div class="info-box">
+                <p><strong>Преимущества приложения:</strong></p>
+                <p>✓ Удобнее чем сайт - всё под рукой</p>
+                <p>✓ Официальное приложение государства</p>
+                <p>✓ Защищённое соединение</p>
+                <p>✓ Все услуги бесплатные (кроме госпошлин)</p>
+            </div>
+        </div>
+
+        <div class="course-navigation">
+            <a href="/tutorials/gosuslugi-registration/1" class="nav-button primary">Как зарегистрироваться?</a>
+            <a href="/tutorials/gosuslugi-doctor/1" class="nav-button primary">Запись к врачу</a>
+            <a href="/tutorials/gosuslugi-pension/1" class="nav-button primary">Электронное свидетельство пенсионера</a>
+        </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,367 @@
+<div class="gosu-sim-root">
+  <style>
+@import url("/tutorials-assets/gosuslugi-pension/static/gosuslugi-course-styles.css");
+
+.gosu-sim-root {
+    margin: 0;
+    padding: 24px;
+    background: #e7edf5;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.gosu-sim {
+    width: min(1100px, 100%);
+    min-height: 0;
+}
+
+.gosu-sim .course-container {
+    max-width: 1100px;
+}
+
+.gosu-sim .course-navigation {
+    flex-wrap: wrap;
+}
+
+.gosu-sim .nav-button,
+.gosu-sim .btn-primary,
+.gosu-sim .btn-secondary,
+.gosu-sim .btn-link,
+.gosu-sim .download-btn,
+.gosu-sim button {
+    max-width: 100%;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.gosu-sim input,
+.gosu-sim select,
+.gosu-sim textarea {
+    max-width: 100%;
+}
+
+.gosu-sim .phone-mockup {
+    width: min(100%, 720px);
+}
+
+.gosu-sim .phone-screen {
+    height: min(85vh, 680px);
+    min-height: 0;
+}
+
+@media (max-width: 720px) {
+    .gosu-sim-root {
+        padding: 16px;
+    }
+
+    .gosu-sim .course-header {
+        padding: 3vh 4vw;
+        border-width: 0.4vw;
+    }
+
+    .gosu-sim .step-card {
+        padding: 2.5vh 4vw;
+    }
+
+    .gosu-sim .phone-screen {
+        height: auto;
+    }
+
+    .gosu-sim .page-content {
+        padding: 3vh 5vw;
+        overflow: visible;
+    }
+
+    .gosu-sim .course-navigation {
+        gap: 12px;
+    }
+
+    .gosu-sim .nav-button {
+        width: 100%;
+    }
+}
+  </style>
+  <div class="gosu-sim">
+<style>
+        .phone-mockup{max-width:min(98vw,700px);margin:3vh auto;background:#000;border:0.8vw solid #000;border-radius:4vw;padding:2vh 1.5vw;box-shadow:0 2vh 5vh rgba(0,0,0,0.4);position:relative}
+        .phone-mockup::before{content:'';position:absolute;top:1vh;left:50%;transform:translateX(-50%);width:20vw;max-width:120px;height:3vh;background:#000;border-radius:2vw}
+        .phone-screen{background:#fff;border-radius:2.5vw;overflow:hidden;height:85vh;min-height:700px;display:flex;flex-direction:column}
+        .browser-bar{background:#f5f5f5;padding:1.5vh 3vw;border-bottom:0.2vw solid #e0e0e0;display:flex;align-items:center;gap:2vw;font-size:clamp(0.85rem,1.6vw,1.3rem);color:#666}
+        .browser-icon{font-size:clamp(1rem,1.9vw,1.6rem)}
+        .browser-url{flex:1;font-weight:500}
+        .page-content{flex:1;overflow-y:auto;background:#fff;padding:3vh 4vw}
+        .gosuslugi-logo{text-align:center;margin-bottom:3vh}
+        .logo-text{font-size:clamp(1.8rem,3.5vw,3rem);font-weight:bold}
+        .logo-gos{color:#0063B0}
+        .logo-uslugi{color:#E31E24}
+        .page-title{font-size:clamp(1.3rem,2.5vw,2.2rem);font-weight:bold;color:#000;margin-bottom:2vh}
+        .search-box{background:#f5f5f5;border:0.2vw solid #ccc;border-radius:1vw;padding:2vh 3vw;margin-bottom:3vh;display:flex;align-items:center;gap:2vw}
+        .search-icon{font-size:clamp(1.2rem,2.4vw,2rem);color:#666}
+        .search-text{flex:1;color:#999;font-size:clamp(1rem,1.9vw,1.6rem)}
+        .service-card{background:#fff;border:0.2vw solid #e0e0e0;border-radius:1.2vw;padding:2.5vh 3vw;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;gap:3vw;margin-bottom:2vh}
+        .service-card:hover{border-color:#0063B0;box-shadow:0 0.5vh 1.5vh rgba(0,99,176,0.15)}
+        .service-card.selected{border-color:#0063B0;border-width:0.3vw;background:#e8f4fd}
+        .service-icon{font-size:clamp(2rem,4vw,3.5rem)}
+        .service-info{flex:1}
+        .service-name{font-size:clamp(1.1rem,2.2vw,1.9rem);font-weight:bold;color:#000;margin-bottom:0.5vh}
+        .service-desc{font-size:clamp(0.95rem,1.8vw,1.5rem);color:#666}
+        .info-card{background:#e8f4fd;border-left:0.6vw solid #0063B0;padding:2.5vh 3vw;margin:2vh 0;border-radius:0.5vw}
+        .info-title{font-size:clamp(1.05rem,2vw,1.7rem);font-weight:bold;color:#000;margin-bottom:1vh}
+        .info-text{font-size:clamp(0.95rem,1.8vw,1.5rem);color:#333;line-height:1.5}
+        .detail-section{margin-bottom:3vh}
+        .detail-row{display:flex;justify-content:space-between;padding:2vh 0;border-bottom:0.2vw solid #e0e0e0;font-size:clamp(1rem,1.9vw,1.6rem)}
+        .detail-row:last-child{border-bottom:none}
+        .detail-label{color:#666}
+        .detail-value{font-weight:bold;color:#000}
+        .btn-primary{width:100%;background:#0063B0;color:#fff;border:none;border-radius:0.8vw;padding:2.5vh;font-size:clamp(1.1rem,2.2vw,1.9rem);font-weight:600;cursor:pointer;transition:all 0.3s;margin-top:2vh}
+        .btn-primary:hover{background:#004d8c}
+        .certificate-card{background:linear-gradient(135deg,#fff 0%,#e8f4fd 100%);border:0.3vw solid #0063B0;border-radius:1.5vw;padding:4vh 3vw;margin:3vh 0;text-align:center}
+        .cert-title{font-size:clamp(1.2rem,2.4vw,2rem);font-weight:bold;color:#000;margin-bottom:2vh}
+        .cert-number{font-size:clamp(1.8rem,3.6vw,3rem);font-weight:bold;color:#0063B0;letter-spacing:0.3vw;margin:2vh 0}
+        .cert-qr{width:30vw;height:30vw;max-width:200px;max-height:200px;background:#fff;border:0.3vw solid #000;margin:2vh auto;display:flex;align-items:center;justify-content:center;font-size:clamp(3rem,6vw,5rem)}
+        .download-section{margin-top:3vh}
+        .download-btn{background:#fff;color:#0063B0;border:0.3vw solid #0063B0;border-radius:0.8vw;padding:2vh 3vw;font-size:clamp(1.05rem,2vw,1.7rem);font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:2vw;margin-bottom:2vh;transition:all 0.3s}
+        .download-btn:hover{background:#e8f4fd}
+        .success-icon{font-size:clamp(5rem,10vw,8rem);text-align:center;margin:3vh 0}
+        .success-title{font-size:clamp(1.6rem,3.2vw,2.8rem);font-weight:bold;text-align:center;color:#000;margin-bottom:2vh}
+        .success-text{font-size:clamp(1.05rem,2vw,1.7rem);text-align:center;color:#666;margin-bottom:3vh;line-height:1.6}
+        .task-hint{background:#ffd700;border:0.4vw solid #000;border-radius:1vw;padding:2.5vh 3vw;margin:2.5vh 0;font-size:clamp(1.1rem,2.2vw,1.9rem);color:#000;font-weight:bold;box-shadow:0 0.5vh 1.5vh rgba(0,0,0,0.3)}
+        .task-hint strong{display:block;margin-bottom:1.5vh;font-size:clamp(1.3rem,2.5vw,2.2rem);text-transform:uppercase}
+    </style>
+<div class="course-container">
+        <div class="course-header">
+            <h1 class="course-title">Электронное свидетельство пенсионера</h1>
+            <p class="course-subtitle">Получение через Госуслуги</p>
+        </div>
+
+        <div class="course-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            <p class="progress-text">Шаг <span id="currentStep">1</span> из 4</p>
+        </div>
+
+        <div class="course-content">
+            <!-- Шаг 0 -->
+            <div class="step-card" id="step0" style="display:block;">
+                <div class="step-number">Подготовка</div>
+                <h2 class="step-title">Что такое электронное свидетельство пенсионера</h2>
+                <p class="instruction-text">Это цифровой документ, подтверждающий ваш статус пенсионера</p>
+                <ul class="checklist">
+                    <li class="checklist-item"><strong>Не нужно носить бумажное удостоверение</strong></li>
+                    <li class="checklist-item"><strong>Можно показать на телефоне</strong></li>
+                    <li class="checklist-item"><strong>Действует так же как бумажное</strong></li>
+                    <li class="checklist-item"><strong>Можно распечатать при необходимости</strong></li>
+                </ul>
+                <div class="info-box">
+                    <p><strong>Где пригодится:</strong></p>
+                    <p>🚌 Получение льгот на проезд</p>
+                    <p>💊 Скидки в аптеках</p>
+                    <p>🎭 Льготы в музеях и театрах</p>
+                    <p>🏥 В поликлинике</p>
+                </div>
+            </div>
+
+            <!-- Шаг 1 -->
+            <div class="step-card" id="step1" style="display:none;">
+                <div class="step-number">Шаг 1</div>
+                <h2 class="step-title">Найдите услугу</h2>
+                <div class="task-hint">
+                    <strong>ЗАДАНИЕ:</strong> Нажмите на "Электронное свидетельство пенсионера"
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="browser-bar">
+                            <span class="browser-icon">🏠</span>
+                            <span class="browser-icon">🔒</span>
+                            <span class="browser-url">gosuslugi.ru</span>
+                        </div>
+                        <div class="page-content">
+                            <div class="gosuslugi-logo">
+                                <div class="logo-text">
+                                    <span class="logo-gos">гос</span><span class="logo-uslugi">услуги</span>
+                                </div>
+                            </div>
+                            <div class="search-box">
+                                <span class="search-icon">🔍</span>
+                                <span class="search-text">Поиск услуг</span>
+                            </div>
+                            <div class="page-title">Пенсия и социальные выплаты</div>
+                            <div class="service-card pension-select">
+                                <span class="service-icon">📄</span>
+                                <div class="service-info">
+                                    <div class="service-name">Электронное свидетельство пенсионера</div>
+                                    <div class="service-desc">Получить цифровое удостоверение</div>
+                                </div>
+                            </div>
+                            <div class="service-card">
+                                <span class="service-icon">💰</span>
+                                <div class="service-info">
+                                    <div class="service-name">Размер пенсии</div>
+                                    <div class="service-desc">Узнать сумму выплат</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Шаг 2 -->
+            <div class="step-card" id="step2" style="display:none;">
+                <div class="step-number">Шаг 2</div>
+                <h2 class="step-title">Информация об услуге</h2>
+                <div class="task-hint">
+                    <strong>ЗАДАНИЕ:</strong> Нажмите "Получить свидетельство"
+                </div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="browser-bar">
+                            <span class="browser-icon">←</span>
+                            <span class="browser-url">Электронное свидетельство</span>
+                        </div>
+                        <div class="page-content">
+                            <div class="page-title">Электронное свидетельство пенсионера</div>
+                            <div class="info-card">
+                                <div class="info-title">Описание услуги</div>
+                                <div class="info-text">Получите цифровое удостоверение пенсионера. Документ формируется автоматически на основе данных ПФР.</div>
+                            </div>
+                            <div class="detail-section">
+                                <div class="detail-row">
+                                    <span class="detail-label">Срок получения:</span>
+                                    <span class="detail-value">Сразу</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Стоимость:</span>
+                                    <span class="detail-value">Бесплатно</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Результат:</span>
+                                    <span class="detail-value">PDF документ</span>
+                                </div>
+                            </div>
+                            <div class="info-card">
+                                <div class="info-title">Кому доступно</div>
+                                <div class="info-text">Гражданам РФ, получающим страховую пенсию по старости или инвалидности</div>
+                            </div>
+                            <button class="btn-primary" id="getBtn">Получить свидетельство</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Шаг 3 -->
+            <div class="step-card" id="step3" style="display:none;">
+                <div class="step-number">Готово!</div>
+                <h2 class="step-title">Свидетельство получено!</h2>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="browser-bar">
+                            <span class="browser-icon">🏠</span>
+                            <span class="browser-url">gosuslugi.ru</span>
+                        </div>
+                        <div class="page-content">
+                            <div class="success-icon">✅</div>
+                            <div class="success-title">Свидетельство готово!</div>
+                            <div class="success-text">Ваше электронное свидетельство пенсионера сформировано</div>
+                            <div class="certificate-card">
+                                <div class="cert-title">ЭЛЕКТРОННОЕ СВИДЕТЕЛЬСТВО<br>ПЕНСИОНЕРА</div>
+                                <div class="cert-qr">📱</div>
+                                <div class="cert-number">№ 123456789</div>
+                                <div style="margin-top:2vh">
+                                    <div class="detail-row">
+                                        <span class="detail-label">ФИО:</span>
+                                        <span class="detail-value">Иванов Иван Иванович</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Дата рождения:</span>
+                                        <span class="detail-value">01.01.1950</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Вид пенсии:</span>
+                                        <span class="detail-value">По старости</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="download-section">
+                                <button class="download-btn">📥 Скачать PDF</button>
+                                <button class="download-btn">📧 Отправить на email</button>
+                                <button class="download-btn">🖨️ Распечатать</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <p><strong>Поздравляем!</strong></p>
+                    <p>✓ Вы получили электронное свидетельство пенсионера</p>
+                    <p>✓ Документ доступен в разделе "Мои документы"</p>
+                    <p>✓ Можно показывать с телефона</p>
+                    <p>✓ Можно распечатать и носить с собой</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="course-navigation">
+            <button class="nav-button" id="prevBtn" onclick="changeStep(-1)">Назад</button>
+            <button class="nav-button primary" id="nextBtn" onclick="changeStep(1)">Далее</button>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        const totalSteps = 3;
+        let taskCompleted = false;
+
+        function showStep(stepIndex) {
+            document.querySelectorAll('.step-card').forEach(step => step.style.display = 'none');
+            document.getElementById('step' + stepIndex).style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            document.getElementById('prevBtn').disabled = stepIndex === 0;
+            document.getElementById('nextBtn').textContent = stepIndex === totalSteps ? 'Завершено' : 'Далее';
+            document.getElementById('currentStep').textContent = stepIndex + 1;
+            document.getElementById('progressBar').style.width = (stepIndex / totalSteps) * 100 + '%';
+            
+            taskCompleted = (stepIndex === 0);
+            updateNextButton();
+        }
+
+        function updateNextButton() {
+            document.getElementById('nextBtn').disabled = !taskCompleted;
+        }
+
+        function changeStep(direction) {
+            currentStep += direction;
+            if (currentStep < 0) currentStep = 0;
+            if (currentStep > totalSteps) {
+                alert('Поздравляем! Вы получили электронное свидетельство пенсионера!');
+                currentStep = totalSteps;
+            }
+            showStep(currentStep);
+        }
+
+        document.querySelectorAll('.pension-select').forEach(el => {
+            el.addEventListener('click', () => {
+                if (currentStep === 1) {
+                    taskCompleted = true;
+                    updateNextButton();
+                    el.classList.add('selected');
+                }
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.target.id === 'getBtn' && currentStep === 2) {
+                e.target.textContent = '⏳ Формируем документ...';
+                e.target.disabled = true;
+                setTimeout(() => {
+                    taskCompleted = true;
+                    updateNextButton();
+                }, 1500);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => showStep(0));
+    </script>
+  </div>
+</div>
