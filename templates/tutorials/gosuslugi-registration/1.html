@@ -5,7 +5,6 @@
 .gosu-sim-root {
     margin: 0;
     padding: 24px;
-    background: #e7edf5;
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -30,6 +29,7 @@
 .gosu-sim .btn-link,
 .gosu-sim .download-btn,
 .gosu-sim button {
+    width: 100%;
     max-width: 100%;
     white-space: normal;
     word-break: break-word;
@@ -60,7 +60,7 @@
         border-width: 0.4vw;
     }
 
-    .gosu-sim .step-card {
+    .gosu-sim .step-card:not(.step-card-split) {
         padding: 2.5vh 4vw;
     }
 
@@ -85,39 +85,38 @@
   <div class="gosu-sim">
 <style>
         /* Имитация телефона */
-        .phone-mockup{max-width:min(98vw,700px);margin:3vh auto;background:#000;border:0.8vw solid #000;border-radius:4vw;padding:2vh 1.5vw;box-shadow:0 2vh 5vh rgba(0,0,0,0.4);position:relative}
-        .phone-mockup::before{content:'';position:absolute;top:1vh;left:50%;transform:translateX(-50%);width:20vw;max-width:120px;height:3vh;background:#000;border-radius:2vw}
-        .phone-screen{background:#fff;border-radius:2.5vw;overflow:hidden;height:85vh;min-height:700px;display:flex;flex-direction:column}
+        .gosu-sim .phone-mockup{border:2px solid #111;border-radius:3.2vw;position:relative;overflow:hidden}
+        .gosu-sim .phone-screen{background:#fff;border-radius:2.5vw;overflow:hidden;height:85vh;min-height:700px;display:flex;flex-direction:column}
         
         /* Browser Bar */
-        .browser-bar{background:#f5f5f5;padding:1.5vh 3vw;border-bottom:0.2vw solid #e0e0e0;display:flex;align-items:center;gap:2vw;font-size:clamp(0.85rem,1.6vw,1.3rem);color:#666}
+        .browser-bar{background:#f5f5f5;padding:0.5vh 1.6vw;border-bottom:0.2vw solid #e0e0e0;display:flex;align-items:center;gap:2vw;font-size:clamp(0.85rem,1.6vw,1.3rem);color:#666}
         .browser-icon{font-size:clamp(1rem,1.9vw,1.6rem)}
-        .browser-url{flex:1;font-weight:500}
+        .browser-url{flex:1;min-width:0;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         
         /* Main Content */
-        .page-content{flex:1;overflow-y:auto;background:#fff;padding:4vh 5vw}
+        .page-content{flex:1;overflow-y:auto;background:#fff;padding:1vh 1vw}
         
         /* Госуслуги Logo */
         .gosuslugi-logo{text-align:center;margin-bottom:4vh}
-        .logo-text{font-size:clamp(2rem,4vw,3.5rem);font-weight:bold}
-        .logo-gos{color:#0063B0}
-        .logo-uslugi{color:#E31E24}
+        .gosu-sim .logo-text{font-size:clamp(2rem,4vw,3.5rem);font-weight:bold}
+        .gosu-sim .logo-gos{color:#0063B0}
+        .gosu-sim .logo-uslugi{color:#E31E24}
         
         /* Page Title */
-        .page-title{font-size:clamp(1.3rem,2.5vw,2.2rem);font-weight:bold;color:#000;text-align:center;margin-bottom:3vh}
+        .gosu-sim .page-title{font-size:clamp(1.3rem,2.5vw,2.2rem);font-weight:bold;color:#000;text-align:center;margin-bottom:3vh}
         
         /* Description Text */
         .description-text{font-size:clamp(1rem,1.9vw,1.6rem);color:#666;text-align:center;margin-bottom:4vh;line-height:1.5}
         
         /* Buttons */
-        .btn-primary{width:100%;background:#0063B0;color:#fff;border:none;border-radius:0.8vw;padding:2.5vh;font-size:clamp(1.1rem,2.2vw,1.9rem);font-weight:600;cursor:pointer;transition:all 0.3s;margin-bottom:2vh;box-shadow:0 0.3vh 1vh rgba(0,99,176,0.3)}
-        .btn-primary:hover{background:#004d8c;transform:translateY(-0.2vh)}
+        .gosu-sim .btn-primary{width:100%;background:#0063B0;color:#fff;border:none;border-radius:0.8vw;padding:2.5vh;font-size:clamp(1.1rem,2.2vw,1.9rem);font-weight:600;cursor:pointer;transition:all 0.3s;margin-bottom:2vh;box-shadow:0 0.3vh 1vh rgba(0,99,176,0.3)}
+        .gosu-sim .btn-primary:hover{background:#004d8c;transform:translateY(-0.2vh)}
         
-        .btn-secondary{width:100%;background:#fff;color:#0063B0;border:0.3vw solid #0063B0;border-radius:0.8vw;padding:2.5vh;font-size:clamp(1.1rem,2.2vw,1.9rem);font-weight:600;cursor:pointer;transition:all 0.3s;margin-bottom:2vh}
-        .btn-secondary:hover{background:#f0f7ff}
+        .gosu-sim .btn-secondary{width:100%;background:#fff;color:#0063B0;border:0.3vw solid #0063B0;border-radius:0.8vw;padding:2.5vh;font-size:clamp(1.1rem,2.2vw,1.9rem);font-weight:600;cursor:pointer;transition:all 0.3s;margin-bottom:2vh}
+        .gosu-sim .btn-secondary:hover{background:#f0f7ff}
         
-        .btn-link{width:100%;background:none;color:#0063B0;border:none;padding:2vh;font-size:clamp(1.05rem,2vw,1.7rem);font-weight:500;cursor:pointer;text-decoration:none;display:block;text-align:center}
-        .btn-link:hover{text-decoration:underline}
+        .gosu-sim .btn-link{width:100%;background:none;color:#0063B0;border:none;padding:2vh;font-size:clamp(1.05rem,2vw,1.7rem);font-weight:500;cursor:pointer;text-decoration:none;display:block;text-align:center}
+        .gosu-sim .btn-link:hover{text-decoration:underline}
         
         /* Form Fields */
         .form-field{margin-bottom:3vh}
@@ -159,15 +158,10 @@
         .option-icon{font-size:clamp(2rem,4vw,3rem)}
         .option-text{flex:1;font-size:clamp(1.05rem,2vw,1.7rem);font-weight:500;color:#000}
         
-        .task-hint{background:#ffd700;border:0.4vw solid #000;border-radius:1vw;padding:2.5vh 3vw;margin:2.5vh 0;font-size:clamp(1.1rem,2.2vw,1.9rem);color:#000;font-weight:bold;box-shadow:0 0.5vh 1.5vh rgba(0,0,0,0.3)}
-        .task-hint strong{display:block;margin-bottom:1.5vh;font-size:clamp(1.3rem,2.5vw,2.2rem);text-transform:uppercase;letter-spacing:0.1vw}
+        .task-hint{background:#ffd700;border:0.4vw solid #000;border-radius:1vw;padding:1vw;margin:2.5vh 0;font-size:clamp(1.1rem,2.2vw,1.9rem);color:#000;font-weight:bold;box-shadow:0 0.5vh 1.5vh rgba(0,0,0,0.3)}
+        .task-hint strong{display:block;margin-bottom:1.5vh;font-size:clamp(1.3rem,2.5vw,2.2rem);letter-spacing:0.1vw}
     </style>
 <div class="course-container">
-        <div class="course-header">
-            <h1 class="course-title">Регистрация на Госуслугах</h1>
-            <p class="course-subtitle">Пошаговая инструкция</p>
-        </div>
-
         <div class="course-progress">
             <div class="progress-bar">
                 <div class="progress-fill" id="progressBar"></div>
@@ -353,7 +347,7 @@
                                 </div>
                             </div>
                             <div class="page-title">Регистрация</div>
-                            <div class="sms-info">Код подтверждения отправлен на номер<br><strong>+7 938</strong></div>
+                            <div class="sms-info">Код подтверждения отправлен на номер<br><strong id="smsTargetPhone">+7 (938) 000-00-00</strong></div>
                             <div class="form-field">
                                 <label class="form-label">Код подтверждения</label>
                                 <input type="text" class="form-input" id="smsCode" placeholder="" maxlength="6">
@@ -466,7 +460,7 @@
             </div>
         </div>
 
-        <div class="course-navigation">
+        <div class="course-navigation" id="courseNavigation">
             <button class="nav-button" id="prevBtn" onclick="changeStep(-1)">Назад</button>
             <button class="nav-button primary" id="nextBtn" onclick="changeStep(1)">Далее</button>
         </div>
@@ -476,12 +470,100 @@
         let currentStep = 0;
         const totalSteps = 6;
         let taskCompleted = false;
+        let registeredPhone = '+7 (938) 000-00-00';
+
+        function formatRussianMobilePhone(rawPhone) {
+            const digits = String(rawPhone || '').replace(/\D/g, '');
+            let normalized = digits;
+
+            if (normalized.length === 10) {
+                normalized = `7${normalized}`;
+            } else if (normalized.length === 11 && normalized.startsWith('8')) {
+                normalized = `7${normalized.slice(1)}`;
+            }
+
+            const isValid =
+                normalized.length === 11 &&
+                normalized.startsWith('7') &&
+                normalized.charAt(1) === '9';
+
+            if (!isValid) {
+                return '';
+            }
+
+            return `+7 (${normalized.slice(1, 4)}) ${normalized.slice(4, 7)}-${normalized.slice(7, 9)}-${normalized.slice(9, 11)}`;
+        }
+
+        function updateSmsTargetPhone(phoneText) {
+            const phoneTarget = document.getElementById('smsTargetPhone');
+            if (phoneTarget) {
+                phoneTarget.textContent = phoneText;
+            }
+        }
+
+        function prepareSplitStepLayout() {
+            document.querySelectorAll('.step-card').forEach((stepCard) => {
+                if (stepCard.classList.contains('step-card-split')) {
+                    return;
+                }
+
+                const phoneMockup = Array.from(stepCard.children).find((child) =>
+                    child.classList.contains('phone-mockup')
+                );
+
+                if (!phoneMockup) {
+                    return;
+                }
+
+                const layout = document.createElement('div');
+                layout.className = 'step-layout';
+
+                const infoCard = document.createElement('div');
+                infoCard.className = 'step-info-card';
+
+                Array.from(stepCard.children).forEach((child) => {
+                    if (child.classList.contains('step-number')) {
+                        child.remove();
+                        return;
+                    }
+                    if (child !== phoneMockup) {
+                        infoCard.appendChild(child);
+                    }
+                });
+
+                layout.appendChild(phoneMockup);
+                layout.appendChild(infoCard);
+                stepCard.appendChild(layout);
+                stepCard.classList.add('step-card-split');
+            });
+        }
+
+        function setupProgressSegments() {
+            const progressTrack = document.querySelector('.progress-bar');
+            if (!progressTrack) {
+                return;
+            }
+            progressTrack.style.setProperty('--segments', String(totalSteps + 1));
+        }
+
+        function placeNavigation(stepIndex) {
+            const navigation = document.getElementById('courseNavigation');
+            const stepCard = document.getElementById('step' + stepIndex);
+            if (!navigation || !stepCard) {
+                return;
+            }
+
+            const infoCard = stepCard.querySelector('.step-info-card');
+            const targetContainer = infoCard || stepCard;
+            targetContainer.appendChild(navigation);
+        }
 
         function showStep(stepIndex) {
             document.querySelectorAll('.step-card').forEach(step => step.style.display = 'none');
             const step = document.getElementById('step' + stepIndex);
             if (step) {
                 step.style.display = 'block';
+                placeNavigation(stepIndex);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
             
@@ -489,7 +571,7 @@
             document.getElementById('nextBtn').textContent = stepIndex === totalSteps ? 'Завершено' : 'Далее';
             document.getElementById('currentStep').textContent = stepIndex + 1;
             
-            const progress = (stepIndex / totalSteps) * 100;
+            const progress = ((stepIndex + 1) / (totalSteps + 1)) * 100;
             document.getElementById('progressBar').style.width = progress + '%';
             
             taskCompleted = (stepIndex === 0);
@@ -521,14 +603,30 @@
         // Шаг 2
         document.addEventListener('click', (e) => {
             if (e.target.id === 'continueBtn1' && currentStep === 2) {
-                const fields = ['lastName', 'firstName', 'phone', 'email'];
-                const filled = fields.every(id => document.getElementById(id)?.value.length > 0);
-                if (filled) {
-                    taskCompleted = true;
-                    updateNextButton();
-                } else {
+                const lastName = document.getElementById('lastName')?.value.trim() || '';
+                const firstName = document.getElementById('firstName')?.value.trim() || '';
+                const email = document.getElementById('email')?.value.trim() || '';
+                const phoneInput = document.getElementById('phone');
+                const formattedPhone = formatRussianMobilePhone(phoneInput?.value || '');
+
+                if (!lastName || !firstName || !email) {
                     alert('Заполните все поля!');
+                    return;
                 }
+
+                if (!formattedPhone) {
+                    alert('Введите корректный мобильный номер в формате +7XXXXXXXXXX.');
+                    return;
+                }
+
+                registeredPhone = formattedPhone;
+                if (phoneInput) {
+                    phoneInput.value = formattedPhone;
+                }
+                updateSmsTargetPhone(registeredPhone);
+
+                taskCompleted = true;
+                updateNextButton();
             }
         });
 
@@ -573,8 +671,12 @@
         });
 
         document.addEventListener('DOMContentLoaded', () => {
+            prepareSplitStepLayout();
+            setupProgressSegments();
+            updateSmsTargetPhone(registeredPhone);
             showStep(0);
         });
     </script>
   </div>
 </div>
+

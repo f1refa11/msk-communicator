@@ -17,8 +17,10 @@
                     <h1 class="page-title">{{ tutorial_title }}</h1>
                     {% if viewer_navigation == 'style-switch' and style_options %}
                         <p class="page-note">Выберите формат прохождения: видео или симулятор.</p>
-                    {% else %}
+                    {% elif total_pages > 1 %}
                         <p class="page-note">Страница {{ current_page }} из {{ total_pages }}. Используйте крупные стрелки для перехода между шагами.</p>
+                    {% else %}
+                        <p class="page-note">Модуль проходится на одной странице.</p>
                     {% endif %}
                 </div>
                 <div class="viewer-meta">
@@ -37,7 +39,7 @@
                         {% endif %}
                     {% endfor %}
                 </div>
-            {% else %}
+            {% elif total_pages > 1 %}
                 <div class="viewer-nav">
                     {% if current_page > 1 %}
                         <a href="/tutorials/{{ tutorial_name }}/{{ current_page - 1 }}{{ viewer_query or '' }}" class="btn btn-ghost btn-lg">⬅️ Предыдущий шаг</a>

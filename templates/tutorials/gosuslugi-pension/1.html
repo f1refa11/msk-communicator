@@ -5,7 +5,6 @@
 .gosu-sim-root {
     margin: 0;
     padding: 24px;
-    background: #e7edf5;
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -30,6 +29,7 @@
 .gosu-sim .btn-link,
 .gosu-sim .download-btn,
 .gosu-sim button {
+    width: 100%;
     max-width: 100%;
     white-space: normal;
     word-break: break-word;
@@ -60,7 +60,7 @@
         border-width: 0.4vw;
     }
 
-    .gosu-sim .step-card {
+    .gosu-sim .step-card:not(.step-card-split) {
         padding: 2.5vh 4vw;
     }
 
@@ -84,22 +84,21 @@
   </style>
   <div class="gosu-sim">
 <style>
-        .phone-mockup{max-width:min(98vw,700px);margin:3vh auto;background:#000;border:0.8vw solid #000;border-radius:4vw;padding:2vh 1.5vw;box-shadow:0 2vh 5vh rgba(0,0,0,0.4);position:relative}
-        .phone-mockup::before{content:'';position:absolute;top:1vh;left:50%;transform:translateX(-50%);width:20vw;max-width:120px;height:3vh;background:#000;border-radius:2vw}
-        .phone-screen{background:#fff;border-radius:2.5vw;overflow:hidden;height:85vh;min-height:700px;display:flex;flex-direction:column}
+        .gosu-sim .phone-mockup{max-width:min(98vw,700px);border:2px solid #111;border-radius:3.2vw;position:relative;overflow:hidden}
+        .gosu-sim .phone-screen{background:#fff;border-radius:2.5vw;overflow:hidden;height:85vh;min-height:700px;display:flex;flex-direction:column}
         .browser-bar{background:#f5f5f5;padding:1.5vh 3vw;border-bottom:0.2vw solid #e0e0e0;display:flex;align-items:center;gap:2vw;font-size:clamp(0.85rem,1.6vw,1.3rem);color:#666}
         .browser-icon{font-size:clamp(1rem,1.9vw,1.6rem)}
         .browser-url{flex:1;font-weight:500}
-        .page-content{flex:1;overflow-y:auto;background:#fff;padding:3vh 4vw}
+        .page-content{flex:1;overflow-y:auto;background:#fff;padding:1vh 1vw}
         .gosuslugi-logo{text-align:center;margin-bottom:3vh}
-        .logo-text{font-size:clamp(1.8rem,3.5vw,3rem);font-weight:bold}
-        .logo-gos{color:#0063B0}
-        .logo-uslugi{color:#E31E24}
-        .page-title{font-size:clamp(1.3rem,2.5vw,2.2rem);font-weight:bold;color:#000;margin-bottom:2vh}
+        .gosu-sim .logo-text{font-size:clamp(1.8rem,3.5vw,3rem);font-weight:bold}
+        .gosu-sim .logo-gos{color:#0063B0}
+        .gosu-sim .logo-uslugi{color:#E31E24}
+        .gosu-sim .page-title{font-size:clamp(1.3rem,2.5vw,2.2rem);font-weight:bold;color:#000;margin-bottom:2vh}
         .search-box{background:#f5f5f5;border:0.2vw solid #ccc;border-radius:1vw;padding:2vh 3vw;margin-bottom:3vh;display:flex;align-items:center;gap:2vw}
         .search-icon{font-size:clamp(1.2rem,2.4vw,2rem);color:#666}
         .search-text{flex:1;color:#999;font-size:clamp(1rem,1.9vw,1.6rem)}
-        .service-card{background:#fff;border:0.2vw solid #e0e0e0;border-radius:1.2vw;padding:2.5vh 3vw;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;gap:3vw;margin-bottom:2vh}
+        .service-card{background:#fff;border:0.2vw solid #e0e0e0;border-radius:1.2vw;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;gap:1vw;margin-bottom:2vh}
         .service-card:hover{border-color:#0063B0;box-shadow:0 0.5vh 1.5vh rgba(0,99,176,0.15)}
         .service-card.selected{border-color:#0063B0;border-width:0.3vw;background:#e8f4fd}
         .service-icon{font-size:clamp(2rem,4vw,3.5rem)}
@@ -114,8 +113,8 @@
         .detail-row:last-child{border-bottom:none}
         .detail-label{color:#666}
         .detail-value{font-weight:bold;color:#000}
-        .btn-primary{width:100%;background:#0063B0;color:#fff;border:none;border-radius:0.8vw;padding:2.5vh;font-size:clamp(1.1rem,2.2vw,1.9rem);font-weight:600;cursor:pointer;transition:all 0.3s;margin-top:2vh}
-        .btn-primary:hover{background:#004d8c}
+        .gosu-sim .btn-primary{width:100%;background:#0063B0;color:#fff;border:none;border-radius:0.8vw;padding:2.5vh;font-size:clamp(1.1rem,2.2vw,1.9rem);font-weight:600;cursor:pointer;transition:all 0.3s;margin-top:2vh}
+        .gosu-sim .btn-primary:hover{background:#004d8c}
         .certificate-card{background:linear-gradient(135deg,#fff 0%,#e8f4fd 100%);border:0.3vw solid #0063B0;border-radius:1.5vw;padding:4vh 3vw;margin:3vh 0;text-align:center}
         .cert-title{font-size:clamp(1.2rem,2.4vw,2rem);font-weight:bold;color:#000;margin-bottom:2vh}
         .cert-number{font-size:clamp(1.8rem,3.6vw,3rem);font-weight:bold;color:#0063B0;letter-spacing:0.3vw;margin:2vh 0}
@@ -126,15 +125,10 @@
         .success-icon{font-size:clamp(5rem,10vw,8rem);text-align:center;margin:3vh 0}
         .success-title{font-size:clamp(1.6rem,3.2vw,2.8rem);font-weight:bold;text-align:center;color:#000;margin-bottom:2vh}
         .success-text{font-size:clamp(1.05rem,2vw,1.7rem);text-align:center;color:#666;margin-bottom:3vh;line-height:1.6}
-        .task-hint{background:#ffd700;border:0.4vw solid #000;border-radius:1vw;padding:2.5vh 3vw;margin:2.5vh 0;font-size:clamp(1.1rem,2.2vw,1.9rem);color:#000;font-weight:bold;box-shadow:0 0.5vh 1.5vh rgba(0,0,0,0.3)}
-        .task-hint strong{display:block;margin-bottom:1.5vh;font-size:clamp(1.3rem,2.5vw,2.2rem);text-transform:uppercase}
+        .task-hint{background:#ffd700;border:0.4vw solid #000;border-radius:1vw;padding:1vw;margin:2.5vh 0;font-size:clamp(1.1rem,2.2vw,1.9rem);color:#000;font-weight:bold;box-shadow:0 0.5vh 1.5vh rgba(0,0,0,0.3)}
+        .task-hint strong{display:block;margin-bottom:1.5vh;font-size:clamp(1.3rem,2.5vw,2.2rem)}
     </style>
 <div class="course-container">
-        <div class="course-header">
-            <h1 class="course-title">Электронное свидетельство пенсионера</h1>
-            <p class="course-subtitle">Получение через Госуслуги</p>
-        </div>
-
         <div class="course-progress">
             <div class="progress-bar">
                 <div class="progress-fill" id="progressBar"></div>
@@ -301,7 +295,7 @@
             </div>
         </div>
 
-        <div class="course-navigation">
+        <div class="course-navigation" id="courseNavigation">
             <button class="nav-button" id="prevBtn" onclick="changeStep(-1)">Назад</button>
             <button class="nav-button primary" id="nextBtn" onclick="changeStep(1)">Далее</button>
         </div>
@@ -312,17 +306,75 @@
         const totalSteps = 3;
         let taskCompleted = false;
 
+        function prepareSplitStepLayout() {
+            document.querySelectorAll('.step-card').forEach((stepCard) => {
+                if (stepCard.classList.contains('step-card-split')) {
+                    return;
+                }
+
+                const phoneMockup = Array.from(stepCard.children).find((child) =>
+                    child.classList.contains('phone-mockup')
+                );
+
+                if (!phoneMockup) {
+                    return;
+                }
+
+                const layout = document.createElement('div');
+                layout.className = 'step-layout';
+
+                const infoCard = document.createElement('div');
+                infoCard.className = 'step-info-card';
+
+                Array.from(stepCard.children).forEach((child) => {
+                    if (child.classList.contains('step-number')) {
+                        child.remove();
+                        return;
+                    }
+                    if (child !== phoneMockup) {
+                        infoCard.appendChild(child);
+                    }
+                });
+
+                layout.appendChild(phoneMockup);
+                layout.appendChild(infoCard);
+                stepCard.appendChild(layout);
+                stepCard.classList.add('step-card-split');
+            });
+        }
+
+        function setupProgressSegments() {
+            const progressTrack = document.querySelector('.progress-bar');
+            if (!progressTrack) {
+                return;
+            }
+            progressTrack.style.setProperty('--segments', String(totalSteps + 1));
+        }
+
+        function placeNavigation(stepIndex) {
+            const navigation = document.getElementById('courseNavigation');
+            const stepCard = document.getElementById('step' + stepIndex);
+            if (!navigation || !stepCard) {
+                return;
+            }
+
+            const infoCard = stepCard.querySelector('.step-info-card');
+            const targetContainer = infoCard || stepCard;
+            targetContainer.appendChild(navigation);
+        }
+
         function showStep(stepIndex) {
             document.querySelectorAll('.step-card').forEach(step => step.style.display = 'none');
             document.getElementById('step' + stepIndex).style.display = 'block';
+            placeNavigation(stepIndex);
             window.scrollTo({ top: 0, behavior: 'smooth' });
             
             document.getElementById('prevBtn').disabled = stepIndex === 0;
-            document.getElementById('nextBtn').textContent = stepIndex === totalSteps ? 'Завершено' : 'Далее';
+            document.getElementById('nextBtn').textContent = stepIndex === totalSteps ? 'Начать туториал заново' : 'Далее';
             document.getElementById('currentStep').textContent = stepIndex + 1;
-            document.getElementById('progressBar').style.width = (stepIndex / totalSteps) * 100 + '%';
+            document.getElementById('progressBar').style.width = ((stepIndex + 1) / (totalSteps + 1)) * 100 + '%';
             
-            taskCompleted = (stepIndex === 0);
+            taskCompleted = stepIndex === 0 || stepIndex === totalSteps;
             updateNextButton();
         }
 
@@ -331,6 +383,12 @@
         }
 
         function changeStep(direction) {
+            if (direction > 0 && currentStep === totalSteps) {
+                currentStep = 0;
+                showStep(currentStep);
+                return;
+            }
+
             currentStep += direction;
             if (currentStep < 0) currentStep = 0;
             if (currentStep > totalSteps) {
@@ -361,7 +419,13 @@
             }
         });
 
-        document.addEventListener('DOMContentLoaded', () => showStep(0));
+        document.addEventListener('DOMContentLoaded', () => {
+            prepareSplitStepLayout();
+            setupProgressSegments();
+            showStep(0);
+        });
     </script>
   </div>
 </div>
+
+
